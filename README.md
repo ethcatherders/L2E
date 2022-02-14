@@ -1,7 +1,7 @@
-# Lear2Earn project (L2E) 
+# Lear2Earn project (L2E)
 
 ## Description
-This repository contains information on a WIP project [Learn2Earn](https://hackmd.io/@poojaranjan/Learn2Earn) by the ECH contributors. 
+This repository contains information on a WIP project [Learn2Earn](https://hackmd.io/@poojaranjan/Learn2Earn) by the ECH contributors.
 
 ## Previous Meetings
 
@@ -13,6 +13,7 @@ This repository contains information on a WIP project [Learn2Earn](https://hackm
   3 | Monday, January 24, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-3) |
   2 | Monday, January 17, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-2) |
   1 | Monday, January 10, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-1) |
+
 
 ## Contribution Guidelines
 
