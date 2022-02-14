@@ -5,14 +5,15 @@ This repository contains information on a WIP project [Learn2Earn](https://hackm
 
 ## Previous Meetings
 
- №  | Date                             | Notes          |
---- | -------------------------------- | -------------- |
-  6 | Monday, February 14, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-6) |
-  5 | Monday, February 07, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-5) |
-  4 | Monday, January 31, 2022 19:00 UTC   | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-4) |
-  3 | Monday, January 24, 2022 19:00 UTC   | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-3) |
-  2 | Monday, January 17, 2022 19:00 UTC   | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-2) |
-  1 | Monday, January 10, 2022 19:00 UTC   | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-1) |
+ №  | Date                             | Notes          | 
+--- | -------------------------------- | -------------- | 
+  6 | Monday, February 14, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-6)|
+  5 | Monday, February 07, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-5)|
+  4 | Monday, January 31, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-4) |
+  3 | Monday, January 24, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-3) |
+  2 | Monday, January 17, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-2) |
+  1 | Monday, January 10, 2022 19:00 UTC  | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-1) |
+
 
 ## Contribution Guidelines
 
