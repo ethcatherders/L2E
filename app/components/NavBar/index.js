@@ -4,6 +4,7 @@ import {
   Text, 
   AspectRatio, 
   Button,
+  Box,
   Drawer,
   DrawerBody,
   DrawerFooter,
@@ -16,22 +17,30 @@ import {
 import Image from 'next/image';
 import { useRef } from 'react';
 import { useMoralis } from 'react-moralis';
-import logo from '../../public/vercel.svg';
+import logo from '../../public/ECHLogo.png';
 
 export default function NavBar(props) {
-  const { authenticate, isAuthenticating } = useMoralis();
+  const { authenticate, isAuthenticating, logout, isLoggingOut } = useMoralis();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
 
   return (
     <HStack justify={'space-between'} align={'center'} borderBottom={'1px solid grey'} padding={5}>
-      <AspectRatio maxWidth={'75px'}>
+      <AspectRatio maxWidth={50} maxHeight={55} ratio={-1}>
         <Image src={logo} />
       </AspectRatio>
       {props.authenticated ? 
-        <Text>
-          {props.ethAddress}
-        </Text>
+        <HStack>
+          <Text color={'white'} bg={'rgba(35, 35, 35, 1)'} borderRadius={5} padding={2}>
+            {`${props.ethAddress.substring(0, 9)}...`}
+          </Text>
+          <Button
+            onClick={logout}
+            isLoading={isLoggingOut}
+          >
+            Logout
+          </Button>
+        </HStack>
         :
         <Button
           ref={btnRef}
@@ -58,7 +67,7 @@ export default function NavBar(props) {
                 width={'100%'}
                 onClick={() => authenticate({
                   provider: 'metamask'
-                })}
+                }).then(() => onClose())}
                 isLoading={isAuthenticating}
               >
                 MetaMask
@@ -67,7 +76,7 @@ export default function NavBar(props) {
                 width={'100%'}
                 onClick={() => authenticate({
                   provider: 'walletconnect'
-                })}
+                }).then(() => onClose())}
                 isLoading={isAuthenticating}
               >
                 Wallet Connect
