@@ -3,6 +3,7 @@
 ## Tech Stack
 The proposed technologies to be used for the initial version of this app are the following:
 - NextJS
+- Chakra UI
 - Moralis
 - POAP
 
