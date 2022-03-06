@@ -23,7 +23,7 @@ All the data including users, course content, and POAP info will be stored in th
 - POAPs - to store key information of each POAP for querying and managing.
 ```JSON
 {
-    name: "POAP Name",
+  name: "POAP Name",
 	source: "URL",
 	mintLinks: ["mintlink", ...], // Delete each item from array after being used
 	course: "Course ID", // ID of object in Course collection (Relational)
@@ -34,20 +34,21 @@ All the data including users, course content, and POAP info will be stored in th
 ```JSON
 {
 	videoUrl: "YouTube link",
-	questions: ["Question 1", "Qestion 2", ...],
-	answers: [
-		// For Question 1
+	quiz: [
 		{
-			options: ["Option 1", "Option 2", ...],
-			correctIndex: 1, // Index of item in options array
+			id: 1,
+			question: "Question 1",
+			options: ["Option 1", "Option 2", ...]
 		},
-		// For Question 2
 		{
-			options: ["Option 1", "Option 2", ...],
-			correctIndex: 3, // Index of item in options array
-		},
-		// For etc ...
+			id: 2,
+			question: "Question 2",
+			options: ["Option 1", "Option 2", ...]
+		}
+		// ..etc.
 	],
+	// Each answer is the index of the correct item for each "options" array within quiz object item
+	answers: [1, 3, 0, 2, ...],
 	responses: [
 		{
 			user: "USER ID", // ID of object in User collection (Relational)
