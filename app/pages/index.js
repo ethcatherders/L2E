@@ -25,6 +25,7 @@ export default function Home() {
     const query = new Moralis.Query(Course);
     const results = await query.map(course => {
       return {
+        id: course.id,
         title: course.attributes.title,
         thumbnail: course.attributes.thumbnail ? course.attributes.thumbnail : pic,
         completed: false

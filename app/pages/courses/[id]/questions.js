@@ -17,11 +17,14 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Box,
+  Center,
 } from "@chakra-ui/react";
 
 export default function Questions() {
   const [quiz, setQuiz] = useState([]);
   const [answers, setAnswers] = useState([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { isInitialized, Moralis, user } = useMoralis();
   const router = useRouter();
 
@@ -39,7 +42,13 @@ export default function Questions() {
 
     try {
       const result = await query.get(id);
-      return result.attributes.quiz;
+      return result.attributes.quiz.map(item => {
+        return {
+          id: item.id,
+          question: item.question,
+          options: item.options
+        }
+      });
     } catch (error) {
       console.error(error);
       return [
@@ -74,6 +83,7 @@ export default function Questions() {
       await result.save();
       user.addUnique("coursesCompleted", result);
       await user.save();
+      setIsSubmitted(true);
     } catch (error) {
       console.error(error);
       console.log({ user, answers });
@@ -82,8 +92,8 @@ export default function Questions() {
 
   return (
     <Layout>
-      <Container padding={10}>
-        {!user ? 
+      {!user ? 
+        <Container padding={10}>
           <Alert 
             status="error"
             flexDirection='column'
@@ -96,31 +106,59 @@ export default function Questions() {
             <AlertTitle mt={5}>Connect your wallet!</AlertTitle>
             <AlertDescription>You must connect and sign-in with your Ethereum address before continuing.</AlertDescription>
           </Alert>
-          :
-          <form onSubmit={submit}>
-            {quiz.map((quizItem, index) => 
-              <FormControl as='fieldset' isRequired key={index} paddingBottom={10} disabled={user ? false : true}>
-                <FormLabel as='legend'>{quizItem.question}</FormLabel>
-                <RadioGroup paddingLeft={5} value={answers[index]} onChange={(e) => selectAnswer(e, index)}>
-                  <VStack alignItems='flex-start'>
-                    {quizItem.options.map((option, optIndex) =>
-                      <Radio value={option} key={optIndex}>{option}</Radio>
-                    )}
-                  </VStack>
-                </RadioGroup>
-              </FormControl>
-            )}
-            <Button type="submit">
-              Submit
-            </Button>
-            <Link href={`/courses/${router.query.id}/results`}>
-              <Button type="button">
-                View Results
+        </Container>
+        :
+        <Container padding={10}>
+          {!isSubmitted ?
+            <form onSubmit={submit}>
+              {quiz.map((quizItem, index) => 
+                <FormControl as='fieldset' isRequired key={index} paddingBottom={10} disabled={user ? false : true}>
+                  <FormLabel as='legend'>{quizItem.question}</FormLabel>
+                  <RadioGroup paddingLeft={5} value={answers[index]} onChange={(e) => selectAnswer(e, index)}>
+                    <VStack alignItems='flex-start'>
+                      {quizItem.options.map((option, optIndex) =>
+                        <Radio value={option} key={optIndex}>{option}</Radio>
+                      )}
+                    </VStack>
+                  </RadioGroup>
+                </FormControl>
+              )}
+              <Button type="submit">
+                Submit
               </Button>
-            </Link>
-          </form>
-        }
-      </Container>
+            </form>
+            :
+            <Box>
+              <Alert
+                status='success'
+                variant='subtle'
+                flexDirection='column'
+                alignItems='center'
+                justifyContent='center'
+                textAlign='center'
+                height='200px'
+                borderRadius={5}
+                marginBottom={5}
+                >
+                <AlertIcon boxSize='40px' mr={0} />
+                <AlertTitle mt={4} mb={1} fontSize='lg'>
+                  Your Answers Submitted!
+                </AlertTitle>
+                <AlertDescription maxWidth='sm'>
+                  Click on 'View Results' to see your score and potentially earn a POAP!
+                </AlertDescription>
+              </Alert>
+              <Center>
+                <Link href={`/courses/${router.query.id}/results`}>
+                  <Button type="button">
+                    View Results
+                  </Button>
+                </Link>
+              </Center>
+            </Box>
+          }
+        </Container>
+      }
     </Layout>
   )
 }

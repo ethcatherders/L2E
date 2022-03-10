@@ -33,7 +33,7 @@ export default function Course() {
       console.error(error);
       return {
         title: 'Example',
-        videoUrl: 'https://youtu.be/dQw4w9WgXcQ'
+        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
       }
     }
   }
@@ -46,7 +46,7 @@ export default function Course() {
             {course.title}
           </Heading>
           <AspectRatio height={450} width={'100%'}>
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+            <iframe width="560" height="315" src={course.videoUrl} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
           </AspectRatio>
           <Center paddingTop={5}>
             <Link href={`/courses/${router.query.id}/questions`}>
