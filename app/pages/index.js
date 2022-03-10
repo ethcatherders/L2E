@@ -10,21 +10,28 @@ import { useMoralis } from 'react-moralis';
 
 export default function Home() {
   const [courses, setCourses] = useState([]);
-  const { user, isInitialized } = useMoralis();
+  const { user, isInitialized, Moralis } = useMoralis();
   
-  useEffect(() => {
+  useEffect(async () => {
     if (isInitialized) {
       // Query courses from Moralis
-
-      // This is just an example
-      setCourses([{
-        id: 1,
-        name: 'Course Name',
-        thumbnail: pic,
-        completed: false
-      }])
+      await getCourses();
     }
   }, [isInitialized]);
+
+  async function getCourses() {
+    // This will need to be transitioned to a Cloud function when filtering between completed and not completed by user
+    const Course = Moralis.Object.extend("Course");
+    const query = new Moralis.Query(Course);
+    const results = await query.map(course => {
+      return {
+        title: course.attributes.title,
+        thumbnail: course.attributes.thumbnail ? course.attributes.thumbnail : pic,
+        completed: false
+      }
+    });
+    setCourses(results);
+  }
 
   return (
     <Layout>
@@ -36,8 +43,8 @@ export default function Home() {
                   <Box maxWidth={'100%'}>
                     <Image src={course.thumbnail} width={100} height={75} layout='responsive' objectFit='cover' />
                   </Box>
-                  <Center padding={2} borderBottomRadius='md' height='75px' background='white'>
-                    <Heading size='md' noOfLines={1}>{course.name}</Heading>
+                  <Center padding={2} borderBottomRadius='md' height='75px'>
+                    <Heading size='md' noOfLines={1}>{course.title}</Heading>
                   </Center>
               </GridItem>
             </Link>
