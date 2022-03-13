@@ -51,18 +51,6 @@ export default function Questions() {
       });
     } catch (error) {
       console.error(error);
-      return [
-        {
-          id: 1,
-          question: 'This is a sample question',
-          options: ['option 1', 'option 2', 'option 3', 'option 4'],
-        },
-        {
-          id: 2,
-          question: 'This is a second question for example',
-          options: ['option 1', 'option 2', 'option 3', 'option 4'],
-        }
-      ]
     }
   }
 
@@ -79,14 +67,14 @@ export default function Questions() {
 
     try {
       const result = await query.get(id);
-      result.addUnique("responses", { user, answers });
+      const userId = user.id;
+      result.addUnique("responses", { user: userId, answers });
       await result.save();
       user.addUnique("coursesCompleted", result);
       await user.save();
       setIsSubmitted(true);
     } catch (error) {
       console.error(error);
-      console.log({ user, answers });
     }
   }
 

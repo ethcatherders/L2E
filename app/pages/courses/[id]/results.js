@@ -6,8 +6,6 @@ import { useMoralis } from "react-moralis";
 import Layout from "../../../components/Layout";
 
 export default function Result() {
-  const [userAnswers, setUserAnswers] = useState([]);
-  const [correctAnswers, setCorrectAnswers] = useState([]);
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const { user, isInitialized, Moralis } = useMoralis();
   const router = useRouter();
@@ -15,8 +13,6 @@ export default function Result() {
   useEffect(async () => {
     if (isInitialized) {
       await getAnswers();
-      const { match, total } = compareAnswers(userAnswers, correctAnswers);
-      setScore({ correct: match, total: total });
     }
   }, [isInitialized]);
 
@@ -27,13 +23,12 @@ export default function Result() {
 
     try {
       const result = await query.get(id);
-      const fromUser = result.attributes.responses.filter(response => response.user == user);
-      setCorrectAnswers(result.attributes.answers);
-      setUserAnswers(fromUser[fromUser.length - 1]);
+      const fromUser = result.attributes.responses.filter(response => response.user === user.id);
+      const answers = result.attributes.quiz.map(item => item.answer);
+      const { match, total } = compareAnswers(fromUser[fromUser.length - 1].answers, answers);
+      setScore({ correct: match, total: total });
     } catch (error) {
       console.log(error);
-      setCorrectAnswers(['option 1', 'option 2']);
-      setUserAnswers(['option 4', 'option 2']);
     }
   }
 
@@ -60,7 +55,7 @@ export default function Result() {
           <Heading marginBottom={5}>
             {score.correct} out of {score.total}
           </Heading>
-          {score.correct / score.total >= 0.8 ? 
+          {score.correct / score.total >= 0.7 ? 
             <Box>
               <Text>
                 Congrats! You passed!
