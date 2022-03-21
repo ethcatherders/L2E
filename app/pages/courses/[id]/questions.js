@@ -19,6 +19,7 @@ import {
   AlertDescription,
   Box,
   Center,
+  Spinner
 } from "@chakra-ui/react";
 
 export default function Questions() {
@@ -34,6 +35,14 @@ export default function Questions() {
       setAnswers(Array(quiz.length));
     }
   }, [isInitialized]);
+
+  useEffect(async () => {
+    const { id } = router.query;
+    if (isInitialized && id) {
+      setQuiz(await getCourseQuestions());
+      setAnswers(Array(quiz.length));
+    }
+  }, [router.query.id]);
 
   async function getCourseQuestions() {
     const Course = Moralis.Object.extend("Course");
@@ -51,6 +60,7 @@ export default function Questions() {
       });
     } catch (error) {
       console.error(error);
+      return [];
     }
   }
 
@@ -98,23 +108,37 @@ export default function Questions() {
         :
         <Container padding={10}>
           {!isSubmitted ?
-            <form onSubmit={submit}>
-              {quiz.map((quizItem, index) => 
-                <FormControl as='fieldset' isRequired key={index} paddingBottom={10} disabled={user ? false : true}>
-                  <FormLabel as='legend'>{quizItem.question}</FormLabel>
-                  <RadioGroup paddingLeft={5} value={answers[index]} onChange={(e) => selectAnswer(e, index)}>
-                    <VStack alignItems='flex-start'>
-                      {quizItem.options.map((option, optIndex) =>
-                        <Radio value={option} key={optIndex}>{option}</Radio>
-                      )}
-                    </VStack>
-                  </RadioGroup>
-                </FormControl>
-              )}
-              <Button type="submit">
-                Submit
-              </Button>
-            </form>
+            <Box>
+              {quiz.length ?
+                <form onSubmit={submit}>
+                  {quiz.map((quizItem, index) => 
+                    <FormControl as='fieldset' isRequired key={index} paddingBottom={10} disabled={user ? false : true}>
+                      <FormLabel as='legend'>{quizItem.question}</FormLabel>
+                      <RadioGroup paddingLeft={5} value={answers[index]} onChange={(e) => selectAnswer(e, index)}>
+                        <VStack alignItems='flex-start'>
+                          {quizItem.options.map((option, optIndex) =>
+                            <Radio value={option} key={optIndex}>{option}</Radio>
+                          )}
+                        </VStack>
+                      </RadioGroup>
+                    </FormControl>
+                  )}
+                  <Button type="submit">
+                    Submit
+                  </Button>
+                </form>
+                :
+                <Center>
+                  <Spinner
+                    thickness='4px'
+                    speed='0.65s'
+                    // emptyColor='gray.200'
+                    color='gray.500'
+                    size='xl'
+                  />
+                </Center>
+              }
+            </Box>
             :
             <Box>
               <Alert

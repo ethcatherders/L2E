@@ -40,7 +40,7 @@ export default function Home() {
         <Grid templateColumns={'repeat(auto-fit, minmax(250px, 1fr))'} gap={5}>
           {courses.map((course, index) =>
             <Link href={`/courses/${course.id}`} key={index}>
-              <GridItem bg='grey' borderRadius='md' maxWidth='350px' minHeight='fit-content' border='1px solid grey'>
+              <GridItem bg='grey' borderRadius='md' maxWidth='350px' minHeight='fit-content' border='1px solid grey' cursor='pointer'>
                   <Box maxWidth={'100%'}>
                     <Image src={course.thumbnail} width={100} height={75} layout='responsive' objectFit='cover' />
                   </Box>

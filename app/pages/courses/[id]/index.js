@@ -10,13 +10,19 @@ export default function Course() {
   const [course, setCourse] = useState(null);
   const { isInitialized, Moralis } = useMoralis();
   const router = useRouter();
-  console.log(router.pathname);
 
   useEffect(async () => {
     if (isInitialized) {
       setCourse(await getCourse());
     }
   }, [isInitialized]);
+
+  useEffect(async () => {
+    const {id} = router.query;
+    if (isInitialized && id) {
+      setCourse(await getCourse());
+    }
+  }, [router.query.id]);
 
   async function getCourse() {
     const Course = Moralis.Object.extend("Course");
@@ -31,10 +37,6 @@ export default function Course() {
       }
     } catch (error) {
       console.error(error);
-      return {
-        title: 'Example',
-        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
-      }
     }
   }
 
