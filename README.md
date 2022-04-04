@@ -7,6 +7,8 @@ This repository contains information on a WIP project [Learn2Earn](https://hackm
 
  №  | Date                             | Notes          |
 --- | -------------------------------- | -------------- |
+  12| Monday, Apr 04, 2022 19:00 UTC | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-12)|
+  11| Monday, March 28, 2022 19:00 UTC | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-11)|
   10| Monday, March 21, 2022 19:00 UTC | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-10)|
   9 | Monday, March 07, 2022 19:00 UTC | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-9)|
   8 | Monday, February 28, 2022 19:00 UTC | [Meeting notes](https://hackmd.io/@poojaranjan/L2Emeetingnotes#Meeting-8)|
