@@ -3,22 +3,9 @@ import { useMoralis } from "react-moralis";
 import { useRouter } from 'next/router';
 import Layout from "../../../components/Layout";
 import { 
-  Container, 
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  RadioGroup,
-  Radio,
-  VStack,
-  Button,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  Box,
   Center,
-  Spinner
+  Container, 
+  Text
 } from "@chakra-ui/react";
 
 /*
@@ -27,6 +14,8 @@ import {
 
 export default function EditCourse() {
   return (
-    <Container></Container>
+    <Center marginTop={20}>
+      <Text>This page is in construction.</Text>
+    </Center>
   )
 }
