@@ -42,17 +42,20 @@ export default function Course() {
     <Layout>
       {course ? 
         <Container maxW='container.md' paddingTop={5}>
-          <HStack paddingBottom={5}>
+          <HStack paddingBottom={5} justifyContent="space-between">
             <Heading>
               {course.attributes.title}
             </Heading>
-            <Link href={`/courses/${router.query.id}/edit`} passHref>
-              <Button>Edit Course</Button>
-            </Link>
-            <Link href={`/courses/${router.query.id}/poap`} passHref>
-              <Button>Add/Change POAP</Button>
-            </Link>
+            <HStack>
+              <Link href={`/courses/${router.query.id}/edit`} passHref>
+                <Button>Edit Course</Button>
+              </Link>
+              <Link href={`/courses/${router.query.id}/poap`} passHref>
+                <Button>Add/Change POAP</Button>
+              </Link>
+            </HStack>
           </HStack>
+          <Heading size="md" marginTop={5} marginBottom={2}>Video</Heading>
           <AspectRatio height={450} width={'100%'}>
             <iframe width="560" height="315" src={course.attributes.videoUrl} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
           </AspectRatio>

@@ -18,11 +18,14 @@ import { read } from 'xlsx';
 
 export default function CreateCourse() {
   const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
   const { Moralis } = useMoralis();
 
   async function submitNewCourseFromFile(e) {
     e.preventDefault();
     // call a POST fetch request to API for parsing and appending to database
+    setSuccess(false);
+    setError(false);
     try {
       const fileList = document.getElementById('file').files;
       console.log(fileList[0].name);
@@ -56,6 +59,7 @@ export default function CreateCourse() {
           for(let y=0; courses.length > y; y++) {
             await uploadCourse(courses[y]);
           }
+          setSuccess(true);
           console.log("Success!");
         } catch (error) {
           console.error(error);
@@ -84,6 +88,7 @@ export default function CreateCourse() {
             <Input type='file' id="file" name="upload" accept=".xlsx" />
           </FormControl>
           {error ? <Text color="red">Something went wrong.</Text> : ''}
+          {success ? <Text color="green">Successfully uploaded course(s)!</Text> : ''}
           <Button type="submit" marginTop={5}>Submit</Button>
         </form>
       </Container>
