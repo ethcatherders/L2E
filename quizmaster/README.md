@@ -1,4 +1,16 @@
-# Learn-2-Earn App
+# Learn-2-Earn Quizmaster
+This is the admin application to upload, edit and manage courses for the L2E app.
+
+## Creating a New Course
+All new courses are uploaded from an excelsheet (.xlsx), parsed and saved into the Moralis database. Parsing and saving the course properly is dependent on inputting the content into the correct cells within the excelsheet. 
+
+Here is an example of how the excelsheet should be structured:
+![alt text](./public//courseformat_example.png)
+
+You can upload multiple courses at once by having multiple sheets in a single .xlsx file. Each sheet MUST follow the same structure as the image above with each input in the same cell. Once you press submit, the app will loop through each sheet and save them as courses to the Moralis database.
+
+## Editing a Course
+You can edit an existing course in the Moralis database in the edit page. You can edit all aspects directly in the app including the course title, video URL, each question, the options and the answers.
 
 ## Design
 The development of the UI is based on the design proposal found [here](https://www.figma.com/file/tB5If4aq8GRB0cAsnxkyek/ECH-Learn2Earn?node-id=0%3A1).
