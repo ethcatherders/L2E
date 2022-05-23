@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMoralis } from "react-moralis";
 import { useRouter } from 'next/router';
 import Link from "next/link";
@@ -19,15 +19,34 @@ import {
   AlertDescription,
   Box,
   Center,
-  Spinner
+  Spinner,
+  HStack
 } from "@chakra-ui/react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function Questions() {
   const [quiz, setQuiz] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const { isInitialized, Moralis, user } = useMoralis();
   const router = useRouter();
+
+  const [valid, setValid] = useState(false);
+  const recaptchaRef = useRef();
+
+  async function validateCaptcha() {
+    const token = await recaptchaRef.current.getValue();
+    const res = await fetch("/api/validateCaptcha", {
+      method: "POST",
+      body: JSON.stringify({ captcha: token }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    // Kick off the reCaptcha
+    setValid(res.ok);
+  }
 
   useEffect(async () => {
     if (isInitialized) {
@@ -71,20 +90,27 @@ export default function Questions() {
 
   async function submit(e) {
     e.preventDefault();
-    const Course = Moralis.Object.extend("Course");
-    const query = new Moralis.Query(Course);
-    const { id } = router.query;
+    setErrorMsg('');
 
-    try {
-      const result = await query.get(id);
-      const userId = user.id;
-      result.addUnique("responses", { user: userId, answers });
-      await result.save();
-      user.addUnique("coursesCompleted", result);
-      await user.save();
-      setIsSubmitted(true);
-    } catch (error) {
-      console.error(error);
+    if (valid) {
+      const Course = Moralis.Object.extend("Course");
+      const query = new Moralis.Query(Course);
+      const { id } = router.query;
+  
+      try {
+        const result = await query.get(id);
+        const userId = user.id;
+        result.addUnique("responses", { user: userId, answers });
+        await result.save();
+        user.addUnique("coursesCompleted", result);
+        await user.save();
+        return setIsSubmitted(true);
+      } catch (error) {
+        console.error(error);
+        setErrorMsg('Something went wrong. Please try again later.');
+      }
+    } else {
+      setErrorMsg("Please verify with the ReCaptcha before submitting.");
     }
   }
 
@@ -123,9 +149,24 @@ export default function Questions() {
                       </RadioGroup>
                     </FormControl>
                   )}
-                  <Button type="submit">
-                    Submit
-                  </Button>
+                  <Alert
+                    status="error"
+                    hidden={!errorMsg}
+                  >
+                    <AlertIcon/>
+                    <AlertDescription>{errorMsg}</AlertDescription>
+                  </Alert>
+                  <HStack alignItems="center" gap={10} mt={10}>
+                    <Button type="submit">
+                      Submit
+                    </Button>
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      size="normal"
+                      sitekey={process.env.ReCaptchaSiteKey}
+                      onChange={validateCaptcha}
+                    />
+                  </HStack>
                 </form>
                 :
                 <Center>

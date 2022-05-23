@@ -1,29 +1,29 @@
 import { 
   HStack,
-  // VStack, 
-  // Text, 
+  VStack, 
+  Text, 
   AspectRatio, 
-  // Button,
-  // Box,
-  // Drawer,
-  // DrawerBody,
-  // DrawerFooter,
-  // DrawerHeader,
-  // DrawerOverlay,
-  // DrawerContent,
-  // DrawerCloseButton,
-  // useDisclosure
+  Button,
+  Box,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  useDisclosure
 } from '@chakra-ui/react';
 import Image from 'next/image';
-// import { useRef } from 'react';
-// import { useMoralis } from 'react-moralis';
+import { useRef } from 'react';
+import { useMoralis } from 'react-moralis';
 import logo from '../../public/ECHLogo.png';
 import Link from 'next/link';
 
 export default function NavBar(props) {
-  // const { authenticate, isAuthenticating, logout, isLoggingOut } = useMoralis();
-  // const { isOpen, onOpen, onClose } = useDisclosure();
-  // const btnRef = useRef();
+  const { authenticate, isAuthenticating, logout, isLoggingOut } = useMoralis();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = useRef();
 
   return (
     <HStack justify={'space-between'} align={'center'} borderBottom={'1px solid grey'} padding={5}>
@@ -32,7 +32,7 @@ export default function NavBar(props) {
           <Image src={logo} />
         </AspectRatio>
       </Link>
-      {/* {props.authenticated ? 
+      {props.authenticated ? 
         <HStack>
           <Text color={'white'} bg={'rgba(35, 35, 35, 1)'} borderRadius={5} padding={2}>
             {`${props.ethAddress.substring(0, 9)}...`}
@@ -93,7 +93,7 @@ export default function NavBar(props) {
             </Button>
           </DrawerFooter>
         </DrawerContent>
-      </Drawer> */}
+      </Drawer>
     </HStack>
   )
 }
