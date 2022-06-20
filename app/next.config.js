@@ -5,5 +5,8 @@ module.exports = {
     MoralisAppID: process.env.MORALIS_APP_ID,
     ReCaptchaSecret: process.env.RECAPTCHA_SECRET_KEY,
     ReCaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY
+  },
+  images: {
+    domains: ["img.youtube.com"]
   }
 }

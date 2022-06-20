@@ -14,19 +14,22 @@
 
 .footer {
   display: flex;
-  flex: 1;
+  /* flex: 1; */
   padding: 2rem 0;
   /* border-top: 1px solid #eaeaea; */
   justify-content: center;
   align-items: center;
   margin-top: 20px;
+  background-image: url("../public/bg-waves.svg");
+  object-fit: cover;
+  justify-self: baseline;
 }
 
 .footer a {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-grow: 1;
+  /* flex-grow: 1; */
 }
 
 .title a {

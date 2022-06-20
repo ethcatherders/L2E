@@ -1,6 +1,6 @@
-import { Grid, GridItem, Container, Box, Text, Center, Heading } from '@chakra-ui/react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { Grid, GridItem, Container, Box, Text, Center, Heading, Image } from '@chakra-ui/react';
+import NextImage from 'next/image';
+import NextLink from 'next/link';
 import styles from '../styles/Home.module.css';
 import pic from '../public/ECHLogo.png';
 
@@ -24,10 +24,15 @@ export default function Home() {
     const Course = Moralis.Object.extend("Course");
     const query = new Moralis.Query(Course);
     const results = await query.map(course => {
+      let thumbnailUrl
+      if (course.attributes.videoUrl) {
+        const startIndex = "https://www.youtube.com/embed/".length
+        thumbnailUrl = `http://img.youtube.com/vi/${course.attributes.videoUrl.substring(startIndex)}/maxresdefault.jpg`
+      }
       return {
         id: course.id,
         title: course.attributes.title,
-        thumbnail: course.attributes.thumbnail ? course.attributes.thumbnail : pic,
+        thumbnail: thumbnailUrl ? thumbnailUrl : pic,
         completed: false
       }
     });
@@ -37,18 +42,25 @@ export default function Home() {
   return (
     <Layout>
       <Container maxW='container.xl' paddingTop={5} paddingBottom={5}>
-        <Grid templateColumns={'repeat(auto-fit, minmax(250px, 1fr))'} gap={5}>
-          {courses.map((course, index) =>
-            <Link href={`/courses/${course.id}`} key={index}>
-              <GridItem bg='grey' borderRadius='md' maxWidth='350px' minHeight='fit-content' border='1px solid grey' cursor='pointer'>
-                  <Box maxWidth={'100%'}>
-                    <Image src={course.thumbnail} width={100} height={75} layout='responsive' objectFit='cover' />
-                  </Box>
-                  <Center padding={2} borderBottomRadius='md' height='75px'>
-                    <Heading size='md' noOfLines={1}>{course.title}</Heading>
-                  </Center>
+        {courses.length ?
+          <NextLink href={`/courses/${courses[0].id}`}>
+            <Center mb={10} borderRadius="2xl" width="100%" minHeight={250} border="1px solid grey" cursor="pointer" backgroundImage={courses[0].thumbnail} objectFit="cover">
+              <Heading size='xl' noOfLines={1}>{courses[0].title}</Heading>
+            </Center>
+          </NextLink>
+          :
+          ""
+        }
+        <Grid templateColumns={'repeat(auto-fit, minmax(200px, 1fr))'} gap={5}>
+          {courses.slice(1).map((course, index) =>
+            <NextLink href={`/courses/${course.id}`} key={index}>
+              <GridItem bg="rgba(36, 39, 48, 1)" borderRadius='2xl' maxWidth='350px' minHeight='fit-content' border='1px solid grey' cursor='pointer'>
+                <Image src={course.thumbnail} objectFit='cover' borderTopRadius='2xl' />
+                <Center padding={2} borderBottomRadius='2xl' height={100}>
+                  <Heading size='sm' noOfLines={3} textAlign='center'>{course.title}</Heading>
+                </Center>
               </GridItem>
-            </Link>
+            </NextLink>
           )}
         </Grid>
       </Container>

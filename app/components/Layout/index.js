@@ -2,28 +2,30 @@ import { useEffect, useState } from 'react';
 import Head from "next/head";
 import { useMoralis } from "react-moralis";
 import NavBar from "../NavBar";
+import SideNav from '../SideNav';
 import styles from '../../styles/Home.module.css';
+import { Flex, Box } from '@chakra-ui/react';
 
 export default function Layout({ children }) {
-  const [ethAddress, setEthAddress] = useState('Sign Up/Sign In');
-  const { user, isAuthenticated, isInitialized } = useMoralis();
-
-  useEffect(() => {
-    if (user && isAuthenticated) {
-      setEthAddress(user.attributes.ethAddress);
-    }
-  }, [isInitialized]);
-
   return (
-    <div>
+    <Flex direction="column" height="100vh">
       <Head>
         <title>learn2earn</title>
         <meta name="description" content="Learn about Ethereum" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <NavBar ethAddress={ethAddress} authenticated={isAuthenticated} />
-      {children}
+      <Box flexGrow={1}>
+        <NavBar />
+        <Flex direction="row">
+          <Box width={250} ml={20}>
+            <SideNav />
+          </Box>
+          <Box flexGrow={1} mr={20}>
+            {children}
+          </Box>
+        </Flex>
+      </Box>
 
       <footer className={styles.footer}>
         <a
@@ -34,6 +36,6 @@ export default function Layout({ children }) {
           Made with ❤️ from the Ethereum Cat Herders
         </a>
       </footer>
-    </div>
+    </Flex>
   )
 }

@@ -50,13 +50,13 @@ export default function Course() {
           <AspectRatio height={450} width={'100%'}>
             <iframe width="560" height="315" src={course.videoUrl} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
           </AspectRatio>
-          <Center paddingTop={5}>
+          {/* <Center paddingTop={5}>
             <Link href={`/courses/${router.query.id}/questions`}>
               <Button>
                 Take Quiz
               </Button>
             </Link>
-          </Center>
+          </Center> */}
         </Container>
         :
         <Container>
