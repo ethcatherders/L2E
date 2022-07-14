@@ -182,10 +182,10 @@ export default function Questions() {
                 </Alert>
                 {!displayBtn ?
                   <HStack justifyContent="center" alignItems="center" gap={10} mt={5} width="100%">
-                    <Button type="button" onClick={prevQuestion}>
+                    <Button type="button" onClick={prevQuestion} backgroundColor='rgba(255, 255, 255, 0.1)'>
                       Back
                     </Button>
-                    <Button type="button" onClick={nextQuestion}>
+                    <Button _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }} type="button" onClick={nextQuestion} backgroundColor='rgba(32, 223, 127, 1)' color='black'>
                       Next
                     </Button>
                   </HStack>
@@ -198,10 +198,10 @@ export default function Questions() {
                       onChange={validateCaptcha}
                     />
                     <HStack justifyContent="center" alignItems="center" gap={10} mt={5} width="100%">
-                      <Button type="button" onClick={prevQuestion}>
+                      <Button type="button" onClick={prevQuestion} background='rgba(255, 255, 255, 0.1)'>
                         Back
                       </Button>
-                      <Button colorScheme="cyan" type="submit">
+                      <Button type="submit" backgroundColor='rgba(32, 223, 127, 1)' _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}>
                         Submit
                       </Button>
                     </HStack>
