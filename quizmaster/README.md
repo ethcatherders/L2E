@@ -1,6 +1,31 @@
 # Learn-2-Earn Quizmaster
 This is the admin application to upload, edit and manage courses for the L2E app.
 
+## Getting Started
+### Running Quizmaster on Localhost
+To run the app, you must have a `server key` and `app id` from Moralis and store them in a `.env.local` file. Reach out in the `#learn-2-earn` channel in the ECH discord to get them from a core contributor or go to the [Moralis website](https://moralis.io) to create your own server.
+
+Your .env.local file should look like this:
+```js
+MORALIS_SERVER_URL='<SERVER-KEY-URL>'
+MORALIS_APP_ID='<APP-ID>'
+```
+
+Once you have your `.env.local` file set up, you are ready to run the dapp. Open a terminal and make sure your within the quizmaster directory. If not, you could be in the L2E monorepo simply need to enter the following:
+```
+cd quizmaster
+```
+
+Then, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
 ## Creating a New Course
 All new courses are uploaded from an excelsheet (.xlsx), parsed and saved into the Moralis database. Parsing and saving the course properly is dependent on inputting the content into the correct cells within the excelsheet. 
 
@@ -73,16 +98,3 @@ All the data including users, course content, and POAP info will be stored in th
 	poap: "POAP ID" // ID of object in POAP collection (Relational)
 }
 ```
-
-## Getting Started
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
