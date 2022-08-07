@@ -21,7 +21,7 @@ export default function Layout({ children }) {
           <Box width={250} ml={20}>
             <SideNav />
           </Box>
-          <Box flexGrow={1} mr={20}>
+          <Box flexGrow={1} mr={20} height='100%'>
             {children}
           </Box>
         </Flex>

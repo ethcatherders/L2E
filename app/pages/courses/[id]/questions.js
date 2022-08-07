@@ -21,7 +21,9 @@ import {
   Center,
   Spinner,
   HStack,
-  Heading
+  Heading,
+  useColorMode,
+  useToast
 } from "@chakra-ui/react";
 import ReCAPTCHA from "react-google-recaptcha";
 import uuid from "react-uuid";
@@ -37,6 +39,8 @@ export default function Questions() {
   const router = useRouter();
 
   const { isInitialized, Moralis, user } = useMoralis();
+  const { colorMode } = useColorMode()
+  const toast = useToast()
 
   const [valid, setValid] = useState(false);
   const recaptchaRef = useRef();
@@ -136,10 +140,24 @@ export default function Questions() {
         return setIsSubmitted(true);
       } catch (error) {
         console.error(error);
-        setErrorMsg('Something went wrong. Please try again later.');
+        toast({
+          status: 'error',
+          title: 'Something went wrong',
+          description: 'Please try again later.',
+          position: 'bottom-right',
+          duration: 3000
+        })
+        // setErrorMsg('Something went wrong. Please try again later.');
       }
     } else {
-      setErrorMsg("Please verify with the ReCaptcha before submitting.");
+      toast({
+        status: 'error',
+        title: 'ReCaptcha Error',
+        description: 'Please verify with the ReCaptcha before submitting.',
+        position: 'bottom-right',
+        duration: 3000
+      })
+      // setErrorMsg("Please verify with the ReCaptcha before submitting.");
     }
   }
 
@@ -147,45 +165,39 @@ export default function Questions() {
     <Layout>
       {/* <Container background="blue"> */}
         {!isSubmitted ?
-          <Box background="rgba(229, 229, 229, 0.13)" padding={5}>
+          <Box background={colorMode === 'dark' ? "rgba(229, 229, 229, 0.13)" : 'rgba(220, 220, 220, 1)'} padding={5}>
             {quiz.length ?
               <form onSubmit={submit}>
-                {/* {quiz.map((quizItem, index) => 
-                  <FormControl as='fieldset' isRequired key={index} paddingBottom={10}>
-                    <FormLabel as='legend'>{quizItem.question}</FormLabel>
-                    <RadioGroup paddingLeft={5} value={answers[index]} onChange={(e) => selectAnswer(e, index)}>
-                      <VStack alignItems='flex-start'>
-                        {quizItem.options.map((option, optIndex) =>
-                          <Radio value={option} key={optIndex}>{option}</Radio>
-                        )}
-                      </VStack>
-                    </RadioGroup>
-                  </FormControl>
-                )} */}
                 <Heading size="md" mb={5}>Question #{index + 1}</Heading>
                 <FormControl as='fieldset' isRequired paddingBottom={10}>
                   <FormLabel as='legend'>{quiz[index].question}</FormLabel>
                   <RadioGroup paddingLeft={5} value={answers[index]} onChange={(e) => selectAnswer(e, index)}>
                     <VStack alignItems='flex-start'>
                       {quiz[index].options.map((option, optIndex) =>
-                        <Radio value={option} key={optIndex}>{option}</Radio>
+                        <Radio value={option} key={optIndex} borderColor={colorMode === 'light' && 'rgba(70, 69, 67, 1)'}>{option}</Radio>
                       )}
                     </VStack>
                   </RadioGroup>
                 </FormControl>
-                <Alert
-                  status="error"
-                  hidden={!errorMsg}
-                >
-                  <AlertIcon/>
-                  <AlertDescription>{errorMsg}</AlertDescription>
-                </Alert>
                 {!displayBtn ?
                   <HStack justifyContent="center" alignItems="center" gap={10} mt={5} width="100%">
-                    <Button type="button" onClick={prevQuestion} backgroundColor='rgba(255, 255, 255, 0.1)'>
+                    <Button
+                      type="button"
+                      onClick={prevQuestion}
+                      backgroundColor={colorMode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(128, 129, 145, 1)'}
+                      color={'white'}
+                      hidden={index === 0}
+                    >
                       Back
                     </Button>
-                    <Button _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }} type="button" onClick={nextQuestion} backgroundColor='rgba(32, 223, 127, 1)' color='black'>
+                    <Button
+                      _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
+                      type="button"
+                      onClick={nextQuestion}
+                      backgroundColor='rgba(32, 223, 127, 1)'
+                      color='black'
+                      isDisabled={!answers[index]}
+                    >
                       Next
                     </Button>
                   </HStack>
@@ -198,10 +210,20 @@ export default function Questions() {
                       onChange={validateCaptcha}
                     />
                     <HStack justifyContent="center" alignItems="center" gap={10} mt={5} width="100%">
-                      <Button type="button" onClick={prevQuestion} background='rgba(255, 255, 255, 0.1)'>
+                      <Button
+                        type="button"
+                        onClick={prevQuestion}
+                        background='rgba(255, 255, 255, 0.1)'
+                        hidden={index === 0}
+                      >
                         Back
                       </Button>
-                      <Button type="submit" backgroundColor='rgba(32, 223, 127, 1)' _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}>
+                      <Button
+                        type="submit"
+                        backgroundColor='rgba(32, 223, 127, 1)'
+                        _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
+                        isDisabled={!answers[index]}
+                      >
                         Submit
                       </Button>
                     </HStack>

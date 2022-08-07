@@ -16,7 +16,8 @@ import {
   Switch,
   FormControl,
   FormLabel,
-  useColorModeValue
+  useColorModeValue,
+  useColorMode
 } from '@chakra-ui/react';
 import Image from 'next/image';
 import { useRef } from 'react';
@@ -29,6 +30,7 @@ export default function NavBar(props) {
   const { authenticate, isAuthenticating, logout, isLoggingOut, isAuthenticated, user } = useMoralis();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
+  const { colorMode, toggleColorMode } = useColorMode()
 
   return (
     <Box>
@@ -41,10 +43,10 @@ export default function NavBar(props) {
         </Link> */}
         <FormControl width="fit-content" paddingRight={5}>
           <HStack>
-            <FormLabel htmlFor='colormode-toggle' mb={0}>
-              {useColorModeValue('Light', 'Dark')}
+            <FormLabel htmlFor='colormode-toggler' mb={0}>
+              {colorMode}
             </FormLabel>
-            <Switch id="colormode" isChecked={useColorModeValue(false, true)} />
+            <Switch id="colormode-toggler" defaultChecked={colorMode === 'dark'} onChange={toggleColorMode} />
           </HStack>
         </FormControl>
         {user && isAuthenticated ? 

@@ -1,4 +1,4 @@
-import { Container, Heading, Text, Button, Box, Input, HStack, IconButton, Alert, AlertDescription, AlertIcon } from "@chakra-ui/react";
+import { Container, Heading, Text, Button, Box, Input, HStack, IconButton, Alert, AlertDescription, AlertIcon, useColorMode, useToast } from "@chakra-ui/react";
 import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -13,6 +13,9 @@ export default function Result() {
 
   const { user, isInitialized, Moralis } = useMoralis();
   const router = useRouter();
+  const { colorMode } = useColorMode();
+  const toast = useToast();
+
   const minimumPassingPercentage = 0.7;
 
   useEffect(async () => {
@@ -149,6 +152,12 @@ export default function Result() {
   function copyToClipboard() {
     navigator.clipboard.writeText(mintLink);
     setStatusMsg("Copied to clipboard")
+    toast({
+      title: 'Copied to clipboard',
+      status: 'success',
+      duration: 3000,
+      position: 'bottom-right'
+    })
   }
   
   // async function getAnswers() {
@@ -169,20 +178,24 @@ export default function Result() {
 
   return (
     <Layout>
-      <Container
+      <Box
         textAlign='center'
-        padding={20}
+        height='100%'
+        bg={colorMode === 'dark' ? "rgba(229, 229, 229, 0.13)" : 'rgba(220, 220, 220, 1)'}
+        padding={5}
       >
-        <Text>
-          You scored
-        </Text>
-        <Heading marginBottom={5}>
-          {score.correct} out of {score.total}
+        {score.correct / score.total >= minimumPassingPercentage && (
+          <Heading marginBottom={5}>
+            Congratulations! You passed!
+          </Heading>
+        )}
+        <Heading size='md' marginBottom={5}>
+          {score.correct}/{score.total} Correct
         </Heading>
         {score.correct / score.total >= minimumPassingPercentage ? 
           <Box>
             <Text>
-              Congrats! You passed!
+              You earned a POAP as a reward.
             </Text>
             {/* <Link href={mintLink} passHref>
               <a target="_blank">
@@ -192,7 +205,7 @@ export default function Result() {
               </a>
             </Link> */}
             <HStack mt={2} justifyContent="center" alignItems="center">
-              <Input type="text" value={mintLink} maxWidth={250} />
+              <Input type="text" value={mintLink} maxWidth={250} bg={colorMode === 'light' ? 'whiteAlpha.700' : 'transparent'} />
               <IconButton aria-label="Copy to clipboard" icon={<CopyIcon/>} onClick={copyToClipboard} />
               <Link href={mintLink} passHref>
                 <a target="_blank">
@@ -213,14 +226,7 @@ export default function Result() {
             </Link>
           </Box>
         }
-        <Alert
-          status="success"
-          hidden={!statusMsg}
-        >
-          <AlertIcon/>
-          <AlertDescription>{statusMsg}</AlertDescription>
-        </Alert>
-      </Container>
+      </Box>
     </Layout>
   )
 }

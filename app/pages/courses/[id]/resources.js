@@ -10,7 +10,8 @@ import {
   Spinner,
   Heading,
   Link,
-  Text
+  Text,
+  useColorMode
 } from "@chakra-ui/react";
 
 export default function Resources() {
@@ -19,6 +20,7 @@ export default function Resources() {
   const router = useRouter();
 
   const { isInitialized, Moralis, user } = useMoralis();
+  const { colorMode } = useColorMode()
 
   useEffect(async () => {
     if (isInitialized && router.query.id) {
@@ -44,7 +46,7 @@ export default function Resources() {
 
   return (
     <Layout>
-      <Box background="rgba(229, 229, 229, 0.13)" padding={5}>
+      <Box background={colorMode === 'dark' ? "rgba(229, 229, 229, 0.13)" : 'rgba(220, 220, 220, 1)'} padding={5}>
         {!loading ?
           <Box>
             <Heading size="md" mb={5}>Extra Resources</Heading>

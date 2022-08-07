@@ -1,4 +1,4 @@
-import { Grid, GridItem, Container, Box, Text, Center, Heading, Image, AspectRatio, Flex, Skeleton } from '@chakra-ui/react';
+import { Grid, GridItem, Container, Box, Text, Center, Heading, Image, AspectRatio, Flex, Skeleton, useColorMode } from '@chakra-ui/react';
 import NextImage from 'next/image';
 import NextLink from 'next/link';
 import styles from '../styles/Home.module.css';
@@ -11,6 +11,7 @@ import { useMoralis } from 'react-moralis';
 export default function Home() {
   const [courses, setCourses] = useState([]);
   const { user, isInitialized, Moralis } = useMoralis();
+  const { colorMode } = useColorMode()
   
   useEffect(async () => {
     if (isInitialized) {
@@ -82,9 +83,17 @@ export default function Home() {
                     zIndex={0}
                   />
                 </AspectRatio>
-                <Center padding={2} borderBottomRadius='2xl' height={100} zIndex={1} bg="rgba(36, 39, 48, 1)">
-                  <Heading size='sm' noOfLines={3} textAlign='center'>{course.title}</Heading>
-                </Center>
+                <Flex
+                  direction='column'
+                  justify='center'
+                  padding={4}
+                  borderBottomRadius='2xl'
+                  height={100}
+                  zIndex={1}
+                  bg={colorMode === 'dark' ? "rgba(36, 39, 48, 1)" : "rgba(196, 196, 196, 1)"}
+                >
+                  <Heading size='sm' noOfLines={3}>{course.title}</Heading>
+                </Flex>
               </GridItem>
             </NextLink>
           )}
