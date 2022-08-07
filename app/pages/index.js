@@ -1,4 +1,4 @@
-import { Grid, GridItem, Container, Box, Text, Center, Heading, Image, AspectRatio, Flex } from '@chakra-ui/react';
+import { Grid, GridItem, Container, Box, Text, Center, Heading, Image, AspectRatio, Flex, Skeleton } from '@chakra-ui/react';
 import NextImage from 'next/image';
 import NextLink from 'next/link';
 import styles from '../styles/Home.module.css';
@@ -53,6 +53,7 @@ export default function Home() {
               </Center>
               <Image
                 src={courses[0].thumbnail}
+                fallback={<Skeleton height={250} width='100%' />}
                 position='relative'
                 objectFit='cover'
                 height={250}
@@ -74,6 +75,7 @@ export default function Home() {
                 <AspectRatio overflow='hidden' borderTopRadius='2xl' ratio={1.75}>
                   <Image
                     src={course.thumbnail}
+                    fallback={<Skeleton width='100%' height='100%' />}
                     objectFit='cover'
                     transition='all .5s ease'
                     _hover={{ transform: 'scale(1.2)' }}
