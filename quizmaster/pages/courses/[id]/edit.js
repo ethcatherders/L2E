@@ -15,6 +15,7 @@ import {
   Input, 
   Radio, 
   RadioGroup, 
+  Spinner, 
   Text,
   VStack
 } from "@chakra-ui/react";
@@ -74,7 +75,7 @@ export default function EditCourse() {
 
   function changeVideoLength(newVideoLength) {
     const newCourse = {...course};
-    newCourse.videoLength = newVideoLength;
+    newCourse.videoDuration = newVideoLength;
     setCourse(newCourse);
   }
 
@@ -177,7 +178,7 @@ export default function EditCourse() {
             </VStack>
             <VStack alignItems="flex-start" mb={5}>
               <Heading size="sm">Video Length (in minutes):</Heading>
-              <Input value={course.videoLength} onChange={(e) => changeVideoLength(e.currentTarget.value)} />
+              <Input value={course.videoDuration} onChange={(e) => changeVideoLength(e.currentTarget.value)} />
             </VStack>
             <VStack alignItems="flex-start" mb={5}>
               <Heading size="sm">Speaker's Name:</Heading>
@@ -188,7 +189,14 @@ export default function EditCourse() {
                 <Heading size="sm">Speaker's Profile Pic (400 x 400):</Heading>
                 <Input value={course.speakerImg} onChange={(e) => changeSpeakerImage(e.currentTarget.files[0])} type='file' />
               </VStack>
-              <Image src={course.speakerImg && `https://gateway.moralisipfs.com/ipfs/${course.speakerImg}`} width={100} height={100} objectFit='cover' borderRadius={10} />
+              <Image
+                src={course.speakerImg && `https://gateway.moralisipfs.com/ipfs/${course.speakerImg}`} 
+                width={100} 
+                height={100} 
+                objectFit='cover' 
+                borderRadius={10}
+                fallback={uploading && <Spinner width={100} height={100} />}
+              />
             </HStack>
             <VStack alignItems="flex-start" mb={5}>
               <Heading size="sm">Speaker's Twitter:</Heading>

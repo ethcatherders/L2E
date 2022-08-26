@@ -36,7 +36,8 @@ export default function Home() {
         id: course.id,
         speaker: course.attributes.speaker,
         speakerImg: course.attributes.speakerImg,
-        duration: course.attributes.duration,
+        duration: course.attributes.videoDuration,
+        title: course.attributes.title,
         thumbnail: thumbnailUrl ? thumbnailUrl : pic,
         createdAt: course.createdAt,
         createdBy: course.attributes.createdBy,
@@ -73,7 +74,7 @@ export default function Home() {
                 >
                   <Flex width='100%' justify='end'>
                     <Text
-                      position='fixed'
+                      position='absolute'
                       textAlign='right'
                       paddingX={2}
                       paddingY={0.25}
@@ -84,7 +85,7 @@ export default function Home() {
                       mt={2}
                       zIndex={1}
                     >
-                      {course.duration ?? '-- min'}
+                      {course.duration ?? '--'} min
                     </Text>
                   </Flex>
                   {course.thumbnail === pic ? (
