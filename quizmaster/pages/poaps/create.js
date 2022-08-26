@@ -104,8 +104,8 @@ export default function CreatePoap() {
       <Container mb={20}>
         <HStack mt={5} mb={10} justifyContent="space-between">
           <Heading>Add a New POAP</Heading>
-          <Link href={`/courses/${router.query.id}`} passHref>
-            <Button>Go Back</Button>
+          <Link href={`/poaps`} passHref>
+            <Button>Back to POAPs</Button>
           </Link>
         </HStack>
         <form onSubmit={submitPoap}>
