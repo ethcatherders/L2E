@@ -10,6 +10,7 @@ export default function Poap() {
   const [course, setCourse] = useState({});
   const [poaps, setPoaps] = useState([]);
   const [assignedPoapId, setAssignedPoapId] = useState(null);
+  const [currentPoap, setCurrentPoap] = useState(null)
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -17,11 +18,11 @@ export default function Poap() {
   const router = useRouter();
 
   useEffect(async () => {
-    if (isInitialized) {
+    if (isInitialized && router.query.id) {
       await getCourse();
       await getPoaps();
     }
-  }, [isInitialized, !!router.query.id]);
+  }, [isInitialized, router.query.id]);
 
   async function courseFromMoralis() {
     const Course = Moralis.Object.extend("Course");
@@ -47,6 +48,11 @@ export default function Poap() {
       const result = await query.find();
       console.log(result);
       setPoaps(result);
+
+      const current = result.find(poap => poap.attributes.course && poap.attributes.course.id === router.query.id)
+      console.log(current)
+      setAssignedPoapId(current.id)
+      setCurrentPoap(current)
     } catch (error) {
       console.error(error);
     }
@@ -81,13 +87,14 @@ export default function Poap() {
         <HStack mt={5} mb={10} justifyContent="space-between">
           <Heading>Attach POAP</Heading>
           <Link href={`/courses/${router.query.id}`} passHref>
-            <Button>Go Back</Button>
+            <Button>Back To Course</Button>
           </Link>
         </HStack>
         <form onSubmit={submitAttachment}>
           <Text textAlign="center">Attach a POAP to the following course:</Text>
           <Heading size="lg" textAlign="center">{course.title}</Heading>
-          <Select mt={5} placeholder="Select one" onChange={(e) => setAssignedPoapId(e.currentTarget.value)}>
+          <Text textAlign='center' mt={4}>Current POAP: {currentPoap ? currentPoap.attributes.name : 'None'}</Text>
+          <Select mt={5} placeholder="Select one" defaultValue={assignedPoapId} onChange={(e) => setAssignedPoapId(e.currentTarget.value)}>
             {poaps.map((poap, index) => 
               <option value={poap.id} key={index}>{poap.attributes.name}</option>
             )}
