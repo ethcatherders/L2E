@@ -51,10 +51,10 @@ export default function Home() {
   return (
     <Layout>
       <Container maxW='container.xl' paddingTop={5} paddingBottom={5}>
-        <HStack mb={5}>
+        <HStack mb={5} align='center' justify='space-between'>
           <Heading>Courses</Heading>
           <NextLink href="/courses/create">
-            <Button>+ New Course</Button>
+            <Button bg='#20DF7F' textColor='black'>+ New Course</Button>
           </NextLink>
         </HStack>
         <Grid templateColumns={'repeat(auto-fit, minmax(200px, 1fr))'} gap={5}>
@@ -171,14 +171,11 @@ export default function Home() {
 
       <footer className={styles.footer}>
         <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+          href="https://www.ethereumcatherders.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <NextImage src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
+          Made with ❤️ from the Ethereum Cat Herders
         </a>
       </footer>
     </Layout>

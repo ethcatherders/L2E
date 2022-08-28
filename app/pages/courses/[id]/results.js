@@ -16,7 +16,7 @@ export default function Result() {
   const { colorMode } = useColorMode();
   const toast = useToast();
 
-  const minimumPassingPercentage = 0.7;
+  const minimumPassingPercentage = 1;
 
   useEffect(async () => {
     if (isInitialized && user) {
@@ -42,8 +42,12 @@ export default function Result() {
     try {
       const course = await getCourse();
       const fromUser = course.attributes.responses.filter(response => response.id === router.query.entry);
-      const answers = course.attributes.quiz.map(item => item.answer);
-      const { match, total } = compareAnswers(fromUser[fromUser.length - 1].answers, answers);
+      console.log("fromUser:", fromUser)
+      const questions = course.attributes.quiz.filter(q => !!fromUser[fromUser.length - 1].answers.find(fu => fu.id === q.id))
+      console.log("Questions:", questions)
+      const userAnswers = fromUser[fromUser.length - 1].answers.map(item => item.answer)
+      const actualAnswers = questions.map(item => item.answer);
+      const { match, total } = compareAnswers(userAnswers, actualAnswers);
       setScore({ correct: match, total: total });
       if (match / total >= minimumPassingPercentage) {
         const link = await getPoapLinkForMinting(course);
@@ -68,7 +72,7 @@ export default function Result() {
     3. Query Course and count number of times user completed this course (if only once - as in now - then continue)
     4. Return boolean to determine whether user can mint a POAP or not
   */
-  async function checkEligibleToMintPoap(courseObj, poapId) {
+  async function checkEligibleToMintPoap(courseObj, poapObj) {
 
     // Check if Course contains a relation to a POAP
     // try {
@@ -81,9 +85,11 @@ export default function Result() {
     if (user) {
       // Check if User already minted the POAP before
       try {
-        const poapsMinted = user.attributes.poaps;
-        const alreadyMinted = poapsMinted.includes(poapId);
-        if (alreadyMinted) return false;
+        // const poapsMinted = user.attributes.poapsEarned;
+        // const alreadyMinted = poapsMinted.includes(poapId);
+        // if (alreadyMinted) return false;
+        if (poapObj.attributes.earnedBy && poapObj.attributes.earnedBy.includes(user)) return false
+        if (user.attributes.poapsEarned && user.attributes.poapsEarned.find(pe => pe.id === poapObj.id)) return false
       } catch (error) {
         console.error(error);
       }
@@ -125,11 +131,25 @@ export default function Result() {
       
       // const { id } = courseObj.attributes.poap;
       // const poap = await query.get(id);
-      const eligibleToMint = await checkEligibleToMintPoap(course, poap.id);
+      const eligibleToMint = await checkEligibleToMintPoap(course, poap);
       if (eligibleToMint) {
-        const link = poap.attributes.mintLinks.pop();
-        if (link) return link;
+        const link = poap.attributes.mintLinks[0];
+        if (link) {
+          if (user) {
+            user.addUnique("poapsEarned", {id: poap.id, mintLink: link, timestamp: Date.now()})
+            poap.addUnique("earnedBy", user)
+            await user.save()
+          }
+          
+          const remainingLinks = poap.attributes.mintLinks.slice(1, poap.attributes.mintLinks.length - 1)
+          poap.set("mintLinks", remainingLinks)
+          await poap.save()
+  
+          return link;
+        }
       }
+
+      return '#'
 
       // Add 'minted: true' to response in courseObj
     } catch (error) {
@@ -140,8 +160,9 @@ export default function Result() {
 
   function compareAnswers(array1, array2) {
     const result = { match: 0, total: 0 };
+    console.log("array1:", array1, "array2:", array2)
     for (let i = 0; array1.length > i && array2.length > i; i++) {
-      if (array1[i] === array2[i]) {
+      if (array2.includes(array1[i])) {
         result.match++;
       }
     }
@@ -194,32 +215,40 @@ export default function Result() {
         </Heading>
         {score.correct / score.total >= minimumPassingPercentage ? 
           <Box>
-            <Text>
-              You earned a POAP as a reward.
-            </Text>
-            {/* <Link href={mintLink} passHref>
-              <a target="_blank">
+            {mintLink === '#' ? (
+              <Link href='/' passHref>
                 <Button mt={2}>
-                  Mint POAP
+                  Back to Home
                 </Button>
-              </a>
-            </Link> */}
-            <HStack mt={2} justifyContent="center" alignItems="center">
-              <Input type="text" value={mintLink} maxWidth={250} bg={colorMode === 'light' ? 'whiteAlpha.700' : 'transparent'} />
-              <IconButton aria-label="Copy to clipboard" icon={<CopyIcon/>} onClick={copyToClipboard} />
-              <Link href={mintLink} passHref>
-                <a target="_blank">
-                  <IconButton aria-label="Go to mint site" icon={<ExternalLinkIcon/>} />
-                </a>
               </Link>
-            </HStack>
+            ) : (
+              <>
+              <Text>
+                You earned a POAP as a reward.
+              </Text>
+              <HStack mt={2} justifyContent="center" alignItems="center">
+                <Input type="text" value={mintLink} maxWidth={250} bg={colorMode === 'light' ? 'whiteAlpha.700' : 'transparent'} />
+                <IconButton aria-label="Copy to clipboard" icon={<CopyIcon/>} onClick={copyToClipboard} />
+                <Link href={mintLink} passHref>
+                  <a target="_blank">
+                    <IconButton aria-label="Go to mint site" icon={<ExternalLinkIcon/>} />
+                  </a>
+                </Link>
+              </HStack>
+              <Link href='/' passHref>
+                <Button mt={2}>
+                  Back to Home
+                </Button>
+              </Link>
+              </>
+            )}
           </Box>
           :
           <Box>
             <Text>
               Better luck next time :(
             </Text>
-            <Link href='/'>
+            <Link href='/' passHref>
               <Button mt={2}>
                 Back to Home
               </Button>

@@ -13,35 +13,67 @@ import {
   Text,
   HStack,
   AspectRatio,
-  Image
+  Image,
+  SkeletonCircle
 } from "@chakra-ui/react";
 
 export default function PoapsEarned() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [poaps, setPoaps] = useState([]);
   const { user, isInitialized, Moralis } = useMoralis();
   
   useEffect(async () => {
-    if (isInitialized) {
-      
+    if (isInitialized && user) {
+      await getPoapsEarned()
+      setLoading(false)
     }
-  }, [isInitialized]);
+  }, [isInitialized, user]);
 
   // Query user's profile to get POAPs earned
-  async function getPoapsEarned() {}
+  async function getPoapsEarned() {
+    if (user.attributes.poapsEarned) {
+      const list = await Promise.all(user.attributes.poapsEarned.map(async (item) => {
+        try {
+          const POAP = Moralis.Object.extend("POAP")
+          const query = new Moralis.Query(POAP)
+          const result = await query.get(item.id)
+          return {
+            ...item,
+            name: result.attributes.name,
+            image: result.attributes.image
+          }
+        } catch (error) {
+          console.error(error)
+          return {
+            ...item,
+            name: 'Unknown',
+            image: null
+          }
+        }
+      }))
+      setPoaps(list)
+    }
+  }
 
   return (
     <Layout>
       <Box background="rgba(229, 229, 229, 0.13)" padding={5}>
+        <Heading size="md" mb={5}>POAPs Earned</Heading>
         {!loading ?
           <Box>
-            <Heading size="md" mb={5}>POAPs Earned</Heading>
             {poaps.length ? poaps.map((poap, index) => 
               <HStack gap={5} key={index}>
-                <AspectRatio maxW={100} ratio={1/1}>
-                  <Image src={poap.image} objectFit='cover' />
+                <AspectRatio width={100} ratio={1/1}>
+                  <Image
+                    src={poap.image && `https://gateway.moralisipfs.com/ipfs/${poap.image}`}
+                    objectFit='cover'
+                    fallback={poap.image && <SkeletonCircle width={100} height={100} />}
+                  />
                 </AspectRatio>
-                <Text>Completed on {poap.timestamp}</Text>
+                <VStack align='left'>
+                  <Heading size='sm'>{poap.name}</Heading>
+                  <Text>Completed on {poap.timestamp ? (new Date(poap.timestamp)).toLocaleDateString() : 'N/A'}</Text>
+                </VStack>
               </HStack>
             ) : <Text>Start some courses and ace the quizzes to earn POAPs!</Text>}
           </Box>
@@ -50,7 +82,6 @@ export default function PoapsEarned() {
             <Spinner
               thickness='4px'
               speed='0.65s'
-              // emptyColor='gray.200'
               color='gray.500'
               size='xl'
             />

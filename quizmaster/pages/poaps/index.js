@@ -15,7 +15,10 @@ import {
   AspectRatio,
   Image,
   Button,
-  Select
+  Select,
+  FormControl,
+  FormLabel,
+  Input
 } from "@chakra-ui/react";
 
 export default function PoapsEarned() {
@@ -23,6 +26,7 @@ export default function PoapsEarned() {
   const [poaps, setPoaps] = useState([]);
   const [courses, setCourses] = useState([])
   const [openForm, setOpenForm] = useState([])
+  const [uploading, setUploading] = useState(false)
   const { isInitialized, Moralis } = useMoralis();
   
   useEffect(async () => {
@@ -124,6 +128,28 @@ export default function PoapsEarned() {
     }
   }
 
+  async function uploadImageToPoap(index, newImage) {
+    setUploading(true)
+    try {
+      const POAP = Moralis.Object.extend("POAP")
+      const pQuery = new Moralis.Query(POAP)
+      const poap = await pQuery.get(poaps[index].id)
+
+      const file = new Moralis.File(newImage.name, newImage)
+      await file.saveIPFS()
+      const image = file.hash();
+      
+      await poap.save({ image })
+      console.log('Image uploaded!')
+
+      poaps[index].image = image
+      setPoaps([...poaps])
+    } catch (error) {
+      console.error(error)
+    }
+    setUploading(false)
+  }
+
   return (
     <Layout>
       <Box background="rgba(229, 229, 229, 0.13)" padding={5} mt={2}>
@@ -137,9 +163,25 @@ export default function PoapsEarned() {
           <Box>
             {poaps.length ? poaps.map((poap, index) => 
               <HStack gap={5} key={index}>
-                <AspectRatio width={100} ratio={1/1}>
-                  <Image src={poap.image} objectFit='cover' />
-                </AspectRatio>
+                <FormControl maxWidth='fit-content'>
+                  <FormLabel htmlFor={`upload-${poap.id}`}>
+                    <AspectRatio width={100} ratio={1/1}>
+                      <Image
+                        src={poap.image && `https://gateway.moralisipfs.com/ipfs/${poap.image}`}
+                        width={100}
+                        height={100}
+                        objectFit='cover'
+                        fallback={uploading && <Spinner width={100} height={100} />}
+                      />
+                    </AspectRatio>
+                  </FormLabel>
+                  <Input
+                    id={`upload-${poap.id}`}
+                    type='file'
+                    onChange={(e) => uploadImageToPoap(index, e.currentTarget.files[0])}
+                    hidden
+                  />
+                </FormControl>
                 <VStack align='left'>
                   <Heading size='md'>{poap.name}</Heading>
                   <Text>{poap.mintLinks.length} Remaining</Text>

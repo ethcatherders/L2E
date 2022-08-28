@@ -24,6 +24,7 @@ export default function CreatePoap() {
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const { isInitialized, Moralis } = useMoralis();
   const router = useRouter();
 
@@ -69,6 +70,24 @@ export default function CreatePoap() {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async function changePoapImage(newImage) {
+    setUploading(true)
+    try {
+      // const data = e.currentTarget.files[0]
+      const file = new Moralis.File(newImage.name, newImage)
+      await file.saveIPFS()
+
+      const newPoapData = {...poapData};
+      newPoapData.image = file.hash();
+      setPoapData(newPoapData);
+
+      console.log("Poap Image:", file.hash())
+    } catch (error) {
+      console.error(error)      
+    }
+    setUploading(false)
   }
 
   async function uploadPoapToMoralis() {
@@ -117,10 +136,28 @@ export default function CreatePoap() {
             <Heading size="sm">Admin Page URL:</Heading>
             <Input value={poapData.adminLink} onChange={(e) => changeAdminLink(e.currentTarget.value)} />
           </VStack>
+          <VStack alignItems="flex-start" mb={5}>
+            <Heading size="sm">Image:</Heading>
+            <Input type='file' value={poapData.image} onChange={(e) => changeAdminLink(e.currentTarget.value)} />
+          </VStack>
+          <HStack mb={5} width='100%' gap={2}>
+            <VStack alignItems="flex-start" flexGrow={1}>
+              <Heading size="sm">Upload Image:</Heading>
+              <Input value={poapData.image} onChange={(e) => changePoapImage(e.currentTarget.files[0])} type='file' />
+            </VStack>
+            <Image
+              src={poapData.image && `https://gateway.moralisipfs.com/ipfs/${poapData.image}`} 
+              width={100} 
+              height={100} 
+              objectFit='cover' 
+              borderRadius={10}
+              fallback={uploading && <Spinner width={100} height={100} />}
+            />
+          </HStack>
           <FormControl>
             <FormLabel>Upload the .txt file of mint links here:</FormLabel>
             <Input type='file' id="file" name="upload" accept=".txt" onChange={parseTxtFile} />
-        </FormControl>
+          </FormControl>
           {error ? <Text color="red">Something went wrong.</Text> : ''}
           {success ? <Text color="green">Your POAP has been saved!</Text> : ''}
           <Button type="submit" mt={5} isLoading={loading}>Save</Button>

@@ -80,6 +80,23 @@ export default function Questions() {
 
     try {
       const result = await query.get(id);
+      const quizLength = result.attributes.quiz.length <= 5 ? result.attributes.quiz.length : 5;
+      if (quizLength < result.attributes.quiz.length) {
+        const questions = []
+        while (questions.length < quizLength) {
+          const randomIndex = parseInt(Math.random() * result.attributes.quiz.length)
+          console.log(randomIndex)
+          const question = {
+            id: result.attributes.quiz[randomIndex].id,
+            question: result.attributes.quiz[randomIndex].question,
+            options: result.attributes.quiz[randomIndex].options
+          }
+          if (!questions.find(q => q.id === question.id)) {
+            questions.push(question)
+          }
+        }
+        return questions;
+      }
       return result.attributes.quiz.map(item => {
         return {
           id: item.id,
@@ -131,7 +148,8 @@ export default function Questions() {
         const entryId = uuid();
         setSubmissionId(entryId);
         console.log("Submission ID: ", submissionId);
-        result.addUnique("responses", { id: entryId, user: userId, answers, timestamp: (new Date()).toUTCString() });
+        const submittedAnswers = answers.map((a, i) => { return { id: quiz[i].id, answer: a } })
+        result.addUnique("responses", { id: entryId, user: userId, answers: submittedAnswers, timestamp: (new Date()).toUTCString() });
         await result.save();
         if (user) {
           user.addUnique("coursesCompleted", result);

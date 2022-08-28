@@ -20,7 +20,7 @@ export default function CreateCourse() {
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false)
-  const { Moralis } = useMoralis();
+  const { Moralis, user } = useMoralis();
 
   async function submitNewCourseFromFile(e) {
     e.preventDefault();
@@ -48,19 +48,38 @@ export default function CreateCourse() {
     
             let active = true;
             const quiz = [];
-            for(let x=8; active; x++) {
+            for(let x=9; active; x++) {
               if (!sheet[`A${x}`]) break
-              const id = x - 7;
+              const id = x - 8;
               const question = sheet[`A${x}`].v;
               const options = [sheet[`B${x}`].v, sheet[`C${x}`].v, sheet[`D${x}`].v, sheet[`E${x}`].v];
               const answer = sheet[`F${x}`].v;
               const quizItem = { id, question, options, answer };
               quiz.push(quizItem);
             }
-            courses.push({ title, videoUrl, videoDuration, speaker, speakerTwitterUrl, quiz, responses: [] });
+            const resources = []
+            for(let y=9; active; y++) {
+              if (!sheet[`H${y}`]) break
+              const description = sheet[`H${y}`].v
+              const link = sheet[`I${y}`].v
+              const resourceItem = { description, link }
+              resources.push(resourceItem)
+            }
+
+            courses.push({
+              title,
+              videoUrl,
+              videoDuration,
+              speaker,
+              speakerTwitterUrl,
+              quiz,
+              responses: [],
+              resources,
+              createdBy: user
+            });
           }
     
-          console.log("Courses: ", courses);
+          console.log("Courses:", courses);
           for(let y=0; courses.length > y; y++) {
             await uploadCourse(courses[y]);
           }

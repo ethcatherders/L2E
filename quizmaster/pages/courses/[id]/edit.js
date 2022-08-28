@@ -31,7 +31,7 @@ export default function EditCourse() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const { isInitialized, Moralis } = useMoralis();
+  const { isInitialized, Moralis, user } = useMoralis();
   const router = useRouter();
 
   useEffect(async () => {
@@ -141,6 +141,7 @@ export default function EditCourse() {
       const { id } = router.query;
 
       const result = await query.get(id);
+      result.set("updatedBy", user)
       await result.save(course);
       setSuccess(true);
     } catch (err) {
@@ -231,7 +232,7 @@ export default function EditCourse() {
 
             <Heading mb={5}>Extra Resources</Heading>
             {course.resources && course.resources.length ? course.resources.map((resource, index) => 
-              <VStack key={index}>
+              <VStack key={index} align='left' gap={0}>
                 <Text>{resource.description}</Text>
                 <Link href={resource.link}>{resource.link}</Link>
               </VStack>

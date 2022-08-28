@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
-import { Container, AspectRatio, Box, Text, Button, Radio, RadioGroup, VStack, Heading, HStack } from '@chakra-ui/react';
+import { Container, AspectRatio, Box, Text, Button, Radio, RadioGroup, VStack, Heading, HStack, Divider } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import Link from "next/link";
 
@@ -74,6 +74,15 @@ export default function Course() {
               </Box>
             </Box>
           )}
+          <Box mb={10} mt={5}>
+            <Heading size='md'>Extra Resources</Heading>
+            {course.attributes.resources && course.attributes.resources.length ? course.attributes.resources.map((resource, index) => 
+              <Box key={index} mt={4}>
+                <Text>{resource.description}</Text>
+                <Link href={resource.link}>{resource.link}</Link>
+              </Box>
+            ) : <Text>There are no additional resources for this course.</Text>}
+          </Box>
         </Container>
         :
         <Container>

@@ -30,11 +30,18 @@ export default function Home() {
         const startIndex = "https://www.youtube.com/embed/".length
         thumbnailUrl = `http://img.youtube.com/vi/${course.attributes.videoUrl.substring(startIndex)}/maxresdefault.jpg`
       }
+
+      let completed = false
+      if (user && user.attributes.coursesCompleted) {
+        completed = !!user.attributes.coursesCompleted.find(cc => cc.id === course.id)
+      }
+
       return {
         id: course.id,
-        title: course.attributes.title,
+        ...course.attributes,
+        completed,
         thumbnail: thumbnailUrl ? thumbnailUrl : pic,
-        completed: false
+        createdAt: course.createdAt,
       }
     });
     setCourses(results);
@@ -98,7 +105,7 @@ export default function Home() {
                   mt={-10}
                   zIndex={1}
                 >
-                  {courses[0].duration ?? '-- min'}
+                  {courses[0].videoDuration ?? '--'} min
                 </Text>
               </Flex>
             </Flex>
@@ -122,7 +129,7 @@ export default function Home() {
               >
                 <Flex width='100%' justify='end'>
                   <Text
-                    position='fixed'
+                    position='absolute'
                     textAlign='right'
                     paddingX={2}
                     paddingY={0.25}
@@ -133,7 +140,7 @@ export default function Home() {
                     mt={2}
                     zIndex={1}
                   >
-                    {course.duration ?? '-- min'}
+                    {course.videoDuration ?? '--'} min
                   </Text>
                 </Flex>
                 <AspectRatio overflow='hidden' borderTopRadius='2xl' ratio={1.75}>
@@ -150,7 +157,9 @@ export default function Home() {
                   direction='column'
                   // justify='center'
                   align='end'
-                  padding={4}
+                  paddingX={4}
+                  paddingTop={4}
+                  paddingBottom={1}
                   borderBottomRadius='2xl'
                   height={100}
                   zIndex={1}
@@ -178,12 +187,17 @@ export default function Home() {
                   </Heading>
                   <Heading
                     size='sm'
-                    noOfLines={3}
+                    noOfLines={2}
                     alignSelf='start'
                     mt={2}
                   >
                     {course.title}
                   </Heading>
+                  {course.completed && (
+                    <Text textColor='green' fontSize={10} textAlign='right' position='absolute' mt={63}>
+                      Completed
+                    </Text>
+                  )}
                 </Flex>
               </GridItem>
             </NextLink>
