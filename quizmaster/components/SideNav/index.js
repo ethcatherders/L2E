@@ -18,6 +18,9 @@ export default function SideNav(props) {
     if (router.pathname.includes("poaps")) {
       return setActiveTab("poaps")
     }
+    if (router.pathname.includes("admins")) {
+      return setActiveTab("admins")
+    }
     setActiveTab("home")
   }, [])
 
@@ -26,23 +29,28 @@ export default function SideNav(props) {
       <VStack mt={10} gap={5}>
         <NextLink href="/" passHref>
           <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
-            <Image src={activeTab != "poaps" ? homeIconActive : homeIcon} alt="home" objectFit="cover" width={50} height={50} />
+            <Image src={activeTab == "home" ? homeIconActive : homeIcon} alt="home" objectFit="cover" width={50} height={50} />
             <Text textAlign="center" fontWeight={activeTab == "home" ? "bold" : "normal"}>
               Courses
             </Text>
           </HStack>
         </NextLink>
-        {user ?
-          <NextLink href="/poaps" passHref>
-            <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
-              <Image src={activeTab == "poaps" ? walletIconActive : walletIcon} alt="poaps" objectFit="cover" width={50} height={50} />
-              <Text textAlign="center" fontWeight={activeTab == "poaps" ? "bold" : "normal"}>
-                POAPS
-              </Text>
-            </HStack>
-          </NextLink>
-          : ""
-        }
+        <NextLink href="/poaps" passHref>
+          <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
+            <Image src={activeTab == "poaps" ? walletIconActive : walletIcon} alt="poaps" objectFit="cover" width={50} height={50} />
+            <Text textAlign="center" fontWeight={activeTab == "poaps" ? "bold" : "normal"}>
+              POAPS
+            </Text>
+          </HStack>
+        </NextLink>
+        <NextLink href="/admins" passHref>
+          <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
+            <Image src={activeTab == "admins" ? walletIconActive : walletIcon} alt="admins" objectFit="cover" width={50} height={50} />
+            <Text textAlign="center" fontWeight={activeTab == "admins" ? "bold" : "normal"}>
+              Admins
+            </Text>
+          </HStack>
+        </NextLink>
       </VStack>
     </Box>
   )
