@@ -182,12 +182,12 @@ export default function EditCourse() {
               <Input value={course.videoDuration} onChange={(e) => changeVideoLength(e.currentTarget.value)} />
             </VStack>
             <VStack alignItems="flex-start" mb={5}>
-              <Heading size="sm">Speaker's Name:</Heading>
+              <Heading size="sm">Speaker&apos;s Name:</Heading>
               <Input value={course.speaker} onChange={(e) => changeSpeakerName(e.currentTarget.value)} />
             </VStack>
             <HStack mb={5} width='100%' gap={2}>
               <VStack alignItems="flex-start" flexGrow={1}>
-                <Heading size="sm">Speaker's Profile Pic (400 x 400):</Heading>
+                <Heading size="sm">Speaker&apos;s Profile Pic (400 x 400):</Heading>
                 <Input value={course.speakerImg} onChange={(e) => changeSpeakerImage(e.currentTarget.files[0])} type='file' />
               </VStack>
               <Image
@@ -200,7 +200,7 @@ export default function EditCourse() {
               />
             </HStack>
             <VStack alignItems="flex-start" mb={5}>
-              <Heading size="sm">Speaker's Twitter:</Heading>
+              <Heading size="sm">Speaker&apos;s Twitter:</Heading>
               <Input value={course.speakerTwitterUrl} onChange={(e) => changeSpeakerTwitterUrl(e.currentTarget.value)} />
             </VStack>
             <hr />

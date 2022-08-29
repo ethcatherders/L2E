@@ -12,6 +12,8 @@ import {
   Input, 
   FormControl, 
   FormLabel,
+  Image,
+  Spinner
 } from "@chakra-ui/react";
 import Link from "next/link";
 
