@@ -1,4 +1,41 @@
-# Learn-2-Earn App
+# Learn-2-Earn Quizmaster
+This is the admin application to upload, edit and manage courses for the L2E app.
+
+## Getting Started
+### Running Quizmaster on Localhost
+To run the app, you must have a `server key` and `app id` from Moralis and store them in a `.env.local` file. Reach out in the `#learn-2-earn` channel in the ECH discord to get them from a core contributor or go to the [Moralis website](https://moralis.io) to create your own server.
+
+Your .env.local file should look like this:
+```js
+MORALIS_SERVER_URL='<SERVER-KEY-URL>'
+MORALIS_APP_ID='<APP-ID>'
+```
+
+Once you have your `.env.local` file set up, you are ready to run the dapp. Open a terminal and make sure your within the quizmaster directory. If not, you could be in the L2E monorepo simply need to enter the following:
+```
+cd quizmaster
+```
+
+Then, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Creating a New Course
+All new courses are uploaded from an excelsheet (.xlsx), parsed and saved into the Moralis database. Parsing and saving the course properly is dependent on inputting the content into the correct cells within the excelsheet. 
+
+Here is an example of how the excelsheet should be structured:
+![alt text](./public//courseformat_example.png)
+
+You can upload multiple courses at once by having multiple sheets in a single .xlsx file. Each sheet MUST follow the same structure as the image above with each input in the same cell. Once you press submit, the app will loop through each sheet and save them as courses to the Moralis database.
+
+## Editing a Course
+You can edit an existing course in the Moralis database in the edit page. You can edit all aspects directly in the app including the course title, video URL, each question, the options and the answers.
 
 ## Design
 The development of the UI is based on the design proposal found [here](https://www.figma.com/file/tB5If4aq8GRB0cAsnxkyek/ECH-Learn2Earn?node-id=0%3A1).
@@ -61,16 +98,3 @@ All the data including users, course content, and POAP info will be stored in th
 	poap: "POAP ID" // ID of object in POAP collection (Relational)
 }
 ```
-
-## Getting Started
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

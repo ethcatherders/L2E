@@ -1,4 +1,5 @@
-import { Container, Heading, Text, Button, Box } from "@chakra-ui/react";
+import { Container, Heading, Text, Button, Box, Input, HStack, IconButton, Alert, AlertDescription, AlertIcon, useColorMode, useToast } from "@chakra-ui/react";
+import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -8,9 +9,14 @@ import Layout from "../../../components/Layout";
 export default function Result() {
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [mintLink, setMintLink] = useState('#');
+  const [statusMsg, setStatusMsg] = useState(null)
+
   const { user, isInitialized, Moralis } = useMoralis();
   const router = useRouter();
-  const minimumPassingPercentage = 0.7;
+  const { colorMode } = useColorMode();
+  const toast = useToast();
+
+  const minimumPassingPercentage = 1;
 
   useEffect(async () => {
     if (isInitialized && user) {
@@ -21,18 +27,27 @@ export default function Result() {
 
   useEffect(async () => {
     const { id } = router.query;
-    if (isInitialized && user && id) {
+    // console.log("Router: ", router);
+    // console.log("Router.query: ", router.query);
+    if (isInitialized && id) {
       // await getAnswers();
       await getScore();
     }
   }, [router.query.id]);
   
+  // Move this to Cloud function in Moralis
+  // If the score qualifies for POAP, append the uuid of submission to POAP/Course object to prevent multiple mints from same submission
+  // This should work whether signed in or not
   async function getScore() {
     try {
       const course = await getCourse();
-      const fromUser = course.attributes.responses.filter(response => response.user === user.id);
-      const answers = course.attributes.quiz.map(item => item.answer);
-      const { match, total } = compareAnswers(fromUser[fromUser.length - 1].answers, answers);
+      const fromUser = course.attributes.responses.filter(response => response.id === router.query.entry);
+      console.log("fromUser:", fromUser)
+      const questions = course.attributes.quiz.filter(q => !!fromUser[fromUser.length - 1].answers.find(fu => fu.id === q.id))
+      console.log("Questions:", questions)
+      const userAnswers = fromUser[fromUser.length - 1].answers.map(item => item.answer)
+      const actualAnswers = questions.map(item => item.answer);
+      const { match, total } = compareAnswers(userAnswers, actualAnswers);
       setScore({ correct: match, total: total });
       if (match / total >= minimumPassingPercentage) {
         const link = await getPoapLinkForMinting(course);
@@ -57,36 +72,47 @@ export default function Result() {
     3. Query Course and count number of times user completed this course (if only once - as in now - then continue)
     4. Return boolean to determine whether user can mint a POAP or not
   */
-  async function checkEligibleToMintPoap(courseObj) {
-    let poap;
+  async function checkEligibleToMintPoap(courseObj, poapObj) {
 
     // Check if Course contains a relation to a POAP
+    // try {
+    //   poap = courseObj.attributes.poap;
+    //   if (!poap) return false;
+    // } catch (error) {
+    //   console.error(error);
+    // }
+    
+    if (user) {
+      // Check if User already minted the POAP before
+      try {
+        // const poapsMinted = user.attributes.poapsEarned;
+        // const alreadyMinted = poapsMinted.includes(poapId);
+        // if (alreadyMinted) return false;
+        if (poapObj.attributes.earnedBy && poapObj.attributes.earnedBy.includes(user)) return false
+        if (user.attributes.poapsEarned && user.attributes.poapsEarned.find(pe => pe.id === poapObj.id)) return false
+      } catch (error) {
+        console.error(error);
+      }
+      
+      // Check if User completed this course at least once before
+      // If so, then User is not eligible to mint a POAP
+      try {
+        const completionCount = courseObj.attributes.responses.filter(response => response.user === user.id);
+        if (completionCount.length > 1) return false;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    // Check if this particular entry was already processed for minting
     try {
-      poap = courseObj.attributes.poap;
-      if (!poap) return eligibleToMint = false;
+      const completed = courseObj.attributes.responses.find(response => response.id === router.query.entry);
+      if (completed.minted) return false;
     } catch (error) {
       console.error(error);
     }
 
-    // Check if User already minted the POAP before
-    try {
-      const poapsMinted = user.attributes.poaps;
-      const alreadyMinted = poapsMinted.includes(poap);
-      if (alreadyMinted) return eligibleToMint = false;
-    } catch (error) {
-      console.error(error);
-    }
-
-    // Check if User completed this course at least once before
-    // If so, then User is not eligible to mint a POAP
-    try {
-      const completionCount = courseObj.attributes.responses.filter(response => response.user === user.id);
-      if (completionCount.length > 1) return eligibleToMint = false;
-    } catch (error) {
-      console.error(error);
-    }
-
-    return eligibleToMint = true;
+    return true;
   }
   
   /*
@@ -95,32 +121,64 @@ export default function Result() {
     3. Return mint link from last item in array using pop() function
     ** The link will be a state variable and used as href for mint button **
   */
-  async function getPoapLinkForMinting(courseObj) {
-    const eligibleToMint = await checkEligibleToMintPoap();
-    if (eligibleToMint) {
-      try {
-        const POAP = Moralis.Object.extend("Poap");
-        const query = new Moralis.Query(POAP);
-        const { id } = courseObj.attributes.poap;
-        const poap = await query.get(id);
-        const link = poap.attributes.mintLinks.pop();
-        if (link) return link;
-      } catch (error) {
-        console.error(error);
-        return '#';
+  async function getPoapLinkForMinting(course) {
+    try {
+      const POAP = Moralis.Object.extend("POAP");
+      const query = new Moralis.Query(POAP);
+      query.equalTo("course", course)
+      const poap = await query.first()
+      console.log(poap)
+      
+      // const { id } = courseObj.attributes.poap;
+      // const poap = await query.get(id);
+      const eligibleToMint = await checkEligibleToMintPoap(course, poap);
+      if (eligibleToMint) {
+        const link = poap.attributes.mintLinks[0];
+        if (link) {
+          if (user) {
+            user.addUnique("poapsEarned", {id: poap.id, mintLink: link, timestamp: Date.now()})
+            poap.addUnique("earnedBy", user)
+            await user.save()
+          }
+          
+          const remainingLinks = poap.attributes.mintLinks.slice(1, poap.attributes.mintLinks.length - 1)
+          poap.set("mintLinks", remainingLinks)
+          await poap.save()
+  
+          return link;
+        }
       }
+
+      return '#'
+
+      // Add 'minted: true' to response in courseObj
+    } catch (error) {
+      console.error(error);
+      return '#';
     }
   }
 
   function compareAnswers(array1, array2) {
     const result = { match: 0, total: 0 };
+    console.log("array1:", array1, "array2:", array2)
     for (let i = 0; array1.length > i && array2.length > i; i++) {
-      if (array1[i] === array2[i]) {
+      if (array2.includes(array1[i])) {
         result.match++;
       }
     }
     result.total = array2.length;
     return result;
+  }
+
+  function copyToClipboard() {
+    navigator.clipboard.writeText(mintLink);
+    setStatusMsg("Copied to clipboard")
+    toast({
+      title: 'Copied to clipboard',
+      status: 'success',
+      duration: 3000,
+      position: 'bottom-right'
+    })
   }
   
   // async function getAnswers() {
@@ -141,40 +199,63 @@ export default function Result() {
 
   return (
     <Layout>
-      <Container
+      <Box
         textAlign='center'
-        padding={20}
+        height='100%'
+        bg={colorMode === 'dark' ? "rgba(229, 229, 229, 0.13)" : 'rgba(220, 220, 220, 1)'}
+        padding={5}
       >
-        <Text>
-          You scored
-        </Text>
-        <Heading marginBottom={5}>
-          {score.correct} out of {score.total}
+        {score.correct / score.total >= minimumPassingPercentage && (
+          <Heading marginBottom={5}>
+            Congratulations! You passed!
+          </Heading>
+        )}
+        <Heading size='md' marginBottom={5}>
+          {score.correct}/{score.total} Correct
         </Heading>
         {score.correct / score.total >= minimumPassingPercentage ? 
           <Box>
-            <Text>
-              Congrats! You passed!
-            </Text>
-            <Link href={mintLink}>
-              <Button mt={2}>
-                Mint POAP
-              </Button>
-            </Link>
+            {mintLink === '#' ? (
+              <Link href='/' passHref>
+                <Button mt={2}>
+                  Back to Home
+                </Button>
+              </Link>
+            ) : (
+              <>
+              <Text>
+                You earned a POAP as a reward.
+              </Text>
+              <HStack mt={2} justifyContent="center" alignItems="center">
+                <Input type="text" value={mintLink} maxWidth={250} bg={colorMode === 'light' ? 'whiteAlpha.700' : 'transparent'} />
+                <IconButton aria-label="Copy to clipboard" icon={<CopyIcon/>} onClick={copyToClipboard} />
+                <Link href={mintLink} passHref>
+                  <a target="_blank">
+                    <IconButton aria-label="Go to mint site" icon={<ExternalLinkIcon/>} />
+                  </a>
+                </Link>
+              </HStack>
+              <Link href='/' passHref>
+                <Button mt={2}>
+                  Back to Home
+                </Button>
+              </Link>
+              </>
+            )}
           </Box>
           :
           <Box>
             <Text>
               Better luck next time :(
             </Text>
-            <Link href='/'>
+            <Link href='/' passHref>
               <Button mt={2}>
                 Back to Home
               </Button>
             </Link>
           </Box>
         }
-      </Container>
+      </Box>
     </Layout>
   )
 }
