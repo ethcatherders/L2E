@@ -59,7 +59,7 @@ export default function Home() {
         </HStack>
         <Grid templateColumns={'repeat(auto-fit, minmax(200px, 1fr))'} gap={5}>
           {courses.map((course, index) =>
-            <GridItem>
+            <GridItem key={index}>
               <NextLink href={`/courses/${course.id}`} key={index}>
                 <GridItem
                   // display='flex'
