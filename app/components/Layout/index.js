@@ -10,9 +10,9 @@ export default function Layout({ children }) {
   return (
     <Flex direction="column" height="100vh">
       <Head>
-        <title>learn2earn</title>
-        <meta name="description" content="Learn about Ethereum" />
-        <link rel="icon" href="/favicon.ico" />
+        <title>ECH Learn-2-Earn</title>
+        <meta name="description" content="Learn about Ethereum and get rewarded." />
+        <link rel="icon" href="/ECHLogo.png" />
       </Head>
 
       <Box flexGrow={1}>
