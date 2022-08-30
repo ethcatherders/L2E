@@ -9,12 +9,10 @@ import {
   Center,
   Spinner,
   Heading,
-  Link,
   Text,
   HStack,
-  AspectRatio,
   Image,
-  SkeletonCircle
+  SkeletonCircle,
 } from "@chakra-ui/react";
 
 export default function PoapsEarned() {
@@ -62,14 +60,15 @@ export default function PoapsEarned() {
         {!loading ?
           <Box>
             {poaps.length ? poaps.map((poap, index) => 
-              <HStack gap={5} key={index}>
-                <AspectRatio width={100} ratio={1/1}>
-                  <Image
-                    src={poap.image && `https://gateway.moralisipfs.com/ipfs/${poap.image}`}
-                    objectFit='cover'
-                    fallback={poap.image && <SkeletonCircle width={100} height={100} />}
-                  />
-                </AspectRatio>
+              <HStack gap={5} key={index} mb={5}>
+                <Image
+                  src={poap.image && `https://gateway.moralisipfs.com/ipfs/${poap.image}`}
+                  objectFit='cover'
+                  borderRadius='full'
+                  boxSize='100px'
+                  alt="POAP"
+                  fallback={poap.image && <SkeletonCircle width={100} height={100} />}
+                />
                 <VStack align='left'>
                   <Heading size='sm'>{poap.name}</Heading>
                   <Text>Completed on {poap.timestamp ? (new Date(poap.timestamp)).toLocaleDateString() : 'N/A'}</Text>

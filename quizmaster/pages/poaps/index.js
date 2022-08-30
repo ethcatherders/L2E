@@ -12,7 +12,6 @@ import {
   Link,
   Text,
   HStack,
-  AspectRatio,
   Image,
   Button,
   Select,
@@ -162,18 +161,17 @@ export default function PoapsEarned() {
         {!loading ?
           <Box>
             {poaps.length ? poaps.map((poap, index) => 
-              <HStack gap={5} key={index}>
+              <HStack gap={5} key={index} mb={5}>
                 <FormControl maxWidth='fit-content'>
                   <FormLabel htmlFor={`upload-${poap.id}`}>
-                    <AspectRatio width={100} ratio={1/1}>
-                      <Image
-                        src={poap.image && `https://gateway.moralisipfs.com/ipfs/${poap.image}`}
-                        width={100}
-                        height={100}
-                        objectFit='cover'
-                        fallback={uploading && <Spinner width={100} height={100} />}
-                      />
-                    </AspectRatio>
+                    <Image
+                      src={poap.image && `https://gateway.moralisipfs.com/ipfs/${poap.image}`}
+                      width={100}
+                      height={100}
+                      borderRadius='full'
+                      objectFit='cover'
+                      fallback={uploading && <Spinner width={100} height={100} />}
+                    />
                   </FormLabel>
                   <Input
                     id={`upload-${poap.id}`}
