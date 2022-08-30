@@ -21,7 +21,8 @@ export default function CreatePoap() {
   const [poapData, setPoapData] = useState({
     name: '',
     adminLink: '',
-    mintLinks: []
+    mintLinks: [],
+    image: ''
   });
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -138,14 +139,10 @@ export default function CreatePoap() {
             <Heading size="sm">Admin Page URL:</Heading>
             <Input value={poapData.adminLink} onChange={(e) => changeAdminLink(e.currentTarget.value)} />
           </VStack>
-          <VStack alignItems="flex-start" mb={5}>
-            <Heading size="sm">Image:</Heading>
-            <Input type='file' value={poapData.image} onChange={(e) => changeAdminLink(e.currentTarget.value)} />
-          </VStack>
           <HStack mb={5} width='100%' gap={2}>
             <VStack alignItems="flex-start" flexGrow={1}>
               <Heading size="sm">Upload Image:</Heading>
-              <Input value={poapData.image} onChange={(e) => changePoapImage(e.currentTarget.files[0])} type='file' />
+              <Input onChange={(e) => changePoapImage(e.currentTarget.files[0])} type='file' />
             </VStack>
             <Image
               src={poapData.image && `https://gateway.moralisipfs.com/ipfs/${poapData.image}`} 
