@@ -122,7 +122,7 @@ export default function Home() {
                       padding={1}
                     >
                       <Avatar
-                        src={course.speakerImg}
+                        src={course.speakerImg && `https://gateway.moralisipfs.com/ipfs/${course.speakerImg}`}
                         height={50}
                         width={50}
                       />

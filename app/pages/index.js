@@ -78,7 +78,7 @@ export default function Home() {
                     padding={1}
                   >
                     <Avatar
-                      src={courses[0].speakerImg}
+                      src={courses[0].speakerImg && `https://gateway.moralisipfs.com/ipfs/${courses[0].speakerImg}`}
                       height={50}
                       width={50}
                     />
@@ -172,7 +172,7 @@ export default function Home() {
                     padding={1}
                   >
                     <Avatar
-                      src={course.speakerImg}
+                      src={course.speakerImg && `https://gateway.moralisipfs.com/ipfs/${course.speakerImg}`}
                       height={50}
                       width={50}
                     />

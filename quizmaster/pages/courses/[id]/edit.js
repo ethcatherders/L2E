@@ -6,7 +6,7 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Center,
+  Avatar,
   Container, 
   Divider, 
   Heading, 
@@ -87,18 +87,20 @@ export default function EditCourse() {
 
   async function changeSpeakerImage(newImage) {
     setUploading(true)
-    try {
-      // const data = e.currentTarget.files[0]
-      const file = new Moralis.File(newImage.name, newImage)
-      await file.saveIPFS()
-
-      const newCourse = {...course};
-      newCourse.speakerImg = file.hash();
-      setCourse(newCourse);
-
-      console.log("Avatar Image:", file.hash())
-    } catch (error) {
-      console.error(error)      
+    if (newImage) {
+      try {
+        // const data = e.currentTarget.files[0]
+        const file = new Moralis.File(newImage.name, newImage)
+        await file.saveIPFS()
+  
+        const newCourse = {...course};
+        newCourse.speakerImg = file.hash();
+        setCourse(newCourse);
+  
+        console.log("Avatar Image:", file.hash())
+      } catch (error) {
+        console.error(error)      
+      }
     }
     setUploading(false)
   }
@@ -165,7 +167,7 @@ export default function EditCourse() {
                 </Link>
                 <Button type="button" onClick={getCourse}>Reset</Button>
               </ButtonGroup>
-              <Button type="submit" width='100%' isLoading={loading}>Save Changes</Button>
+              <Button type="submit" onClick={submitChanges} width='100%' isLoading={loading}>Save Changes</Button>
             </VStack>
           </HStack>
           <form onSubmit={submitChanges}>
@@ -192,11 +194,12 @@ export default function EditCourse() {
               </VStack>
               <Image
                 src={course.speakerImg && `https://gateway.moralisipfs.com/ipfs/${course.speakerImg}`} 
-                width={100} 
-                height={100} 
-                objectFit='cover' 
-                borderRadius={10}
-                fallback={uploading && <Spinner width={100} height={100} />}
+                width={100}
+                height={100}
+                objectFit='cover'
+                borderRadius='full'
+                background='grey'
+                fallback={(uploading||course.speakerImg) && <Spinner width={100} height={100} />}
               />
             </HStack>
             <VStack alignItems="flex-start" mb={5}>
