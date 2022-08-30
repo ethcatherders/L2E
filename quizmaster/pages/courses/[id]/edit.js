@@ -188,7 +188,7 @@ export default function EditCourse() {
             <HStack mb={5} width='100%' gap={2}>
               <VStack alignItems="flex-start" flexGrow={1}>
                 <Heading size="sm">Speaker&apos;s Profile Pic (400 x 400):</Heading>
-                <Input value={course.speakerImg} onChange={(e) => changeSpeakerImage(e.currentTarget.files[0])} type='file' />
+                <Input onChange={(e) => changeSpeakerImage(e.currentTarget.files[0])} type='file' />
               </VStack>
               <Image
                 src={course.speakerImg && `https://gateway.moralisipfs.com/ipfs/${course.speakerImg}`} 
