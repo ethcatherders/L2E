@@ -12,10 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { read } from 'xlsx';
 
-/*
-  Create a new course using a form.
-*/
-
 export default function CreateCourse() {
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
