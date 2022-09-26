@@ -38,7 +38,7 @@ export default function CreateCourse() {
             const sheet = workbook.Sheets[sheetNames[i]];
             const title = sheet.B1.v;
             const speaker = sheet.B2.v;
-            const speakerTwitterUrl = sheet.B3.v;
+            const speakerTwitterUrl = sheet.B3.v ?? undefined;
             const videoUrl = sheet.B4.v;
             const videoDuration = parseInt(sheet.B5.v);
     
@@ -48,7 +48,20 @@ export default function CreateCourse() {
               if (!sheet[`A${x}`]) break
               const id = x - 8;
               const question = sheet[`A${x}`].v;
-              const options = [sheet[`B${x}`].v, sheet[`C${x}`].v, sheet[`D${x}`].v, sheet[`E${x}`].v];
+              const options = []
+              if (sheet[`B${x}`] && sheet[`B${x}`].v) {
+                options.push(sheet[`B${x}`].v)
+              }
+              if (sheet[`C${x}`] && sheet[`C${x}`].v) {
+                options.push(sheet[`C${x}`].v)
+              }
+              if (sheet[`D${x}`] && sheet[`D${x}`].v) {
+                options.push(sheet[`D${x}`].v)
+              }
+              if (sheet[`E${x}`] && sheet[`E${x}`].v) {
+                options.push(sheet[`E${x}`].v)
+              }
+              // const options = [sheet[`B${x}`].v, sheet[`C${x}`].v, sheet[`D${x}`].v, sheet[`E${x}`].v];
               const answer = sheet[`F${x}`].v;
               const quizItem = { id, question, options, answer };
               quiz.push(quizItem);
