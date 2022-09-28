@@ -4,7 +4,7 @@ import { useMoralis } from "react-moralis";
 import NavBar from "../NavBar";
 import SideNav from '../SideNav';
 import styles from '../../styles/Home.module.css';
-import { Flex, Box } from '@chakra-ui/react';
+import { Flex, Box, Text, Link } from '@chakra-ui/react';
 
 export default function Layout({ children }) {
   return (
@@ -35,6 +35,10 @@ export default function Layout({ children }) {
         >
           Made with ❤️ from the Ethereum Cat Herders
         </a>
+        <Flex gap={1}>
+          <Text>Please share your feedback</Text>
+          <Link href="https://forms.gle/hGrMsGrStk9z7xc27" isExternal textDecor='underline'>here</Link>
+        </Flex>
       </footer>
     </Flex>
   )

@@ -38,7 +38,7 @@ export default function CreateCourse() {
             const sheet = workbook.Sheets[sheetNames[i]];
             const title = sheet.B1.v;
             const speaker = sheet.B2.v;
-            const speakerTwitterUrl = sheet.B3.v ?? undefined;
+            const speakerTwitterUrl = (sheet.B3 && sheet.B3.v) ?? undefined;
             const videoUrl = sheet.B4.v;
             const videoDuration = parseInt(sheet.B5.v);
     
