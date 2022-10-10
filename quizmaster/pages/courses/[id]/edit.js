@@ -27,6 +27,7 @@ import Link from "next/link";
 
 export default function EditCourse() {
   const [course, setCourse] = useState(null);
+  const [newResources, setNewResources] = useState([])
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -129,6 +130,45 @@ export default function EditCourse() {
     setCourse(newCourse);
   }
 
+  function changeResourceDescription(erIndex, newDescription) {
+    const newCourse = {...course}
+    newCourse.resources[erIndex].description = newDescription
+    setCourse(newCourse)
+  }
+
+  function changeResourceLink(erIndex, newLink) {
+    const newCourse = {...course}
+    newCourse.resources[erIndex].link = newLink
+    setCourse(newCourse)
+  }
+
+  function addResourceDescription(index, newDescription) {
+    const newNewResources = [...newResources]
+    newNewResources[index].description = newDescription
+    setNewResources(newNewResources)
+  }
+
+  function addResourceLink(index, newLink) {
+    const newNewResources = [...newResources]
+    newNewResources[index].link = newLink
+    setNewResources(newNewResources)
+  }
+
+  function addNewResourceItem() {
+    const resources = [...newResources, {description: "", link: ""}]
+    setNewResources(resources)
+  }
+
+  function checkAndAppendNewResources() {
+    if (newResources.length) {
+      const newCourse = [...course]
+      const resources = [...course.resources]
+      newCourse.resources = [...resources, ...newResources]
+      return newCourse
+    }
+    return course
+  }
+
   async function submitChanges(e) {
     e.preventDefault();
 
@@ -144,6 +184,7 @@ export default function EditCourse() {
 
       const result = await query.get(id);
       result.set("updatedBy", user)
+      const course = checkAndAppendNewResources()
       await result.save(course);
       setSuccess(true);
     } catch (err) {
@@ -163,11 +204,11 @@ export default function EditCourse() {
             <VStack>
               <ButtonGroup mt={5}>
                 <Link href={`/courses/${router.query.id}`} passHref>
-                  <Button>Go Back</Button>
+                  <Button color='white' backgroundColor='black'>Go Back</Button>
                 </Link>
-                <Button type="button" onClick={getCourse}>Reset</Button>
+                <Button type="button" onClick={getCourse} color='white' backgroundColor='black'>Reset</Button>
               </ButtonGroup>
-              <Button type="submit" onClick={submitChanges} width='100%' isLoading={loading}>Save Changes</Button>
+              <Button type="submit" onClick={submitChanges} width='100%' isLoading={loading} color='white' backgroundColor='black'>Save Changes</Button>
             </VStack>
           </HStack>
           <form onSubmit={submitChanges}>
@@ -236,15 +277,35 @@ export default function EditCourse() {
             <Heading mb={5}>Extra Resources</Heading>
             {course.resources && course.resources.length ? course.resources.map((resource, index) => 
               <VStack key={index} align='left' gap={0}>
-                <Text>{resource.description}</Text>
-                <Link href={resource.link}>{resource.link}</Link>
+                <HStack width='100%' gap={2}>
+                  <Text>Description:</Text>
+                  <Input value={resource.description} onChange={(e) => changeResourceDescription(index, e.currentTarget.value)} />
+                </HStack>
+                <HStack width='100%' gap={2}>
+                  <Text>Link:</Text>
+                  <Input value={resource.link} onChange={(e) => changeResourceLink(index, e.currentTarget.value)} />
+                </HStack>
               </VStack>
             ) : <Text>There are no additional resources for this course.</Text>}
+            <Heading size='md'>Add More Resources?</Heading>
+            <Button type="button">Add</Button>
+            {newResources.map((resource, index) => (
+              <VStack align='left' gap={0}>
+                <HStack width='100%' gap={2}>
+                  <Text>Description:</Text>
+                  <Input value={resource.description} onChange={(e) => addResourceDescription(index, e.currentTarget.value)} />
+                </HStack>
+                <HStack width='100%' gap={2}>
+                  <Text>Link:</Text>
+                  <Input value={resource.link} onChange={(e) => addResourceLink(index, e.currentTarget.value)} />
+                </HStack>
+              </VStack>
+            ))}
             {error ? <Text color="red">Something went wrong.</Text> : ''}
             {success ? <Text color="green">Your changes have been saved!</Text> : ''}
             <ButtonGroup mt={5}>
-              <Button type="submit" mr={2} isLoading={loading}>Save Changes</Button>
-              <Button type="button" onClick={getCourse}>Reset</Button>
+              <Button type="submit" mr={2} isLoading={loading} color='white' backgroundColor='black'>Save Changes</Button>
+              <Button type="button" onClick={getCourse} color='white' backgroundColor='black'>Reset</Button>
             </ButtonGroup>
           </form>
         </Container>
