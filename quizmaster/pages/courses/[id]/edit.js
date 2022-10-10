@@ -290,7 +290,7 @@ export default function EditCourse() {
             <Heading size='md'>Add More Resources?</Heading>
             <Button type="button">Add</Button>
             {newResources.map((resource, index) => (
-              <VStack align='left' gap={0}>
+              <VStack key={index} align='left' gap={0}>
                 <HStack width='100%' gap={2}>
                   <Text>Description:</Text>
                   <Input value={resource.description} onChange={(e) => addResourceDescription(index, e.currentTarget.value)} />
