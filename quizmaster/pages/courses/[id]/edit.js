@@ -162,7 +162,7 @@ export default function EditCourse() {
   }
 
   function addNewResourceItem() {
-    const resources = [...course.resources, {description: "", link: ""}]
+    const resources = [...newResources, {description: "", link: ""}]
     setNewResources(resources)
   }
 
@@ -295,7 +295,7 @@ export default function EditCourse() {
               </VStack>
             ) : <Text>There are no additional resources for this course.</Text>}
             {newResources.map((resource, index) => (
-              <VStack key={index} align='left' gap={0}>
+              <VStack key={index} align='left' gap={2}>
                 <HStack width='100%' gap={2}>
                   <Text>Description:</Text>
                   <Input value={resource.description} onChange={(e) => addResourceDescription(index, e.currentTarget.value)} />
