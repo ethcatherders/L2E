@@ -308,7 +308,7 @@ export default function EditCourse() {
             ))}
             <HStack gap={4} my={4}>
               <Heading size='md'>Add More Resources?</Heading>
-              <Button type="button" color='white' backgroundColor='black'>Add</Button>
+              <Button type="button" color='white' backgroundColor='black' onClick={addNewResourceItem}>Add</Button>
             </HStack>
             {error ? <Text color="red">Something went wrong.</Text> : ''}
             {success ? <Text color="green">Your changes have been saved!</Text> : ''}
