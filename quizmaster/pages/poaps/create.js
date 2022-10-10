@@ -127,7 +127,7 @@ export default function CreatePoap() {
         <HStack mt={5} mb={10} justifyContent="space-between">
           <Heading>Add a New POAP</Heading>
           <Link href={`/poaps`} passHref>
-            <Button>Back to POAPs</Button>
+            <Button color='white' backgroundColor='black'>Back to POAPs</Button>
           </Link>
         </HStack>
         <form onSubmit={submitPoap}>
@@ -159,7 +159,7 @@ export default function CreatePoap() {
           </FormControl>
           {error ? <Text color="red">Something went wrong.</Text> : ''}
           {success ? <Text color="green">Your POAP has been saved!</Text> : ''}
-          <Button type="submit" mt={5} isLoading={loading}>Save</Button>
+          <Button type="submit" mt={5} isLoading={loading} color='white' backgroundColor='black'>Save</Button>
         </form>
       </Container>
     </Layout>

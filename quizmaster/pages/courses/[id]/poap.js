@@ -87,7 +87,7 @@ export default function Poap() {
         <HStack mt={5} mb={10} justifyContent="space-between">
           <Heading>Attach POAP</Heading>
           <Link href={`/courses/${router.query.id}`} passHref>
-            <Button>Back To Course</Button>
+            <Button color='white' backgroundColor='black'>Back To Course</Button>
           </Link>
         </HStack>
         <form onSubmit={submitAttachment}>
@@ -102,7 +102,7 @@ export default function Poap() {
           {error ? <Text color="red">Something went wrong.</Text> : ''}
           {success ? <Text color="green">The POAP has been assigned!</Text> : ''}
           <Center mt={5}>
-            <Button type="submit" isLoading={loading}>Attach</Button>
+            <Button type="submit" isLoading={loading} color='white' backgroundColor='black'>Attach</Button>
           </Center>
         </form>
       </Container>

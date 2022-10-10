@@ -155,7 +155,7 @@ export default function PoapsEarned() {
         <HStack justify='space-between' align='center' mb={5}>
           <Heading>POAPs</Heading>
           <NextLink href='/poaps/create' passHref>
-            <Button>+ Import</Button>
+            <Button color='white' backgroundColor='black'>+ Import</Button>
           </NextLink>
         </HStack>
         {!loading ?
@@ -203,7 +203,7 @@ export default function PoapsEarned() {
                           <option value={course.id} key={course.id}>{course.title}</option>
                         ))}
                       </Select>
-                      <Button onClick={() => assignPoapToCourse(index)}>Submit</Button>
+                      <Button onClick={() => assignPoapToCourse(index)} color='white' backgroundColor='black'>Submit</Button>
                     </HStack>
                   )}
                 </VStack>

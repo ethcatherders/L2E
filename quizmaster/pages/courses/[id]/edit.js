@@ -62,6 +62,13 @@ export default function EditCourse() {
     }
   }
 
+  async function reset() {
+    await getCourse()
+    setNewResources([])
+    setError(false)
+    setSuccess(false)
+  }
+
   function changeTitle(newTitle) {
     const newCourse = {...course};
     newCourse.title = newTitle;
@@ -206,7 +213,7 @@ export default function EditCourse() {
                 <Link href={`/courses/${router.query.id}`} passHref>
                   <Button color='white' backgroundColor='black'>Go Back</Button>
                 </Link>
-                <Button type="button" onClick={getCourse} color='white' backgroundColor='black'>Reset</Button>
+                <Button type="button" onClick={reset} color='white' backgroundColor='black'>Reset</Button>
               </ButtonGroup>
               <Button type="submit" onClick={submitChanges} width='100%' isLoading={loading} color='white' backgroundColor='black'>Save Changes</Button>
             </VStack>
@@ -287,8 +294,6 @@ export default function EditCourse() {
                 </HStack>
               </VStack>
             ) : <Text>There are no additional resources for this course.</Text>}
-            <Heading size='md'>Add More Resources?</Heading>
-            <Button type="button">Add</Button>
             {newResources.map((resource, index) => (
               <VStack key={index} align='left' gap={0}>
                 <HStack width='100%' gap={2}>
@@ -301,11 +306,15 @@ export default function EditCourse() {
                 </HStack>
               </VStack>
             ))}
+            <HStack gap={4} my={4}>
+              <Heading size='md'>Add More Resources?</Heading>
+              <Button type="button">Add</Button>
+            </HStack>
             {error ? <Text color="red">Something went wrong.</Text> : ''}
             {success ? <Text color="green">Your changes have been saved!</Text> : ''}
             <ButtonGroup mt={5}>
               <Button type="submit" mr={2} isLoading={loading} color='white' backgroundColor='black'>Save Changes</Button>
-              <Button type="button" onClick={getCourse} color='white' backgroundColor='black'>Reset</Button>
+              <Button type="button" onClick={reset} color='white' backgroundColor='black'>Reset</Button>
             </ButtonGroup>
           </form>
         </Container>

@@ -48,10 +48,10 @@ export default function Course() {
             </Heading>
             <VStack>
               <Link href={`/courses/${router.query.id}/edit`} passHref>
-                <Button width='100%'>Edit Course</Button>
+                <Button width='100%' color='white' backgroundColor='black'>Edit Course</Button>
               </Link>
               <Link href={`/courses/${router.query.id}/poap`} passHref>
-                <Button width='100%'>Edit POAP</Button>
+                <Button width='100%' color='white' backgroundColor='black'>Edit POAP</Button>
               </Link>
             </VStack>
           </HStack>

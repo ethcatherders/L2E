@@ -37,6 +37,8 @@ export default function NavBar(props) {
           <Button
             onClick={logout}
             isLoading={isLoggingOut}
+            color='white'
+            backgroundColor='black'
           >
             Logout
           </Button>
@@ -45,6 +47,8 @@ export default function NavBar(props) {
         <Button
           ref={btnRef}
           onClick={onOpen}
+          color='white'
+          backgroundColor='black'
         >
           Connect Wallet
         </Button>
@@ -69,6 +73,8 @@ export default function NavBar(props) {
                   provider: 'metamask'
                 }).then(() => onClose())}
                 isLoading={isAuthenticating}
+                color='white'
+                backgroundColor='black'
               >
                 MetaMask
               </Button>
@@ -78,6 +84,8 @@ export default function NavBar(props) {
                   provider: 'walletconnect'
                 }).then(() => onClose())}
                 isLoading={isAuthenticating}
+                color='white'
+                backgroundColor='black'
               >
                 Wallet Connect
               </Button>
@@ -85,7 +93,7 @@ export default function NavBar(props) {
           </DrawerBody>
 
           <DrawerFooter>
-            <Button variant='outline' mr={3} onClick={onClose}>
+            <Button variant='outline' mr={3} onClick={onClose} color='white' backgroundColor='black'>
               Cancel
             </Button>
           </DrawerFooter>

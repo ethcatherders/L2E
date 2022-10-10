@@ -123,7 +123,7 @@ export default function CreateCourse() {
           </FormControl>
           {error ? <Text color="red">Something went wrong.</Text> : ''}
           {success ? <Text color="green">Successfully uploaded course(s)!</Text> : ''}
-          <Button type="submit" marginTop={5} isLoading={submitting} loadingText='Processing...'>Submit</Button>
+          <Button type="submit" marginTop={5} isLoading={submitting} loadingText='Processing...' color='white' backgroundColor='black'>Submit</Button>
         </form>
       </Container>
     </Layout>

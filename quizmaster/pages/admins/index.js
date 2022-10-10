@@ -66,7 +66,7 @@ export default function Admins() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.currentTarget.value)}
           />
-          <Button onClick={search}>Search</Button>
+          <Button onClick={search} color='white' backgroundColor='black'>Search</Button>
         </FormControl>
         {(searchResults.length > 0 && searchInput) && (
           <Box position='absolute' bg='rgba(36, 39, 48, 1)' borderRadius={10}>
@@ -83,7 +83,7 @@ export default function Admins() {
                   <Text>{result.username}</Text>
                   <Text>{result.ethAddress}</Text>
                 </Box>
-                <Button onClick={() => addAdmin(result.id)}>
+                <Button onClick={() => addAdmin(result.id)} color='white' backgroundColor='black'>
                   Add Admin
                 </Button>
               </HStack>
