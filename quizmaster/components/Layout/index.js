@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Flex, Heading } from '@chakra-ui/react'
+import { Box, Flex, Heading, Spinner, Center } from '@chakra-ui/react'
 import Head from "next/head";
 import { useMoralis } from "react-moralis";
 import NavBar from "../NavBar";
@@ -45,19 +45,27 @@ export default function Layout({ children }) {
 
       <Box flexGrow={1}>
         <NavBar ethAddress={ethAddress} authenticated={isAuthenticated} />
-        {isAdmin ? (
-          <Flex direction="row">
-            <Box width={250} ml={20}>
-              <SideNav />
-            </Box>
-            <Box flexGrow={1} mr={20} height='100%'>
-              {children}
-            </Box>
-          </Flex>
+        {isInitialized ? (
+          <>
+          {isAdmin ? (
+            <Flex direction="row">
+              <Box width={250} ml={20}>
+                <SideNav />
+              </Box>
+              <Box flexGrow={1} mr={20} height='100%'>
+                {children}
+              </Box>
+            </Flex>
+          ) : (
+            <Flex flexGrow={1} align='center' justify='center'>
+              <Heading>You Do NOT Have Access</Heading>
+            </Flex>
+          )}
+          </>
         ) : (
-          <Flex flexGrow={1} align='center' justify='center'>
-            <Heading>You Do NOT Have Access</Heading>
-          </Flex>
+          <Center width='100%' height='100%'>
+            <Spinner width={50} height={50} />
+          </Center>
         )}
       </Box>
     </div>
