@@ -51,7 +51,7 @@ export default function Resources() {
           <Box>
             <Heading size="md" mb={5}>Extra Resources</Heading>
             {resources.length ? resources.map((resource, index) => 
-              <VStack key={index}>
+              <VStack key={index} align="flex-start" gap={0} mt={4}>
                 <Text>{resource.description}</Text>
                 <Link>{resource.link}</Link>
               </VStack>

@@ -4,9 +4,10 @@ import { useMoralis } from "react-moralis";
 import NavBar from "../NavBar";
 import SideNav from '../SideNav';
 import styles from '../../styles/Home.module.css';
-import { Flex, Box, Text, Link } from '@chakra-ui/react';
+import { Flex, Box, Text, Link, Spinner } from '@chakra-ui/react';
 
 export default function Layout({ children }) {
+  const { isInitialized } = useMoralis()
   return (
     <Flex direction="column" height="100vh">
       <Head>
@@ -21,9 +22,15 @@ export default function Layout({ children }) {
           <Box width={250} ml={20}>
             <SideNav />
           </Box>
-          <Box flexGrow={1} mr={20} height='100%'>
-            {children}
-          </Box>
+          {isInitialized ? (
+            <Box flexGrow={1} mr={20} height='100%'>
+              {children}
+            </Box>
+          ) : (
+            <Flex width='100%' height='100%' justify='center' align='center'>
+              <Spinner width={100} height={100} />
+            </Flex>
+          )}
         </Flex>
       </Box>
 
