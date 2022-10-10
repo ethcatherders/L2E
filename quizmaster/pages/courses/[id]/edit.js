@@ -162,13 +162,13 @@ export default function EditCourse() {
   }
 
   function addNewResourceItem() {
-    const resources = [...newResources, {description: "", link: ""}]
+    const resources = [...course.resources, {description: "", link: ""}]
     setNewResources(resources)
   }
 
   function checkAndAppendNewResources() {
     if (newResources.length) {
-      const newCourse = [...course]
+      const newCourse = {...course}
       const resources = [...course.resources]
       newCourse.resources = [...resources, ...newResources]
       return newCourse
