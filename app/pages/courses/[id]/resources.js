@@ -53,7 +53,7 @@ export default function Resources() {
             {resources.length ? resources.map((resource, index) => 
               <VStack key={index} align="flex-start" gap={0} mt={4}>
                 <Text>{resource.description}</Text>
-                <Link>{resource.link}</Link>
+                <Link href={resource.link} textColor='cornflowerblue' isExternal>{resource.link}</Link>
               </VStack>
             ) : <Text>There are no additional resources for this course.</Text>}
           </Box>
