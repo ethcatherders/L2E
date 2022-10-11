@@ -2,6 +2,7 @@ import { AspectRatio, HStack, VStack, Text, Box, useColorMode } from "@chakra-ui
 import NextLink from "next/link";
 import { useMoralis } from "react-moralis";
 import homeIcon from "../../public/icons/home-icon.svg";
+import homeIconDark from "../../public/icons/home-icon-dark.svg";
 import homeIconActive from "../../public/icons/home-icon-active.svg";
 import walletIcon from "../../public/icons/wallet-icon.svg";
 import walletIconActive from "../../public/icons/wallet-icon-active.svg";
@@ -12,6 +13,7 @@ import quizIcon from "../../public/icons/quiz-icon.svg";
 import quizIconDark from "../../public/icons/quiz-icon-dark.svg";
 import quizIconActive from "../../public/icons/quiz-icon-active.svg";
 import videoIcon from "../../public/icons/video-icon.svg";
+import videoIconDark from "../../public/icons/video-icon-dark.svg";
 import videoIconActive from "../../public/icons/video-icon-active.svg";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -51,7 +53,7 @@ export default function SideNav(props) {
         <VStack mt={10} gap={5}>
           <NextLink href="/" passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
-              <Image src={activeTab == "home" ? homeIconActive : homeIcon} alt="home" objectFit="cover" width={50} height={50} />
+              <Image src={activeTab == "home" ? homeIconActive : colorMode === "dark" ? homeIconDark : homeIcon } alt="home" objectFit="cover" width={50} height={50} />
               <Text textAlign="center" fontWeight={activeTab == "home" ? "bold" : "normal"}>
                 Discover
               </Text>
@@ -59,7 +61,7 @@ export default function SideNav(props) {
           </NextLink>
           <NextLink href={`/courses/${router.query.id}/`} passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
-              <Image src={activeTab == "video" ? videoIconActive : videoIcon} alt="video" objectFit="cover" width={50} height={50} />
+              <Image src={activeTab == "video" ? videoIconActive : colorMode === "dark" ? videoIconDark : videoIcon } alt="video" objectFit="cover" width={50} height={50} />
               <Text textAlign="center" fontWeight={activeTab == "video" ? "bold" : "normal"}>
                 Video
               </Text>
