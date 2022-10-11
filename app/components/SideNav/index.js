@@ -1,4 +1,4 @@
-import { AspectRatio, HStack, VStack, Text, Box } from "@chakra-ui/react";
+import { AspectRatio, HStack, VStack, Text, Box, useColorMode } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useMoralis } from "react-moralis";
 import homeIcon from "../../public/icons/home-icon.svg";
@@ -6,8 +6,10 @@ import homeIconActive from "../../public/icons/home-icon-active.svg";
 import walletIcon from "../../public/icons/wallet-icon.svg";
 import walletIconActive from "../../public/icons/wallet-icon-active.svg";
 import resourceIcon from "../../public/icons/resource-icon.svg";
+import resourceIconDark from "../../public/icons/resource-icon-dark.svg";
 import resourceIconActive from "../../public/icons/resource-icon-active.svg";
 import quizIcon from "../../public/icons/quiz-icon.svg";
+import quizIconDark from "../../public/icons/quiz-icon-dark.svg";
 import quizIconActive from "../../public/icons/quiz-icon-active.svg";
 import videoIcon from "../../public/icons/video-icon.svg";
 import videoIconActive from "../../public/icons/video-icon-active.svg";
@@ -20,6 +22,7 @@ export default function SideNav(props) {
   const [activeTab, setActiveTab] = useState("home")
   const { user } = useMoralis();
   const router = useRouter();
+  const { colorMode } = useColorMode()
 
   useEffect(() => {
     if (router.pathname.includes('courses')) {
@@ -64,7 +67,7 @@ export default function SideNav(props) {
           </NextLink>
           <NextLink href={`/courses/${router.query.id}/resources`} passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
-              <Image src={activeTab == "resources" ? resourceIconActive : resourceIcon} alt="extra resources" objectFit="cover" width={50} height={50} />
+              <Image src={activeTab == "resources" ? resourceIconActive : colorMode === "dark" ? resourceIconDark : resourceIcon } alt="extra resources" objectFit="cover" width={50} height={50} />
               <Text textAlign="center" fontWeight={activeTab == "resources" ? "bold" : "normal"}>
                 Extra Resources
               </Text>
@@ -72,7 +75,7 @@ export default function SideNav(props) {
           </NextLink>
           <NextLink href={`/courses/${router.query.id}/questions`} passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
-              <Image src={activeTab == "quiz" ? quizIconActive : quizIcon} alt="quiz" objectFit="cover" width={50} height={50} />
+              <Image src={activeTab == "quiz" ? quizIconActive : colorMode === "dark" ? quizIconDark : quizIcon } alt="quiz" objectFit="cover" width={50} height={50} />
               <Text textAlign="center" fontWeight={activeTab == "quiz" ? "bold" : "normal"}>
                 Quiz
               </Text>
