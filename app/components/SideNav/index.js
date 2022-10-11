@@ -6,7 +6,7 @@ import homeIconActive from "../../public/icons/home-icon-active.svg";
 import walletIcon from "../../public/icons/wallet-icon.svg";
 import walletIconActive from "../../public/icons/wallet-icon-active.svg";
 import resourceIcon from "../../public/icons/resource-icon.svg";
-// import resourceIconActive from "../../public/icons/resource-icon-active.svg";
+import resourceIconActive from "../../public/icons/resource-icon-active.svg";
 import quizIcon from "../../public/icons/quiz-icon.svg";
 import quizIconActive from "../../public/icons/quiz-icon-active.svg";
 import videoIcon from "../../public/icons/video-icon.svg";
@@ -64,7 +64,7 @@ export default function SideNav(props) {
           </NextLink>
           <NextLink href={`/courses/${router.query.id}/resources`} passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
-              <Image src={activeTab == "resources" ? resourceIcon : resourceIcon} alt="extra resources" objectFit="cover" width={50} height={50} />
+              <Image src={activeTab == "resources" ? resourceIconActive : resourceIcon} alt="extra resources" objectFit="cover" width={50} height={50} />
               <Text textAlign="center" fontWeight={activeTab == "resources" ? "bold" : "normal"}>
                 Extra Resources
               </Text>
