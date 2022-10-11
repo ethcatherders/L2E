@@ -5,6 +5,7 @@ import homeIcon from "../../public/icons/home-icon.svg";
 import homeIconDark from "../../public/icons/home-icon-dark.svg";
 import homeIconActive from "../../public/icons/home-icon-active.svg";
 import walletIcon from "../../public/icons/wallet-icon.svg";
+import walletIconDark from "../../public/icons/wallet-icon-dark.svg";
 import walletIconActive from "../../public/icons/wallet-icon-active.svg";
 import resourceIcon from "../../public/icons/resource-icon.svg";
 import resourceIconDark from "../../public/icons/resource-icon-dark.svg";
@@ -99,7 +100,7 @@ export default function SideNav(props) {
         <VStack mt={10} gap={5}>
           <NextLink href="/" passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
-              <Image src={activeTab == "home" ? homeIconActive : homeIcon} alt="home" objectFit="cover" width={50} height={50} />
+              <Image src={activeTab == "home" ? homeIconActive : colorMode === "dark" ? homeIconDark : homeIcon } alt="home" objectFit="cover" width={50} height={50} />
               <Text textAlign="center" fontWeight={activeTab == "home" ? "bold" : "normal"}>
                 Discover
               </Text>
@@ -108,9 +109,9 @@ export default function SideNav(props) {
           {user ?
             <NextLink href="/poaps" passHref>
               <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
-                <Image src={activeTab == "poaps" ? walletIconActive : walletIcon} alt="poaps" objectFit="cover" width={50} height={50} />
+                <Image src={activeTab == "poaps" ? walletIconActive : colorMode === "dark" ? walletIconDark : walletIcon } alt="poaps" objectFit="cover" width={50} height={50} />
                 <Text textAlign="center" fontWeight={activeTab == "poaps" ? "bold" : "normal"}>
-                  My POAPS
+                  My Rewards
                 </Text>
               </HStack>
             </NextLink>
