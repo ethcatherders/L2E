@@ -45,6 +45,14 @@ export default function Questions() {
   const [valid, setValid] = useState(false);
   const recaptchaRef = useRef();
 
+  useEffect(async () => {
+    const { id } = router.query;
+    if (isInitialized && id) {
+      setQuiz(await getCourseQuestions());
+      setAnswers(Array(quiz.length));
+    }
+  }, [isInitialized, router.query.id]);
+
   async function validateCaptcha() {
     const token = await recaptchaRef.current.getValue();
     const res = await fetch("/api/validateCaptcha", {
@@ -57,21 +65,6 @@ export default function Questions() {
     // Kick off the reCaptcha
     setValid(res.ok);
   }
-
-  useEffect(async () => {
-    if (isInitialized) {
-      setQuiz(await getCourseQuestions());
-      setAnswers(Array(quiz.length));
-    }
-  }, [isInitialized]);
-
-  useEffect(async () => {
-    const { id } = router.query;
-    if (isInitialized && id) {
-      setQuiz(await getCourseQuestions());
-      setAnswers(Array(quiz.length));
-    }
-  }, [router.query.id]);
 
   async function getCourseQuestions() {
     const Course = Moralis.Object.extend("Course");
@@ -97,6 +90,7 @@ export default function Questions() {
         }
         return questions;
       }
+      
       return result.attributes.quiz.map(item => {
         return {
           id: item.id,
@@ -128,9 +122,10 @@ export default function Questions() {
     }
   }
 
-  function selectAnswer(e, quizIndex) {
-    answers[quizIndex] = e;
-    setAnswers([...answers]);
+  function selectAnswer(value, quizIndex) {
+    const newAnswers = [...answers]
+    newAnswers[quizIndex] = value;
+    setAnswers(newAnswers);
   }
 
   async function submit(e) {

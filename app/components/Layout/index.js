@@ -19,7 +19,7 @@ export default function Layout({ children }) {
       <Box flexGrow={1}>
         <NavBar />
         <Flex direction="row">
-          <Box width={250} ml={20}>
+          <Box minW={250} ml={20}>
             <SideNav />
           </Box>
           {isInitialized ? (

@@ -10,6 +10,7 @@ import { useMoralis } from 'react-moralis';
 
 export default function Home() {
   const [courses, setCourses] = useState([]);
+  const [showcaseWidth, setShowcaseWidth] = useState('100%')
   const { user, isInitialized, Moralis } = useMoralis();
   const { colorMode } = useColorMode()
   
@@ -19,6 +20,17 @@ export default function Home() {
       await getCourses();
     }
   }, [isInitialized]);
+
+  useEffect(() => {
+    if (document && document.getElementById('showcase')) {
+      setShowcaseWidth(document.getElementById('showcase').offsetWidth)
+      window.addEventListener('resize', () => {
+        if (document && document.getElementById('showcase')) {
+          setShowcaseWidth(document.getElementById('showcase').offsetWidth)
+        }
+      })
+    }
+  })
 
   async function getCourses() {
     // This will need to be transitioned to a Cloud function when filtering between completed and not completed by user
@@ -52,12 +64,20 @@ export default function Home() {
       <Container maxW='container.xl' paddingTop={5} paddingBottom={5}>
         {courses.length ?
           <NextLink href={`/courses/${courses[0].id}`}>
-            <Flex direction='column' justify='center' align='center' id='showcase' mb={10} borderRadius="2xl" width="100%" height={250} border="1px solid grey" cursor="pointer" overflow='hidden'>
+            <Flex id='showcase' direction='column' justify='center' align='center' mb={10} borderRadius="2xl" width="100%" height={250} border="1px solid grey" cursor="pointer" overflow='hidden'>
               <Center
                 zIndex={1}
                 position='absolute'
+                maxW={showcaseWidth}
               >
-                <Heading size='xl' noOfLines={1} color='white'>{courses[0].title}</Heading>
+                <Heading
+                  size='xl'
+                  noOfLines={2}
+                  color='white'
+                  textAlign='center'
+                >
+                  {courses[0].title}
+                </Heading>
               </Center>
               <Image
                 src={courses[0].thumbnail}

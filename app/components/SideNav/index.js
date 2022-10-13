@@ -55,7 +55,7 @@ export default function SideNav(props) {
           <NextLink href="/" passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
               <Image src={activeTab == "home" ? homeIconActive : colorMode === "dark" ? homeIconDark : homeIcon } alt="home" objectFit="cover" width={50} height={50} />
-              <Text textAlign="center" fontWeight={activeTab == "home" ? "bold" : "normal"}>
+              <Text textAlign="left" fontWeight={activeTab == "home" ? "bold" : "normal"}>
                 Discover
               </Text>
             </HStack>
@@ -63,7 +63,7 @@ export default function SideNav(props) {
           <NextLink href={`/courses/${router.query.id}/`} passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
               <Image src={activeTab == "video" ? videoIconActive : colorMode === "dark" ? videoIconDark : videoIcon } alt="video" objectFit="cover" width={50} height={50} />
-              <Text textAlign="center" fontWeight={activeTab == "video" ? "bold" : "normal"}>
+              <Text textAlign="left" fontWeight={activeTab == "video" ? "bold" : "normal"}>
                 Video
               </Text>
             </HStack>
@@ -71,7 +71,7 @@ export default function SideNav(props) {
           <NextLink href={`/courses/${router.query.id}/resources`} passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
               <Image src={activeTab == "resources" ? resourceIconActive : colorMode === "dark" ? resourceIconDark : resourceIcon } alt="extra resources" objectFit="cover" width={50} height={50} />
-              <Text textAlign="center" fontWeight={activeTab == "resources" ? "bold" : "normal"}>
+              <Text textAlign="left" fontWeight={activeTab == "resources" ? "bold" : "normal"}>
                 Extra Resources
               </Text>
             </HStack>
@@ -79,7 +79,7 @@ export default function SideNav(props) {
           <NextLink href={`/courses/${router.query.id}/questions`} passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
               <Image src={activeTab == "quiz" ? quizIconActive : colorMode === "dark" ? quizIconDark : quizIcon } alt="quiz" objectFit="cover" width={50} height={50} />
-              <Text textAlign="center" fontWeight={activeTab == "quiz" ? "bold" : "normal"}>
+              <Text textAlign="left" fontWeight={activeTab == "quiz" ? "bold" : "normal"}>
                 Quiz
               </Text>
             </HStack>
@@ -101,7 +101,7 @@ export default function SideNav(props) {
           <NextLink href="/" passHref>
             <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
               <Image src={activeTab == "home" ? homeIconActive : colorMode === "dark" ? homeIconDark : homeIcon } alt="home" objectFit="cover" width={50} height={50} />
-              <Text textAlign="center" fontWeight={activeTab == "home" ? "bold" : "normal"}>
+              <Text textAlign="left" fontWeight={activeTab == "home" ? "bold" : "normal"}>
                 Discover
               </Text>
             </HStack>
@@ -110,7 +110,7 @@ export default function SideNav(props) {
             <NextLink href="/poaps" passHref>
               <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
                 <Image src={activeTab == "poaps" ? walletIconActive : colorMode === "dark" ? walletIconDark : walletIcon } alt="poaps" objectFit="cover" width={50} height={50} />
-                <Text textAlign="center" fontWeight={activeTab == "poaps" ? "bold" : "normal"}>
+                <Text textAlign="left" fontWeight={activeTab == "poaps" ? "bold" : "normal"}>
                   My Rewards
                 </Text>
               </HStack>
