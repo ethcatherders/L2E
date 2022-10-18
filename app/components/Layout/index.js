@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Head from "next/head";
+import Script from "next/script";
 import { useMoralis } from "react-moralis";
 import NavBar from "../NavBar";
 import SideNav from '../SideNav';
@@ -15,6 +16,22 @@ export default function Layout({ children }) {
         <meta name="description" content="Learn about Ethereum and get rewarded." />
         <link rel="icon" href="/ECHLogo.png" />
       </Head>
+      {/* <!-- Google tag (gtag.js) --> */}
+      <Script
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=G-${process.env.GoogleTagId}`}
+      />
+      <Script
+        id="gtag-init"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-${process.env.GoogleTagId}');
+          `,
+        }}
+      />
 
       <Box flexGrow={1}>
         <NavBar />
