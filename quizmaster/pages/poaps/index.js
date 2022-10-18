@@ -24,7 +24,11 @@ export default function PoapsEarned() {
   const [loading, setLoading] = useState(true)
   const [poaps, setPoaps] = useState([]);
   const [courses, setCourses] = useState([])
-  const [openForm, setOpenForm] = useState([])
+  const [openAssignForm, setOpenAssignForm] = useState([])
+  const [openRefillForm, setOpenRefillForm] = useState([])
+  const [refillLinks, setRefillLinks] = useState([])
+  const [refillErrors, setRefillErrors] = useState([])
+  const [isRefilling, setIsRefilling] = useState(false)
   const [uploading, setUploading] = useState(false)
   const { isInitialized, Moralis } = useMoralis();
   
@@ -71,7 +75,10 @@ export default function PoapsEarned() {
         }
       }))
       setPoaps(parsed)
-      setOpenForm(parsed.map(() => false))
+      setOpenAssignForm(parsed.map(() => false))
+      setOpenRefillForm(parsed.map(() => false))
+      setRefillLinks(parsed.map(() => []))
+      setRefillErrors(parsed.map(() => false))
     } catch (error) {
       console.error(error)
     }
@@ -124,6 +131,54 @@ export default function PoapsEarned() {
       await getAllPoaps()
     } catch (error) {
       console.error(error)
+    }
+  }
+
+  async function refillPoaps(index) {
+    setIsRefilling(true)
+    try {
+      const POAP = Moralis.Object.extend("POAP")
+      const pQuery = new Moralis.Query(POAP)
+      const poap = await pQuery.get(poaps[index].id)
+      const links = refillLinks[index]
+
+      poap.addAll("mintLinks", links)
+      await poap.save()
+      console.log('Refilled POAP with new links!')
+
+      await getAllPoaps()
+    } catch (error) {
+      console.error(error)
+    }
+    setIsRefilling(false)
+  }
+
+  async function parseTxtFile(index) {
+    refillErrors[index] = false
+    setRefillErrors([...refillErrors])
+    try {
+      const fileList = document.getElementById(`refill-upload-${index}`).files;
+      console.log("fileList: ", fileList);
+      const fileReader = new FileReader();
+      fileReader.onload = async (e) => {
+        console.log(e.target.result)
+        const array = e.target.result.trim().split('\n');
+        console.log(array);
+        array.forEach(link => {
+          if (typeof link !== 'string' || !link.includes('POAP.xyz')) {
+            setError(true);
+            throw console.error('Array contains at least 1 non-POAP mint link');
+          }
+        })
+        const refills = [...refillLinks]
+        refills[index] = array
+        setRefillLinks(refills)
+      }
+      fileReader.readAsText(fileList[0])
+    } catch (error) {
+      console.error(error);
+      refillErrors[index] = true
+      setRefillErrors([...refillErrors])
     }
   }
 
@@ -182,22 +237,42 @@ export default function PoapsEarned() {
                 </FormControl>
                 <VStack align='left'>
                   <Heading size='md'>{poap.name}</Heading>
-                  <Text>{poap.mintLinks.length} Remaining</Text>
+                  <Text>
+                    {poap.mintLinks.length} Remaining <Link onClick={() => {
+                        openRefillForm[index] = !openRefillForm[index]
+                        setOpenRefillForm([...openRefillForm])
+                      }}
+                    >
+                      ({openRefillForm[index] ? 'cancel' : 'refill'})
+                    </Link>
+                  </Text>
+                  {openRefillForm[index] && (
+                    <Box>
+                      <HStack align="flex-end" paddingLeft={4}>
+                        <FormControl>
+                          <FormLabel>Upload the .txt file of mint links here:</FormLabel>
+                          <Input type='file' id={`refill-upload-${index}`} name="upload" accept=".txt" onChange={() => parseTxtFile(index)} />
+                        </FormControl>
+                        <Button onClick={() => refillPoaps(index)} color='white' backgroundColor='black' isLoading={isRefilling}>Submit</Button>
+                      </HStack>
+                      {refillErrors[index] && <Text color="red">Something went wrong.</Text>}
+                    </Box>
+                  )}
                   <Text>Admin Access: {poap.adminLink}</Text>
                   <Text>Assigned to: {poap.course ? (
                     <NextLink href={`/courses/${poap.course.id}`} passHref>
                       <Link textDecor='underline'>{poap.course.title}</Link>
                     </NextLink>
                   ) : 'None'} <Link onClick={() => {
-                        openForm[index] = !openForm[index]
-                        setOpenForm([...openForm])
+                        openAssignForm[index] = !openAssignForm[index]
+                        setOpenAssignForm([...openAssignForm])
                       }}
                     >
-                      ({openForm[index] ? 'cancel' : 'change'})
+                      ({openAssignForm[index] ? 'cancel' : 'change'})
                     </Link>
                   </Text>
-                  {openForm[index] && (
-                    <HStack>
+                  {openAssignForm[index] && (
+                    <HStack paddingLeft={4}>
                       <Select id={`course-assign-input-${index}`}>
                         {courses.map((course) => (
                           <option value={course.id} key={course.id}>{course.title}</option>
