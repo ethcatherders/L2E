@@ -3,9 +3,11 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./interfaces/IReward.sol";
 
-contract Reward is ERC721, Ownable, IReward {
+contract Reward is IReward, ERC721, Ownable, Pausable, ReentrancyGuard {
     uint256 private _supply;
     string private _metadataURI;
     mapping(address => bool) private _claimed;
@@ -21,20 +23,18 @@ contract Reward is ERC721, Ownable, IReward {
     }
 
     /**
-     * @dev Mints token to recipient address that has not claimed before
-     *
-     * @param to - recipient address of token
+     * @dev Mints token to recipient address (msg.sender) that has not claimed before
      *
      * note to address cannot be used more than once.
      * note to must have a balance less than 0.
      */
-    function mint(address to) external override onlyOwner {
-        require(!_claimed[to], "Reward: recipient already claimed");
-        require(balanceOf(to) == 0, "Reward: recipient balance greater than 0");
+    function mint() external override whenNotPaused nonReentrant {
+        require(!_claimed[msg.sender], "Reward: recipient already claimed");
+        require(balanceOf(msg.sender) == 0, "Reward: recipient balance greater than 0");
         uint256 tokenId = _supply + 1;
-        _claimed[to] = true;
-		    _supply++;
-        _safeMint(to, tokenId);
+        _claimed[msg.sender] = true;
+		_supply++;
+        _safeMint(msg.sender, tokenId);
     }
 
     /**
@@ -48,7 +48,6 @@ contract Reward is ERC721, Ownable, IReward {
         external
         view
         override
-        onlyOwner
         returns (bool)
     {
         return _claimed[account];
@@ -61,12 +60,20 @@ contract Reward is ERC721, Ownable, IReward {
         return _supply;
     }
 
-	  function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+	function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         _requireMinted(tokenId);
         return _baseURI();
     }
 
     function _baseURI() internal view override returns (string memory) {
         return _metadataURI;
+    }
+
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    function unpause() public onlyOwner {
+        _unpause();
     }
 }

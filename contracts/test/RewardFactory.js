@@ -21,7 +21,7 @@ describe("RewardFactory", function() {
       const {factory} = await deployRewardFactory()
       const [,account1] = await ethers.getSigners()
 
-      const tx = await factory.create(account1.address, BASE_URI)
+      const tx = await factory.create(NAME, SYMBOL, account1.address, BASE_URI)
       await tx.wait()
 
       const { contractAddress } = await fetchCreateEvent(factory, tx)
@@ -40,7 +40,7 @@ describe("RewardFactory", function() {
       const {factory} = await deployRewardFactory()
       const [,account1] = await ethers.getSigners()
       
-      const tx = await factory.create(account1.address, BASE_URI)
+      const tx = await factory.create(NAME, SYMBOL, account1.address, BASE_URI)
       await tx.wait()
 
       const { contractAddress, assignedTo } = await fetchCreateEvent(factory, tx)
@@ -58,7 +58,7 @@ describe("RewardFactory", function() {
       const {factory} = await deployRewardFactory()
       const [,account1] = await ethers.getSigners()
 
-      const tx = await factory.create(account1.address, BASE_URI)
+      const tx = await factory.create(NAME, SYMBOL, account1.address, BASE_URI)
       await tx.wait()
 
       const { contractAddress } = await fetchCreateEvent(factory, tx)
@@ -70,14 +70,14 @@ describe("RewardFactory", function() {
       )
 
       // Mint and get tokenURI to check base URI
-      await reward.mint(account1.address)
+      await reward.connect(account1).mint()
       expect(await reward.tokenURI(1)).to.equal(BASE_URI)
     })
 
     it("Should revert create if not owner", async function () {
       const {factory} = await deployRewardFactory()
       const [,account1] = await ethers.getSigners()
-      await expect(factory.connect(account1).create(account1.address, BASE_URI))
+      await expect(factory.connect(account1).create(NAME, SYMBOL, account1.address, BASE_URI))
         .to.be.revertedWith("Ownable: caller is not the owner")
     })
   })
@@ -86,7 +86,7 @@ describe("RewardFactory", function() {
     it("Should create and emit Create event", async function () {
       const [, account1] = await ethers.getSigners()
       const { factory } = await deployRewardFactory()
-      await expect(factory.create(account1.address, BASE_URI))
+      await expect(factory.create(NAME, SYMBOL, account1.address, BASE_URI))
         .to.emit(factory, "Create")
     })
   })

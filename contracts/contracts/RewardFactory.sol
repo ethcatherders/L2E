@@ -9,11 +9,13 @@ contract RewardFactory is Ownable, IRewardFactory {
     event Create(address contractAddress, address indexed creator, address indexed assignedTo);
 
     function create(
+        string memory name,
+        string memory symbol,
         address assignedOwner,
         string memory baseURI
     ) public override onlyOwner returns (address) {
         address nftAddress = address(
-            new Reward("Learn2Earn Reward", "L2E", assignedOwner, baseURI)
+            new Reward(name, symbol, assignedOwner, baseURI)
         );
         emit Create(nftAddress, msg.sender, assignedOwner);
         return nftAddress;
