@@ -5,23 +5,23 @@ const { NAME, SYMBOL, BASE_URI, deployRewardFactory, fetchCreateEvent } = requir
 describe("RewardFactory", function() {
   describe("Deployment", function () {
     it("Should deploy successfully", async function() {
-      const { factory } = await deployRewardFactory()
+      const { factory } = await deployRewardFactory(0)
       expect(factory.address)
     })
   
     it("Should set ownership to deployer", async function () {
-      const { factory } = await deployRewardFactory()
-      const [owner] = await ethers.getSigners()
+      const { factory, accounts } = await deployRewardFactory(0)
+      const owner = accounts[0]
       expect(await factory.owner()).to.equal(owner.address)
     })
   })
 
   describe("Functions", function () {
     it("Should create and deploy new Reward contract", async function () {
-      const {factory} = await deployRewardFactory()
-      const [,account1] = await ethers.getSigners()
+      const { factory, accounts } = await deployRewardFactory(0)
+      const account1 = accounts[1]
 
-      const tx = await factory.create(NAME, SYMBOL, account1.address, BASE_URI)
+      const tx = await factory.create(NAME, SYMBOL, BASE_URI, accounts[0].address)
       await tx.wait()
 
       const { contractAddress } = await fetchCreateEvent(factory, tx)
@@ -37,13 +37,13 @@ describe("RewardFactory", function() {
     })
 
     it("Should create and transferOwnership to assignedOwner param", async function() {
-      const {factory} = await deployRewardFactory()
-      const [,account1] = await ethers.getSigners()
+      const { factory, accounts } = await deployRewardFactory(1)
+      const [,account1] = accounts
       
-      const tx = await factory.create(NAME, SYMBOL, account1.address, BASE_URI)
+      const tx = await factory.create(NAME, SYMBOL, BASE_URI, account1.address)
       await tx.wait()
 
-      const { contractAddress, assignedTo } = await fetchCreateEvent(factory, tx)
+      const { contractAddress, assignedOwner } = await fetchCreateEvent(factory, tx)
       
       const reward = new ethers.Contract(
         contractAddress,
@@ -51,14 +51,14 @@ describe("RewardFactory", function() {
         account1
       )
 
-      expect(await reward.owner()).to.equal(assignedTo).and.equal(account1.address)
+      expect(await reward.owner()).to.equal(assignedOwner).and.equal(account1.address)
     })
 
     it("Should create and set _metadataURI as baseURI param", async function () {
-      const {factory} = await deployRewardFactory()
-      const [,account1] = await ethers.getSigners()
+      const { factory, accounts } = await deployRewardFactory(0)
+      const [account0, account1] = accounts
 
-      const tx = await factory.create(NAME, SYMBOL, account1.address, BASE_URI)
+      const tx = await factory.create(NAME, SYMBOL, BASE_URI, account0.address)
       await tx.wait()
 
       const { contractAddress } = await fetchCreateEvent(factory, tx)
@@ -75,19 +75,19 @@ describe("RewardFactory", function() {
     })
 
     it("Should revert create if not owner", async function () {
-      const {factory} = await deployRewardFactory()
-      const [,account1] = await ethers.getSigners()
-      await expect(factory.connect(account1).create(NAME, SYMBOL, account1.address, BASE_URI))
+      const { factory, accounts } = await deployRewardFactory(0)
+      const [,account1] = accounts
+      await expect(factory.connect(account1).create(NAME, SYMBOL, BASE_URI, account1.address))
         .to.be.revertedWith("Ownable: caller is not the owner")
     })
   })
 
   describe("Events", function () {
     it("Should create and emit Create event", async function () {
-      const [, account1] = await ethers.getSigners()
-      const { factory } = await deployRewardFactory()
-      await expect(factory.create(NAME, SYMBOL, account1.address, BASE_URI))
-        .to.emit(factory, "Create")
+      const { factory, accounts } = await deployRewardFactory(0)
+      const [account0] = accounts
+      await expect(factory.create(NAME, SYMBOL, BASE_URI, account0.address))
+        .to.emit(factory, "CreateReward")
     })
   })
 })
