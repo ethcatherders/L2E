@@ -36,6 +36,8 @@ export default function Questions() {
   const [submissionId, setSubmissionId] = useState('');
   const [index, setIndex] = useState(0);
   const [displayBtn, setDisplayBtn] = useState(false);
+  const [restricted, setRestricted] = useState(false);
+
   const router = useRouter();
 
   const { isInitialized, Moralis, user } = useMoralis();
@@ -48,10 +50,15 @@ export default function Questions() {
   useEffect(async () => {
     const { id } = router.query;
     if (isInitialized && id) {
-      setQuiz(await getCourseQuestions());
-      setAnswers(Array(quiz.length));
+      if (user) {
+        setQuiz(await getCourseQuestions());
+        setAnswers(Array(quiz.length));
+        setRestricted(false)
+      } else {
+        setRestricted(true)
+      }
     }
-  }, [isInitialized, router.query.id]);
+  }, [isInitialized, user, router.query.id]);
 
   async function validateCaptcha() {
     const token = await recaptchaRef.current.getValue();
@@ -139,7 +146,7 @@ export default function Questions() {
   
       try {
         const result = await query.get(id);
-        const userId = user ? user.id : 'guest';
+        const userId = user.id;
         const entryId = uuid();
         setSubmissionId(entryId);
         console.log("Submission ID: ", submissionId);
@@ -178,82 +185,94 @@ export default function Questions() {
     <Layout>
       {/* <Container background="blue"> */}
         {!isSubmitted ?
-          <Box background={colorMode === 'dark' ? "rgba(229, 229, 229, 0.13)" : 'rgba(220, 220, 220, 1)'} padding={5}>
-            {quiz.length ?
-              <form onSubmit={submit}>
-                <Heading size="md" mb={5}>Question #{index + 1}</Heading>
-                <FormControl as='fieldset' isRequired paddingBottom={10}>
-                  <FormLabel as='legend'>{quiz[index].question}</FormLabel>
-                  <RadioGroup paddingLeft={5} value={answers[index]} onChange={(e) => selectAnswer(e, index)}>
-                    <VStack alignItems='flex-start'>
-                      {quiz[index].options.map((option, optIndex) =>
-                        <Radio value={option} key={optIndex} borderColor={colorMode === 'light' && 'rgba(70, 69, 67, 1)'}>{option}</Radio>
-                      )}
-                    </VStack>
-                  </RadioGroup>
-                </FormControl>
-                {!displayBtn ?
-                  <HStack justifyContent="center" alignItems="center" gap={10} mt={5} width="100%">
-                    <Button
-                      type="button"
-                      onClick={prevQuestion}
-                      backgroundColor={colorMode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(128, 129, 145, 1)'}
-                      color={'white'}
-                      hidden={index === 0}
-                    >
-                      Back
-                    </Button>
-                    <Button
-                      _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
-                      type="button"
-                      onClick={nextQuestion}
-                      backgroundColor='rgba(32, 223, 127, 1)'
-                      color='black'
-                      isDisabled={!answers[index]}
-                    >
-                      Next
-                    </Button>
-                  </HStack>
-                  :
-                  <VStack gap={5}>
-                    <ReCAPTCHA
-                      ref={recaptchaRef}
-                      size="normal"
-                      sitekey={process.env.ReCaptchaSiteKey}
-                      onChange={validateCaptcha}
-                    />
-                    <HStack justifyContent="center" alignItems="center" gap={10} mt={5} width="100%">
-                      <Button
-                        type="button"
-                        onClick={prevQuestion}
-                        background='rgba(255, 255, 255, 0.1)'
-                        hidden={index === 0}
-                      >
-                        Back
-                      </Button>
-                      <Button
-                        type="submit"
-                        backgroundColor='rgba(32, 223, 127, 1)'
-                        _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
-                        isDisabled={!answers[index]}
-                      >
-                        Submit
-                      </Button>
-                    </HStack>
+          <Box background={colorMode === 'dark' ? "rgba(229, 229, 229, 0.13)" : 'rgba(220, 220, 220, 1)'} padding={5} minH='70vh'>
+            {restricted ? (
+              <VStack height='100%' justify='center' minH='60vh'>
+                <Heading>Please connect your wallet to take the quiz.</Heading>
+              </VStack>
+            ) : (
+              <>
+              {quiz.length ? (
+                <form onSubmit={submit} style={{ height: '100%' }}>
+                  <VStack align='flex-start' minHeight='60vh' justify='space-between'>
+                    <Box>
+                      <Heading size="md" mb={5}>Question #{index + 1}</Heading>
+                      <FormControl as='fieldset' isRequired paddingBottom={10}>
+                        <FormLabel as='legend'>{quiz[index].question}</FormLabel>
+                        <RadioGroup paddingLeft={5} value={answers[index]} onChange={(e) => selectAnswer(e, index)}>
+                          <VStack alignItems='flex-start'>
+                            {quiz[index].options.map((option, optIndex) =>
+                              <Radio value={option} key={optIndex} borderColor={colorMode === 'light' && 'rgba(70, 69, 67, 1)'}>{option}</Radio>
+                            )}
+                          </VStack>
+                        </RadioGroup>
+                      </FormControl>
+                    </Box>
+                    {!displayBtn ?
+                      <HStack justifyContent="center" alignItems="center" gap={10} mt={5} width="100%">
+                        <Button
+                          type="button"
+                          onClick={prevQuestion}
+                          backgroundColor={colorMode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(128, 129, 145, 1)'}
+                          color={'white'}
+                          hidden={index === 0}
+                        >
+                          Back
+                        </Button>
+                        <Button
+                          _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
+                          type="button"
+                          onClick={nextQuestion}
+                          backgroundColor='rgba(32, 223, 127, 1)'
+                          color='black'
+                          isDisabled={!answers[index]}
+                        >
+                          Next
+                        </Button>
+                      </HStack>
+                      :
+                      <VStack gap={5}>
+                        <ReCAPTCHA
+                          ref={recaptchaRef}
+                          size="normal"
+                          sitekey={process.env.ReCaptchaSiteKey}
+                          onChange={validateCaptcha}
+                        />
+                        <HStack justifyContent="center" alignItems="center" gap={10} mt={5} width="100%">
+                          <Button
+                            type="button"
+                            onClick={prevQuestion}
+                            background='rgba(255, 255, 255, 0.1)'
+                            hidden={index === 0}
+                          >
+                            Back
+                          </Button>
+                          <Button
+                            type="submit"
+                            backgroundColor='rgba(32, 223, 127, 1)'
+                            _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
+                            isDisabled={!answers[index]}
+                          >
+                            Submit
+                          </Button>
+                        </HStack>
+                      </VStack>
+                    }
                   </VStack>
-                }
-              </form>
-              :
-              <Center>
-                <Spinner
-                  thickness='4px'
-                  speed='0.65s'
-                  // emptyColor='gray.200'
-                  color='gray.500'
-                  size='xl'
-                />
-              </Center>
-            }
+                </form>
+              ) : (
+                <Center>
+                  <Spinner
+                    thickness='4px'
+                    speed='0.65s'
+                    // emptyColor='gray.200'
+                    color='gray.500'
+                    size='xl'
+                  />
+                </Center>
+              )}
+              </>
+            )}
           </Box>
           :
           <Box>
