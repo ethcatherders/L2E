@@ -34,7 +34,7 @@ export default function Result() {
       await getScore();
     }
   }, [router.query.id]);
-  
+
   // Move this to Cloud function in Moralis
   // If the score qualifies for POAP, append the uuid of submission to POAP/Course object to prevent multiple mints from same submission
   // This should work whether signed in or not
@@ -65,7 +65,7 @@ export default function Result() {
     const result = await query.get(id);
     return result;
   }
-  
+
   /*
     1. Query user data to get array of POAPs already minted by individual
     2. Find ID of POAP in array (if ID not found, then continue)
@@ -81,7 +81,7 @@ export default function Result() {
     // } catch (error) {
     //   console.error(error);
     // }
-    
+
     if (user) {
       // Check if User already minted the POAP before
       try {
@@ -93,7 +93,7 @@ export default function Result() {
       } catch (error) {
         console.error(error);
       }
-      
+
       // Check if User completed this course at least once before
       // If so, then User is not eligible to mint a POAP
       try {
@@ -114,7 +114,7 @@ export default function Result() {
 
     return true;
   }
-  
+
   /*
     1. Use checkEligibleToMintPoap() function (if user qualifies, continue)
     2. Query POAP object from Moralis by ID from Course object
@@ -128,7 +128,7 @@ export default function Result() {
       query.equalTo("course", course)
       const poap = await query.first()
       console.log(poap)
-      
+
       // const { id } = courseObj.attributes.poap;
       // const poap = await query.get(id);
       const eligibleToMint = await checkEligibleToMintPoap(course, poap);
@@ -136,15 +136,15 @@ export default function Result() {
         const link = poap.attributes.mintLinks[0];
         if (link) {
           if (user) {
-            user.addUnique("poapsEarned", {id: poap.id, mintLink: link, timestamp: Date.now()})
+            user.addUnique("poapsEarned", { id: poap.id, mintLink: link, timestamp: Date.now() })
             poap.addUnique("earnedBy", user)
             await user.save()
           }
-          
+
           const remainingLinks = poap.attributes.mintLinks.slice(1, poap.attributes.mintLinks.length - 1)
           poap.set("mintLinks", remainingLinks)
           await poap.save()
-  
+
           return link;
         }
       }
@@ -180,7 +180,7 @@ export default function Result() {
       position: 'bottom-right'
     })
   }
-  
+
   // async function getAnswers() {
   //   const Course = Moralis.Object.extend("Course");
   //   const query = new Moralis.Query(Course);
@@ -213,7 +213,7 @@ export default function Result() {
         <Heading size='md' marginBottom={5}>
           {score.correct}/{score.total} Correct
         </Heading>
-        {score.correct / score.total >= minimumPassingPercentage ? 
+        {score.correct / score.total >= minimumPassingPercentage ?
           <Box>
             {mintLink === '#' ? (
               <Link href='/' passHref>
@@ -223,23 +223,26 @@ export default function Result() {
               </Link>
             ) : (
               <>
-              <Text>
-                You earned a POAP as a reward.
-              </Text>
-              <HStack mt={2} justifyContent="center" alignItems="center">
-                <Input type="text" value={mintLink} maxWidth={250} bg={colorMode === 'light' ? 'whiteAlpha.700' : 'transparent'} />
-                <IconButton aria-label="Copy to clipboard" icon={<CopyIcon/>} onClick={copyToClipboard} />
-                <Link href={mintLink} passHref>
-                  <a target="_blank">
-                    <IconButton aria-label="Go to mint site" icon={<ExternalLinkIcon/>} />
-                  </a>
+                <Text>
+                  You earned a POAP as a reward.
+                </Text>
+                <HStack mt={2} justifyContent="center" alignItems="center">
+                  <Input type="text" value={mintLink} maxWidth={250} bg={colorMode === 'light' ? 'whiteAlpha.700' : 'transparent'} />
+                  <IconButton aria-label="Copy to clipboard" icon={<CopyIcon />} onClick={copyToClipboard} />
+                  <Link href={mintLink} passHref>
+                    <a target="_blank">
+                      <IconButton aria-label="Go to mint site" icon={<ExternalLinkIcon />} />
+                    </a>
+                  </Link>
+                  <a href="https://twitter.com/intent/tweet?originACCCWal_referer=https%3A%2F%2Fpublish.twitter.com%2F&ref_src=twsrc%5Etfw%7Ctwcamp%5Ebuttonembed%7Ctwterm%5Eshare%7Ctwgr%5E&text=I%20am%20excited%20to%20share%20that%20I%20took%20quiz%20on%20%22ECH%20Learn2Earn%22%20and%20received%20this%20NFT.%20Try%20it%20today%20at&url=https%3A%2F%2Fl2e.ethereumcatherders.com%2F" target="_blank"><Button>
+                    Tweet
+                  </Button></a>
+                </HStack>
+                <Link href='/' passHref>
+                  <Button mt={2}>
+                    Back to Home
+                  </Button>
                 </Link>
-              </HStack>
-              <Link href='/' passHref>
-                <Button mt={2}>
-                  Back to Home
-                </Button>
-              </Link>
               </>
             )}
           </Box>
