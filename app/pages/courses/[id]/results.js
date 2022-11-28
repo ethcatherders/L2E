@@ -234,7 +234,7 @@ export default function Result() {
                       <IconButton aria-label="Go to mint site" icon={<ExternalLinkIcon />} />
                     </a>
                   </Link>
-                  <a href="https://twitter.com/intent/tweet?originACCCWal_referer=https%3A%2F%2Fpublish.twitter.com%2F&ref_src=twsrc%5Etfw%7Ctwcamp%5Ebuttonembed%7Ctwterm%5Eshare%7Ctwgr%5E&text=I%20am%20excited%20to%20share%20that%20I%20took%20quiz%20on%20%22ECH%20Learn2Earn%22%20and%20received%20this%20NFT.%20Try%20it%20today%20at&url=https%3A%2F%2Fl2e.ethereumcatherders.com%2F" target="_blank"><Button>
+                  <a href="https://twitter.com/intent/tweet?hashtags=quiz%20%23ethereumquiz&amp;original_referer=https%3A%2F%2Fpublish.twitter.com%2F&amp;ref_src=twsrc%5Etfw%7Ctwcamp%5Ebuttonembed%7Ctwterm%5Eshare%7Ctwgr%5E&amp;text=I%20am%20excited%20to%20share%20that%20I%20took%20quiz%20on%20%22ECH%20Learn2Earn%22%20and%20received%20this%20NFT.%20Try%20it%20today%20at%20&amp;url=https%3A%2F%2Fl2e.ethereumcatherders.com%2F%20&amp;via=EthCatHerders" target="_blank"><Button>
                     Tweet
                   </Button></a>
                 </HStack>
