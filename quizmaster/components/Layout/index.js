@@ -1,13 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Box, Flex, Heading, Spinner, Center } from '@chakra-ui/react'
 import Head from "next/head";
 import { useMoralis } from "react-moralis";
 import NavBar from "../NavBar";
 import SideNav from '../SideNav';
+import { AdminContext } from '../../context/AdminContext';
 
 export default function Layout({ children }) {
-  const [ethAddress, setEthAddress] = useState('Sign Up/Sign In');
-  const [isAdmin, setIsAdmin] = useState(false)
+  const {
+    ethAddress,
+    setEthAddress,
+    isAdmin,
+    setIsAdmin
+  } = useContext(AdminContext)
   const { user, isAuthenticated, isInitialized, Moralis } = useMoralis();
 
   useEffect(() => {
