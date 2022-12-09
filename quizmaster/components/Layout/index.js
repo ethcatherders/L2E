@@ -43,8 +43,8 @@ export default function Layout({ children }) {
   return (
     <div>
       <Head>
-        <title>learn2earn</title>
-        <meta name="description" content="Learn about Ethereum" />
+        <title>L2E Quizmaster</title>
+        <meta name="description" content="Admin portal for Ethereum Cat Herders' Learn2Earn" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
