@@ -20,7 +20,7 @@ import {
   Input
 } from "@chakra-ui/react";
 
-export default function PoapsEarned() {
+export default function NFTManager() {
   const [loading, setLoading] = useState(true)
   const [poaps, setPoaps] = useState([]);
   const [nfts, setNFTs] = useState([]);
@@ -158,7 +158,7 @@ export default function PoapsEarned() {
       <Box background="rgba(229, 229, 229, 0.13)" padding={5} mt={2}>
         <HStack justify='space-between' align='center' mb={5}>
           <Heading>NFTs</Heading>
-          <NextLink href='/poaps/create' passHref>
+          <NextLink href='/nfts/create' passHref>
             <Button color='white' backgroundColor='black'>+ Create</Button>
           </NextLink>
         </HStack>
