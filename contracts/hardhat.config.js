@@ -15,9 +15,13 @@ module.exports = {
   defaultNetwork: 'hardhat',
   networks: {
     hardhat: {},
-    // gnosis: {
-    //   url: process.env.GNOSIS_PROVIDER_URL,
-    //   accounts: [process.env.PRIVATE_KEY]
-    // },
+    polygon: {
+      url: process.env.POLYGON_PROVIDER_URL,
+      accounts: [process.env.PRIVATE_KEY]
+    },
+    mumbai: {
+      url: process.env.MUMBAI_PROVIDER_URL,
+      accounts: [process.env.PRIVATE_KEY]
+    }
   }
 };
