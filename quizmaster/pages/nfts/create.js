@@ -141,8 +141,10 @@ export default function CreateNFT() {
   }
 
   async function deployContract(tokenURI) {
-    const provider = new ethers.providers.JsonRpcProvider(FactoryInfo.provider)
-    const signer = new provider.getSigner(user.attributes.ethAddress)
+    const provider = window.ethereum ?
+      new ethers.providers.Web3Provider(window.ethereum) :
+      new ethers.providers.JsonRpcProvider(FactoryInfo.provider)
+    const signer = provider.getSigner(user.attributes.ethAddress)
     const abi = new utils.Interface([
       'function create(string name, string symbol, string baseURI, address assignedOwner) public override returns (address)',
     ])
@@ -153,8 +155,9 @@ export default function CreateNFT() {
     )
     // Deploy contract and parse event to get new contract address
     const tx = await factory.create(name, symbol, tokenURI, owner)
-    await tx.wait()
-    return await getNFTContractAddress(tx)
+    const receipt = await tx.wait()
+    console.log(receipt)
+    return await getNFTContractAddress(receipt)
   }
 
   async function getNFTContractAddress(receipt) {
@@ -187,7 +190,7 @@ export default function CreateNFT() {
       await addNFTToMoralis(contractAddress, chainId)
       setSuccess(true);
     } catch (error) {
-      console.error(err);
+      console.error(error);
       setError(true);
     }
     setLoading(false);
