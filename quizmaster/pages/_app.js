@@ -14,17 +14,17 @@ function MyApp({ Component, pageProps }) {
       }
     }),
   }
-
   const theme = extendTheme({styles})
 
   return (
-  <ChakraProvider theme={theme}>
-    <AdminContextProvider>
-      <MoralisProvider serverUrl={process.env.MoralisServerURL} appId={process.env.MoralisAppID}>
-        <Component {...pageProps} />
-      </MoralisProvider>
-    </AdminContextProvider>
-  </ChakraProvider>
-)}
+    <ChakraProvider theme={theme}>
+      <AdminContextProvider>
+        <MoralisProvider serverUrl={process.env.MoralisServerURL} appId={process.env.MoralisAppID}>
+          <Component {...pageProps} />
+        </MoralisProvider>
+      </AdminContextProvider>
+    </ChakraProvider>
+  )
+}
 
 export default MyApp

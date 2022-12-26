@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { useMoralis } from "react-moralis";
 import { useRouter } from 'next/router';
 import NextLink from "next/link";
@@ -19,17 +19,20 @@ import {
   FormLabel,
   Input
 } from "@chakra-ui/react";
+import { AdminContext } from "../../context/AdminContext";
+import { FactoryAddresses } from "../../utils/factory";
 
 export default function NFTManager() {
+  const { devMode } = useContext(AdminContext)
   const [loading, setLoading] = useState(true)
   const [poaps, setPoaps] = useState([]);
   const [nfts, setNFTs] = useState([]);
   const [courses, setCourses] = useState([])
   const [openForm, setOpenForm] = useState([])
   const [uploading, setUploading] = useState(false)
+  const [FactoryInfo, setFactoryInfo] = useState(devMode ? FactoryAddresses.dev : FactoryAddresses.prod)
 
   const { isInitialized, Moralis } = useMoralis();
-  const FACTORY_ADDRESS = process.env.RewardFactoryAddress
   
   useEffect(async () => {
     if (isInitialized) {

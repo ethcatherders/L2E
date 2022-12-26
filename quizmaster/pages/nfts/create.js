@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useMoralis } from "react-moralis";
 import Layout from "../../components/Layout";
 import {
@@ -15,9 +15,12 @@ import {
   Spinner
 } from "@chakra-ui/react";
 import Link from "next/link";
-import { utils, Contract } from "ethers";
+import { utils, Contract, ethers } from "ethers";
+import { FactoryAddresses } from "../../utils/factory";
+import { AdminContext } from "../../context/AdminContext";
 
 export default function CreateNFT() {
+  const { devMode } = useContext(AdminContext)
   // Form State Variables
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
@@ -32,15 +35,23 @@ export default function CreateNFT() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [FactoryInfo, setFactoryInfo] = useState(devMode ? FactoryAddresses.dev : FactoryAddresses.prod)
 
-  const FACTORY_ADDRESS = process.env.FactoryAddress
-  const { isInitialized, Moralis } = useMoralis();
+  const { isInitialized, Moralis, user } = useMoralis();
 
   useEffect(async () => {
     if (isInitialized) {
       await getAvailableCourses()
     }
   }, [isInitialized]);
+
+  useEffect(() => {
+    if (devMode) {
+      setFactoryInfo(FactoryAddresses.dev)
+    } else {
+      setFactoryInfo(FactoryAddresses.prod)
+    }
+  }, [devMode]);
 
   async function getAllNFTs() {
     try {
@@ -130,14 +141,15 @@ export default function CreateNFT() {
   }
 
   async function deployContract(tokenURI) {
-    const provider = new ethers.providers.JsonRpcProvider(process.env.RPCProviderUrl)
+    const provider = new ethers.providers.JsonRpcProvider(FactoryInfo.provider)
+    const signer = new provider.getSigner(user.attributes.ethAddress)
     const abi = new utils.Interface([
       'function create(string name, string symbol, string baseURI, address assignedOwner) public override returns (address)',
     ])
     const factory = new Contract(
-      FACTORY_ADDRESS,
+      FactoryInfo.address,
       abi,
-      provider
+      signer
     )
     // Deploy contract and parse event to get new contract address
     const tx = await factory.create(name, symbol, tokenURI, owner)
@@ -171,7 +183,7 @@ export default function CreateNFT() {
     try {
       const baseURI = await uploadMetadata()
       const contractAddress = await deployContract(baseURI)
-      const chainId = 137 // Polygon Mainnet
+      const chainId = FactoryInfo.chainId
       await addNFTToMoralis(contractAddress, chainId)
       setSuccess(true);
     } catch (error) {
