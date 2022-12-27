@@ -8,10 +8,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.0.1",
+    "@chakra-ui/icons": "^2.0.15",
     "@chakra-ui/react": "^1.8.5",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "@moralisweb3/common-evm-utils": "^2.10.3",
     "@walletconnect/web3-provider": "^1.7.1",
     "ethers": "^5.7.2",
     "framer-motion": "^6",

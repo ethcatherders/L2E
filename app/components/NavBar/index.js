@@ -1,8 +1,8 @@
 import { 
   HStack,
   VStack, 
-  Text, 
-  AspectRatio, 
+  Text,
+  Avatar,
   Button,
   Box,
   Drawer,
@@ -16,17 +16,23 @@ import {
   Switch,
   FormControl,
   FormLabel,
-  useColorModeValue,
-  useColorMode
+  useColorMode,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Circle,
+  IconButton
 } from '@chakra-ui/react';
-import Image from 'next/image';
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
 import { useMoralis } from 'react-moralis';
-import logo from '../../public/ECHLogo.png';
-import Link from 'next/link';
+import { EvmChain } from '@moralisweb3/common-evm-utils';
+import { Web3Context } from '../../context/Web3Context';
+import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 
 
 export default function NavBar(props) {
+  const { devMode, setDevMode } = useContext(Web3Context)
   const { authenticate, isAuthenticating, logout, isLoggingOut, isAuthenticated, user } = useMoralis();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
@@ -34,32 +40,36 @@ export default function NavBar(props) {
 
   return (
     <Box>
-
       <HStack justifyContent="flex-end" alignItems='center' padding={5}>
-        {/* <Link href='/'>
-          <AspectRatio maxWidth={50} maxHeight={55} ratio={-1} cursor='pointer'>
-            <Image src={logo} />
-          </AspectRatio>
-        </Link> */}
-        <FormControl width="fit-content" paddingRight={5}>
-          <HStack>
-            <FormLabel htmlFor='colormode-toggler' mb={0}>
-              {colorMode}
-            </FormLabel>
-            <Switch id="colormode-toggler" defaultChecked={colorMode === 'dark'} onChange={toggleColorMode} />
-          </HStack>
-        </FormControl>
+        <IconButton
+          icon={colorMode === 'dark' ? <MoonIcon/> : <SunIcon/>}
+          color='white'
+          bg='rgba(35, 35, 35, 1)'
+          onClick={toggleColorMode}
+        />
         {user && isAuthenticated ? 
           <HStack>
             <Text color={'white'} bg={'rgba(35, 35, 35, 1)'} borderRadius={5} padding={2}>
               {`${user.attributes.ethAddress.substring(0, 9)}...`}
             </Text>
-            <Button
-              onClick={logout}
-              isLoading={isLoggingOut}
-            >
-              Logout
-            </Button>
+            <Menu>
+              <MenuButton padding={1} as={Circle} _hover={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }} cursor='pointer'>
+                <Avatar />
+              </MenuButton>
+              <MenuList>
+                <FormControl display='flex' alignItems='center' justifyContent='space-between' padding={3}>
+                  <FormLabel htmlFor='devmode-toggler' mb={0}>
+                    Use Testnet?
+                  </FormLabel>
+                  <Switch
+                    id='devmode-toggler'
+                    defaultChecked={devMode}
+                    onChange={(e) => setDevMode(e.target.checked !== undefined && e.target.checked)}
+                  />
+                </FormControl>
+                <MenuItem onClick={logout}>Logout</MenuItem>
+              </MenuList>
+            </Menu>
           </HStack>
           :
           <Button
