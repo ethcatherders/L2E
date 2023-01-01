@@ -23,7 +23,7 @@ import { AdminContext } from "../../context/AdminContext";
 import { FactoryAddresses } from "../../utils/factory";
 
 export default function NFTManager() {
-  const { devMode } = useContext(AdminContext)
+  const { devMode, setDevMode } = useContext(AdminContext)
   const [loading, setLoading] = useState(true)
   const [poaps, setPoaps] = useState([]);
   const [nfts, setNFTs] = useState([]);
@@ -31,6 +31,11 @@ export default function NFTManager() {
   const [openForm, setOpenForm] = useState([])
   const [uploading, setUploading] = useState(false)
   const [FactoryInfo, setFactoryInfo] = useState(devMode ? FactoryAddresses.dev : FactoryAddresses.prod)
+
+  const network = {
+    80001: 'Mumbai',
+    137: 'Polygon'
+  }
 
   const { isInitialized, Moralis } = useMoralis();
   
@@ -48,33 +53,26 @@ export default function NFTManager() {
       const query = new Moralis.Query(RewardNFT)
       const results = await query.find()
       const parsed = await Promise.all(results.map(async (reward) => {
+        const { id, attributes, createdAt, updatedAt } = reward
         if (reward.attributes.course) {
-          const course = await getCourse(reward.attributes.course.id)
-          return {
-            id: reward.id,
-            address: reward.attributes.address,
-            chainId: reward.attributes.chainId,
-            image: reward.attributes.image,
-            name: reward.attributes.name,
-            owner: reward.attributes.owner,
-            course: {
-              id: course.id,
-              ...course.attributes
-            },
-            createdAt: reward.createdAt,
-            updatedAt: reward.updatedAt
+          const course = await getCourse(reward.attributes.course)
+          const data = {
+            id,
+            ...attributes,
+            createdAt,
+            updatedAt
           }
+          data.course = {
+            id: course.id,
+            ...course.attributes
+          }
+          return data
         }
         return {
-          id: reward.id,
-          address: reward.attributes.address,
-          chainId: reward.attributes.chainId,
-          image: reward.attributes.image,
-          name: reward.attributes.name,
-          owner: reward.attributes.owner,
-          course: undefined,
-          createdAt: reward.createdAt,
-          updatedAt: reward.updatedAt
+          id,
+          ...attributes,
+          createdAt,
+          updatedAt
         }
       }))
       setNFTs(parsed)
@@ -168,11 +166,11 @@ export default function NFTManager() {
         {!loading ?
           <Box>
             {nfts.length ? nfts.map((token, index) => 
-              <HStack gap={5} key={index} mb={5}>
+              <HStack gap={5} key={index} mb={5} hidden={devMode ? token.chainId === 137 : token.chainId === 80001}>
                 <FormControl maxWidth='fit-content'>
                   <FormLabel htmlFor={`upload-${token.id}`}>
                     <Image
-                      src={token.image && `https://gateway.moralisipfs.com/ipfs/${token.image}`}
+                      src={token.image && `https://gateway.moralisipfs.com/ipfs/${token.image.substring("ipfs://".length)}`}
                       width={100}
                       height={100}
                       borderRadius='full'
@@ -189,8 +187,26 @@ export default function NFTManager() {
                 </FormControl>
                 <VStack align='left'>
                   <Heading size='md'>{token.name}</Heading>
-                  <Text>{token.mintLinks.length} Remaining</Text>
-                  <Text>Admin Access: {token.adminLink}</Text>
+                  <Text size="sm">{token.description}</Text>
+                  <Text>Address:{' '}
+                    <Link
+                      isExternal
+                      href={`https://${token.chainId === 80001 && 'mumbai.'}polygonscan.com/address/${token.address}`}
+                      textDecor='underline'
+                    >
+                      {token.address.substring(0,7) + '...' + token.address.substring(token.address.length - 7)}
+                    </Link>
+                  </Text>
+                  <Text>Chain: {network[`${token.chainId}`]}</Text>
+                  <Text>Owner:{' '}
+                    <Link
+                      isExternal
+                      href={`https://${token.chainId === 80001 && 'mumbai.'}polygonscan.com/address/${token.owner}`}
+                      textDecor='underline'
+                    >
+                      {token.owner.substring(0,7) + '...' + token.owner.substring(token.owner.length - 7)}
+                    </Link>
+                  </Text>
                   <Text>Assigned to: {token.course ? (
                     <NextLink href={`/courses/${token.course.id}`} passHref>
                       <Link textDecor='underline'>{token.course.title}</Link>
