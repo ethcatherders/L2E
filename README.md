@@ -1,4 +1,4 @@
-# Lear2Earn project (L2E)
+# Learn2Earn project (L2E)
 
 ## Description
 This repository contains information on a WIP project [Learn2Earn](https://hackmd.io/@poojaranjan/Learn2Earn) by the ECH contributors.
