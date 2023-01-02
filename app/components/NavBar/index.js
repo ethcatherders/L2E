@@ -34,12 +34,13 @@ import { MoonIcon, SunIcon } from '../Icons';
 
 
 export default function NavBar(props) {
-  const [wrongNetworkMsg, setWrongNetworkMsg] = useState()
+  const [wrongNetworkMsg, setWrongNetworkMsg] = useState(false)
   const { devMode, setDevMode } = useContext(Web3Context)
   const { authenticate, isAuthenticating, logout, Moralis, isAuthenticated, user, isInitialized, chainId } = useMoralis();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
   const { colorMode, toggleColorMode } = useColorMode();
+  const authMessage = "By signing this message, you are verifying that you own this wallet address and will use it as your account to interact with the ECH Learn2Earn website."
 
   useEffect(() => {
     if (user && isAuthenticated) {
@@ -51,7 +52,9 @@ export default function NavBar(props) {
     if (!Moralis.isWeb3Enabled()) await Moralis.enableWeb3();
     const connectorType = Moralis.connectorType;
     if (connectorType === "injected") {
-      if ((!devMode && chainId !== "0x89") || (devMode && chainId !== "0x13881")) {
+      if (!devMode && chainId && chainId !== "0x89") {
+        setWrongNetworkMsg(true)
+      } else if (devMode && chainId && chainId !== "0x13881") {
         setWrongNetworkMsg(true)
       } else {
         setWrongNetworkMsg(false)
@@ -142,7 +145,7 @@ export default function NavBar(props) {
                 <Avatar />
               </MenuButton>
               <MenuList>
-                <FormControl display='flex' alignItems='center' justifyContent='space-between' padding={3}>
+                <FormControl display='flex' alignItems='center' justifyContent='space-between' padding={3} isDisabled={true}>
                   <FormLabel htmlFor='devmode-toggler' mb={0}>
                     Use Testnet?
                   </FormLabel>
@@ -182,7 +185,8 @@ export default function NavBar(props) {
               <Button
                 width={'100%'}
                 onClick={() => authenticate({
-                  provider: 'metamask'
+                  provider: 'metamask',
+                  signingMessage: authMessage
                 }).then(() => onClose())}
                 isLoading={isAuthenticating}
               >
@@ -191,7 +195,8 @@ export default function NavBar(props) {
               <Button
                 width={'100%'}
                 onClick={() => authenticate({
-                  provider: 'walletconnect'
+                  provider: 'walletconnect',
+                  signingMessage: authMessage
                 }).then(() => onClose())}
                 isLoading={isAuthenticating}
               >
