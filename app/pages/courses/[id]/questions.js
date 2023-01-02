@@ -231,7 +231,7 @@ export default function Questions() {
                         </Button>
                       </HStack>
                       :
-                      <VStack gap={5}>
+                      <VStack justifyContent="center" alignItems="center" gap={5} mt={5} width="100%">
                         <ReCAPTCHA
                           ref={recaptchaRef}
                           size="normal"
