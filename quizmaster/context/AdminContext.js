@@ -5,7 +5,7 @@ export const AdminContext = createContext()
 export function AdminContextProvider({ children }) {
 	const [isAdmin, setIsAdmin] = useState(false)
 	const [ethAddress, setEthAddress] = useState('')
-	const [devMode, setDevMode] = useState(false);
+	const [devMode, setDevMode] = useState(true);
 
 	return (
 		<AdminContext.Provider

@@ -28,6 +28,7 @@ export default function NavBar(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
   const { devMode, setDevMode } = useContext(AdminContext)
+  const signingMessage = "By signing this message, you are verifying that you own this wallet address and will use it as your account to interact with the Quizmaster, the ECH Learn2Earn admin website."
   
   return (
     <HStack justify={'space-between'} align={'center'} borderBottom={'1px solid grey'} padding={5}>
@@ -81,7 +82,8 @@ export default function NavBar(props) {
               <Button
                 width={'100%'}
                 onClick={() => authenticate({
-                  provider: 'metamask'
+                  provider: 'metamask',
+                  signingMessage
                 }).then(() => onClose())}
                 isLoading={isAuthenticating}
                 color='white'
@@ -92,7 +94,8 @@ export default function NavBar(props) {
               <Button
                 width={'100%'}
                 onClick={() => authenticate({
-                  provider: 'walletconnect'
+                  provider: 'walletconnect',
+                  signingMessage
                 }).then(() => onClose())}
                 isLoading={isAuthenticating}
                 color='white'
