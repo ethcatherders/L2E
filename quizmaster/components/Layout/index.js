@@ -1,13 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Box, Flex, Heading, Spinner, Center } from '@chakra-ui/react'
 import Head from "next/head";
 import { useMoralis } from "react-moralis";
 import NavBar from "../NavBar";
 import SideNav from '../SideNav';
+import { AdminContext } from '../../context/AdminContext';
 
 export default function Layout({ children }) {
-  const [ethAddress, setEthAddress] = useState('Sign Up/Sign In');
-  const [isAdmin, setIsAdmin] = useState(false)
+  const {
+    ethAddress,
+    setEthAddress,
+    isAdmin,
+    setIsAdmin
+  } = useContext(AdminContext)
   const { user, isAuthenticated, isInitialized, Moralis } = useMoralis();
 
   useEffect(() => {
@@ -38,8 +43,8 @@ export default function Layout({ children }) {
   return (
     <div>
       <Head>
-        <title>learn2earn</title>
-        <meta name="description" content="Learn about Ethereum" />
+        <title>L2E Quizmaster</title>
+        <meta name="description" content="Admin portal for Ethereum Cat Herders' Learn2Earn" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

@@ -1,17 +1,33 @@
-import { Heading, Text, Button, Box, Input, HStack, IconButton, useColorMode, useToast } from "@chakra-ui/react";
-import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
-import Link from "next/link";
+import {
+  Heading,
+  Link,
+  Text,
+  Button,
+  Box,
+  useColorMode,
+  useToast,
+  VStack
+} from "@chakra-ui/react";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
 import Layout from "../../../components/Layout";
+import { Contract, providers, utils } from "ethers";
+import { Web3Context } from "../../../context/Web3Context";
+import { EvmChain } from "@moralisweb3/common-evm-utils";
 
 export default function Result() {
+  const { devMode } = useContext(Web3Context)
   const [score, setScore] = useState({ correct: 0, total: 0 });
-  const [mintLink, setMintLink] = useState('#');
-  const [statusMsg, setStatusMsg] = useState(null)
+  const [mintAddress, setMintAddress] = useState(null)
+  const [mintable, setMintable] = useState(false)
+  const [minting, setMinting] = useState(false)
+  const [minted, setMinted] = useState(false)
+  const [mintId, setMintId] = useState(null)
+  const [mintError, setMintError] = useState(false)
 
-  const { user, isInitialized, Moralis } = useMoralis();
+  const { user, isInitialized, Moralis, chainId } = useMoralis();
   const router = useRouter();
   const { colorMode } = useColorMode();
   const toast = useToast();
@@ -19,39 +35,56 @@ export default function Result() {
   const minimumPassingPercentage = 1;
 
   useEffect(async () => {
-    if (isInitialized && user) {
-      // await getAnswers();
-      await getScore();
-    }
-  }, [isInitialized]);
-
-  useEffect(async () => {
     const { id } = router.query;
-    // console.log("Router: ", router);
-    // console.log("Router.query: ", router.query);
-    if (isInitialized && id) {
-      // await getAnswers();
-      await getScore();
+    if (isInitialized && id && user) {
+      await getResult()
     }
-  }, [router.query.id]);
-  
-  // Move this to Cloud function in Moralis
-  // If the score qualifies for POAP, append the uuid of submission to POAP/Course object to prevent multiple mints from same submission
-  // This should work whether signed in or not
-  async function getScore() {
+  }, [isInitialized, user, router.query.id, chainId, devMode]);
+
+  useEffect(() => {
+    if (mintError) {
+      toast({
+        title: 'Something went wrong',
+        description: `An error occurred while claiming.`,
+        status: 'error',
+        duration: 3000,
+        position: 'bottom-right'
+      })
+    } else if (minted && mintId) {
+      toast({
+        title: 'NFT claimed!',
+        description: `You are #${mintId} to earn this NFT!`,
+        status: 'success',
+        duration: 3000,
+        position: 'bottom-right'
+      })
+    }
+  }, [minted, mintId, mintError])
+
+  async function getResult() {
     try {
       const course = await getCourse();
       const fromUser = course.attributes.responses.filter(response => response.id === router.query.entry);
-      console.log("fromUser:", fromUser)
       const questions = course.attributes.quiz.filter(q => !!fromUser[fromUser.length - 1].answers.find(fu => fu.id === q.id))
-      console.log("Questions:", questions)
       const userAnswers = fromUser[fromUser.length - 1].answers.map(item => item.answer)
       const actualAnswers = questions.map(item => item.answer);
       const { match, total } = compareAnswers(userAnswers, actualAnswers);
       setScore({ correct: match, total: total });
       if (match / total >= minimumPassingPercentage) {
-        const link = await getPoapLinkForMinting(course);
-        setMintLink(link);
+        const rewardNft = await getNFT(course.id)
+        if (rewardNft) {
+          const { address } = rewardNft.attributes
+          setMintable(await isMintable(address))
+          setMintAddress(address)
+        } else {
+          setMintable(false)
+        }
+        // const { nftAddress } = course.attributes
+        // if (!nftAddress) setMintable(false)
+        // else {
+        //   setMintable(await isMintable(nftAddress))
+        //   setMintAddress(nftAddress)
+        // }
       }
     } catch (error) {
       console.error(error);
@@ -65,99 +98,83 @@ export default function Result() {
     const result = await query.get(id);
     return result;
   }
-  
-  /*
-    1. Query user data to get array of POAPs already minted by individual
-    2. Find ID of POAP in array (if ID not found, then continue)
-    3. Query Course and count number of times user completed this course (if only once - as in now - then continue)
-    4. Return boolean to determine whether user can mint a POAP or not
-  */
-  async function checkEligibleToMintPoap(courseObj, poapObj) {
 
-    // Check if Course contains a relation to a POAP
-    // try {
-    //   poap = courseObj.attributes.poap;
-    //   if (!poap) return false;
-    // } catch (error) {
-    //   console.error(error);
-    // }
-    
+  async function getNFT(courseId) {
+    const currentChainId = devMode ? 80001 : 137;
+    const RewardNFT = Moralis.Object.extend("RewardNFT");
+    const query = new Moralis.Query(RewardNFT);
+    query.equalTo('course', courseId);
+    query.equalTo('chainId', currentChainId)
+    const result = await query.first();
+    return result;
+  }
+
+  async function isMintable(contractAddress) {
     if (user) {
-      // Check if User already minted the POAP before
-      try {
-        // const poapsMinted = user.attributes.poapsEarned;
-        // const alreadyMinted = poapsMinted.includes(poapId);
-        // if (alreadyMinted) return false;
-        if (poapObj.attributes.earnedBy && poapObj.attributes.earnedBy.includes(user)) return false
-        if (user.attributes.poapsEarned && user.attributes.poapsEarned.find(pe => pe.id === poapObj.id)) return false
-      } catch (error) {
-        console.error(error);
-      }
-      
-      // Check if User completed this course at least once before
-      // If so, then User is not eligible to mint a POAP
-      try {
-        const completionCount = courseObj.attributes.responses.filter(response => response.user === user.id);
-        if (completionCount.length > 1) return false;
-      } catch (error) {
-        console.error(error);
-      }
+      if (!Moralis.isWeb3Enabled()) await Moralis.enableWeb3();
+      const provider = new providers.JsonRpcProvider(
+        devMode ? process.env.AlchemyUrl_Dev : process.env.AlchemyUrl
+      )
+      const signer = provider.getSigner(user.attributes.ethAddress)
+      const abi = new utils.Interface([
+        'function claimed(address account) external view returns (bool)',
+      ]);
+      const contract = new Contract(
+        contractAddress,
+        abi,
+        signer,
+      );
+      const isClaimed = await contract.claimed(user.attributes.ethAddress)
+      return !isClaimed
     }
-
-    // Check if this particular entry was already processed for minting
-    try {
-      const completed = courseObj.attributes.responses.find(response => response.id === router.query.entry);
-      if (completed.minted) return false;
-    } catch (error) {
-      console.error(error);
-    }
-
-    return true;
+    return false
   }
-  
-  /*
-    1. Use checkEligibleToMintPoap() function (if user qualifies, continue)
-    2. Query POAP object from Moralis by ID from Course object
-    3. Return mint link from last item in array using pop() function
-    ** The link will be a state variable and used as href for mint button **
-  */
-  async function getPoapLinkForMinting(course) {
+
+  async function mint() {
+    setMintError(false)
+    setMinted(false)
+    setMintId(null)
+    setMinting(true)
     try {
-      const POAP = Moralis.Object.extend("POAP");
-      const query = new Moralis.Query(POAP);
-      query.equalTo("course", course)
-      const poap = await query.first()
-      console.log(poap)
-      
-      // const { id } = courseObj.attributes.poap;
-      // const poap = await query.get(id);
-      const eligibleToMint = await checkEligibleToMintPoap(course, poap);
-      if (eligibleToMint) {
-        const link = poap.attributes.mintLinks[0];
-        if (link) {
-          if (user) {
-            user.addUnique("poapsEarned", {id: poap.id, mintLink: link, timestamp: Date.now()})
-            poap.addUnique("earnedBy", user)
-            await user.save()
-          }
-          
-          const remainingLinks = poap.attributes.mintLinks.slice(1, poap.attributes.mintLinks.length - 1)
-          poap.set("mintLinks", remainingLinks)
-          await poap.save()
-  
-          return link;
+      if (!Moralis.isWeb3Enabled()) await Moralis.enableWeb3();
+      const connectorType = Moralis.connectorType;
+      let provider;
+      if (connectorType === "injected") {
+        if ((!devMode && chainId !== "0x89") || (devMode && chainId !== "0x13881")) {
+          await switchNetwork()
         }
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts'
+        })
+        provider = new providers.Web3Provider(window.ethereum)
+      } else {
+        provider = new providers.JsonRpcProvider(
+          devMode ? process.env.AlchemyUrl_Dev : process.env.AlchemyUrl
+        )
       }
+      const signer = provider.getSigner()
+      const abi = new utils.Interface([
+        'function mint() external',
+        'function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256)'
+      ]);
+      const contract = new Contract(
+        mintAddress,
+        abi,
+        provider
+      );
+      const tx = await contract.connect(signer).mint()
+      await tx.wait()
 
-      return '#'
-
-      // Add 'minted: true' to response in courseObj
+      const tokenId = await contract.tokenOfOwnerByIndex(user.attributes.ethAddress, 0)
+      setMintId(tokenId)
+      setMinted(true)
     } catch (error) {
-      console.error(error);
-      return '#';
+      console.error(error)
+      setMintError(true)
     }
+    setMinting(false)
   }
-
+  
   function compareAnswers(array1, array2) {
     const result = { match: 0, total: 0 };
     console.log("array1:", array1, "array2:", array2)
@@ -170,32 +187,47 @@ export default function Result() {
     return result;
   }
 
-  function copyToClipboard() {
-    navigator.clipboard.writeText(mintLink);
-    setStatusMsg("Copied to clipboard")
-    toast({
-      title: 'Copied to clipboard',
-      status: 'success',
-      duration: 3000,
-      position: 'bottom-right'
-    })
-  }
+  async function switchNetwork() {
+    if (devMode) {
+      await Moralis.switchNetwork("0x13881")
+      if (chainId === "0x13881") {
+        const chainId = 80001;
+        const chainName = "Mumbai Testnet";
+        const currencyName = "MATIC";
+        const currencySymbol = "MATIC";
+        const rpcUrl = "https://rpc-mumbai.maticvigil.com/";
+        const blockExplorerUrl = "https://mumbai.polygonscan.com/";
   
-  // async function getAnswers() {
-  //   const Course = Moralis.Object.extend("Course");
-  //   const query = new Moralis.Query(Course);
-  //   const { id } = router.query;
-
-  //   try {
-  //     const result = await query.get(id);
-  //     const fromUser = result.attributes.responses.filter(response => response.user === user.id);
-  //     const answers = result.attributes.quiz.map(item => item.answer);
-  //     const { match, total } = compareAnswers(fromUser[fromUser.length - 1].answers, answers);
-  //     setScore({ correct: match, total: total });
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
+        await Moralis.addNetwork(
+          chainId,
+          chainName,
+          currencyName,
+          currencySymbol,
+          rpcUrl,
+          blockExplorerUrl
+        );
+      }
+    } else {
+      await Moralis.switchNetwork("0x89")
+      if (chainId === "0x89") {
+        const chainId = 137;
+        const chainName = "Polygon Mainnet";
+        const currencyName = "MATIC";
+        const currencySymbol = "MATIC";
+        const rpcUrl = "https://polygon-rpc.com";
+        const blockExplorerUrl = "https://polygonscan.com/";
+  
+        await Moralis.addNetwork(
+          chainId,
+          chainName,
+          currencyName,
+          currencySymbol,
+          rpcUrl,
+          blockExplorerUrl
+        );
+      }
+    }
+  }
 
   return (
     <Layout>
@@ -213,48 +245,51 @@ export default function Result() {
         <Heading size='md' marginBottom={5}>
           {score.correct}/{score.total} Correct
         </Heading>
-        {score.correct / score.total >= minimumPassingPercentage ? 
+        {score.correct / score.total >= minimumPassingPercentage ? (
           <Box>
-            {mintLink === '#' ? (
-              <Link href='/' passHref>
+            {!mintable ? (
+              <NextLink href='/' passHref>
                 <Button mt={2}>
                   Back to Home
                 </Button>
-              </Link>
+              </NextLink>
             ) : (
               <>
               <Text>
-                You earned a POAP as a reward.
+                {mintId && minted ? `You earned NFT #${mintId}!` : 'You earned an NFT as a reward!'}
               </Text>
-              <HStack mt={2} justifyContent="center" alignItems="center">
-                <Input type="text" value={mintLink} maxWidth={250} bg={colorMode === 'light' ? 'whiteAlpha.700' : 'transparent'} />
-                <IconButton aria-label="Copy to clipboard" icon={<CopyIcon/>} onClick={copyToClipboard} />
-                <Link href={mintLink} passHref>
-                  <a target="_blank">
-                    <IconButton aria-label="Go to mint site" icon={<ExternalLinkIcon/>} />
-                  </a>
-                </Link>
-              </HStack>
-              <Link href='/' passHref>
-                <Button mt={2}>
-                  Back to Home
+              <VStack align='center' mt={4}>
+                <Button
+                  backgroundColor='rgba(32, 223, 127, 1)'
+                  _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
+                  onClick={() => !minted ? mint() : router.push('/rewards')}
+                  isLoading={minting}
+                  loadingText="Claiming..."
+                  minW={200}
+                >
+                  {minted ? 'View NFTs earned' : 'Claim'}
                 </Button>
-              </Link>
+                <NextLink href='/' passHref>
+                  <Link textDecor='underline' mt={2}>
+                    Back to Home
+                  </Link>
+                </NextLink>
+              </VStack>
               </>
             )}
           </Box>
-          :
+        ) : (
           <Box>
             <Text>
               Better luck next time :(
             </Text>
-            <Link href='/' passHref>
+            <NextLink href='/' passHref>
               <Button mt={2}>
                 Back to Home
               </Button>
-            </Link>
+            </NextLink>
           </Box>
-        }
+        )}
       </Box>
     </Layout>
   )

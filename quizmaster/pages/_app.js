@@ -1,6 +1,7 @@
 import '../styles/globals.css';
 import { MoralisProvider } from 'react-moralis';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { AdminContextProvider } from '../context/AdminContext';
 
 function MyApp({ Component, pageProps }) {
   const styles = {
@@ -13,15 +14,17 @@ function MyApp({ Component, pageProps }) {
       }
     }),
   }
-
   const theme = extendTheme({styles})
 
   return (
-  <ChakraProvider theme={theme}>
-    <MoralisProvider serverUrl={process.env.MoralisServerURL} appId={process.env.MoralisAppID}>
-      <Component {...pageProps} />
-    </MoralisProvider>
-  </ChakraProvider>
-)}
+    <AdminContextProvider>
+      <ChakraProvider theme={theme}>
+        <MoralisProvider serverUrl={process.env.MoralisServerURL} appId={process.env.MoralisAppID}>
+          <Component {...pageProps} />
+        </MoralisProvider>
+      </ChakraProvider>
+    </AdminContextProvider>
+  )
+}
 
 export default MyApp

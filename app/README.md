@@ -33,6 +33,14 @@ All the data including users, course content, and POAP info will be stored in th
 	previewImg: "Image source URL"
 }
 ```
+- NFTs - store key info to reduce RPC calls
+```javascript
+{
+	name: "NFT name",
+	address: "NFT contract address",
+	image: "metadata image"
+}
+```
 - Courses
 ```javascript
 {
@@ -58,7 +66,7 @@ All the data including users, course content, and POAP info will be stored in th
 			answers: [1, 3, 2, 1] // Index of chosen option per answers object
 		}
 	],
-	poap: "POAP ID" // ID of object in POAP collection (Relational)
+	nft: "NFT Object ID" // ID of object in POAP collection (Relational)
 }
 ```
 

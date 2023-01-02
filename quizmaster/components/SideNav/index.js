@@ -15,6 +15,9 @@ export default function SideNav(props) {
   const router = useRouter();
 
   useEffect(() => {
+    if (router.pathname.includes("nfts")) {
+      return setActiveTab("nfts")
+    }
     if (router.pathname.includes("poaps")) {
       return setActiveTab("poaps")
     }
@@ -32,6 +35,14 @@ export default function SideNav(props) {
             <Image src={activeTab == "home" ? homeIconActive : homeIcon} alt="home" objectFit="cover" width={50} height={50} />
             <Text textAlign="center" fontWeight={activeTab == "home" ? "bold" : "normal"}>
               Courses
+            </Text>
+          </HStack>
+        </NextLink>
+        <NextLink href="/nfts" passHref>
+          <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
+            <Image src={activeTab == "nfts" ? walletIconActive : walletIcon} alt="poaps" objectFit="cover" width={50} height={50} />
+            <Text textAlign="center" fontWeight={activeTab == "nfts" ? "bold" : "normal"}>
+              NFTs
             </Text>
           </HStack>
         </NextLink>

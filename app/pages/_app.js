@@ -2,6 +2,7 @@
 import { MoralisProvider } from 'react-moralis';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { mode } from '@chakra-ui/theme-tools';
+import { Web3ContextProvider } from '../context/Web3Context';
 
 function MyApp({ Component, pageProps }) {
   const styles = {
@@ -25,11 +26,13 @@ function MyApp({ Component, pageProps }) {
   const theme = extendTheme({styles})
 
   return (
-  <ChakraProvider theme={theme}>
-    <MoralisProvider serverUrl={process.env.MoralisServerURL} appId={process.env.MoralisAppID}>
-      <Component {...pageProps} />
-    </MoralisProvider>
-  </ChakraProvider>
+    <ChakraProvider theme={theme}>
+      <Web3ContextProvider>
+        <MoralisProvider serverUrl={process.env.MoralisServerURL} appId={process.env.MoralisAppID}>
+          <Component {...pageProps} />
+        </MoralisProvider>
+      </Web3ContextProvider>
+    </ChakraProvider>
 )}
 
 export default MyApp
