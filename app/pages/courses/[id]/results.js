@@ -6,7 +6,8 @@ import {
   Box,
   useColorMode,
   useToast,
-  VStack
+  VStack,
+  Flex
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -15,7 +16,8 @@ import { useMoralis } from "react-moralis";
 import Layout from "../../../components/Layout";
 import { Contract, providers, utils } from "ethers";
 import { Web3Context } from "../../../context/Web3Context";
-import { EvmChain } from "@moralisweb3/common-evm-utils";
+import { TwitterIcon } from "../../../components/Icons";
+
 
 export default function Result() {
   const { devMode } = useContext(Web3Context)
@@ -256,9 +258,9 @@ export default function Result() {
             ) : (
               <>
               <Text>
-                {mintId && minted ? `You earned NFT #${mintId}!` : 'You earned an NFT as a reward!'}
+                {mintId && minted ? `You are #${mintId} to earn this NFT reward!` : 'You earned an NFT as a reward!'}
               </Text>
-              <VStack align='center' mt={4}>
+              <Flex direction="column" align='center' mt={4}>
                 <Button
                   backgroundColor='rgba(32, 223, 127, 1)'
                   _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
@@ -266,15 +268,30 @@ export default function Result() {
                   isLoading={minting}
                   loadingText="Claiming..."
                   minW={200}
+                  size="lg"
                 >
                   {minted ? 'View NFTs earned' : 'Claim'}
                 </Button>
+                {minted && (
+                  <Button
+                    as={Link}
+                    leftIcon={<TwitterIcon/>}
+                    mt={6}
+                    minW={150}
+                    backgroundColor='rgba(255, 255, 255, 0.2)'
+                    _hover={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                    isExternal
+                    href="https://twitter.com/intent/tweet?hashtags=quiz%20%23ethereumquiz&amp;original_referer=https%3A%2F%2Fpublish.twitter.com%2F&amp;ref_src=twsrc%5Etfw%7Ctwcamp%5Ebuttonembed%7Ctwterm%5Eshare%7Ctwgr%5E&amp;text=I%20am%20excited%20to%20share%20that%20I%20took%20quiz%20on%20%22ECH%20Learn2Earn%22%20and%20received%20this%20NFT.%20Try%20it%20today%20at%20&amp;url=https%3A%2F%2Fl2e.ethereumcatherders.com%2F%20&amp;via=EthCatHerders"
+                  >
+                    Share to Twitter
+                  </Button>
+                )}
                 <NextLink href='/' passHref>
                   <Link textDecor='underline' mt={2}>
                     Back to Home
                   </Link>
                 </NextLink>
-              </VStack>
+              </Flex>
               </>
             )}
           </Box>
