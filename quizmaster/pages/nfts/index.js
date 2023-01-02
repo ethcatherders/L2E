@@ -187,7 +187,7 @@ export default function NFTManager() {
                 </FormControl>
                 <VStack align='left'>
                   <Heading size='md'>{token.name}</Heading>
-                  <Text size="sm">{token.description}</Text>
+                  <Text size="sm" maxWidth={600}>{token.description}</Text>
                   <Text>Address:{' '}
                     <Link
                       isExternal
@@ -207,28 +207,12 @@ export default function NFTManager() {
                       {token.owner.substring(0,7) + '...' + token.owner.substring(token.owner.length - 7)}
                     </Link>
                   </Text>
-                  <Text>Assigned to: {token.course ? (
+                  <Text>Course: {token.course ? (
                     <NextLink href={`/courses/${token.course.id}`} passHref>
                       <Link textDecor='underline'>{token.course.title}</Link>
                     </NextLink>
-                  ) : 'None'} <Link onClick={() => {
-                        openForm[index] = !openForm[index]
-                        setOpenForm([...openForm])
-                      }}
-                    >
-                      ({openForm[index] ? 'cancel' : 'change'})
-                    </Link>
+                  ) : 'None'}
                   </Text>
-                  {openForm[index] && (
-                    <HStack>
-                      <Select id={`course-assign-input-${index}`}>
-                        {courses.map((course) => (
-                          <option value={course.id} key={course.id}>{course.title}</option>
-                        ))}
-                      </Select>
-                      <Button onClick={() => assignCourseToNFT(index)} color='white' backgroundColor='black'>Submit</Button>
-                    </HStack>
-                  )}
                 </VStack>
               </HStack>
             ) : <Text>No NFTs were found.</Text>}

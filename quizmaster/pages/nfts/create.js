@@ -23,7 +23,7 @@ export default function CreateNFT() {
   const { devMode } = useContext(AdminContext)
   // Form State Variables
   const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
+  const [symbol, setSymbol] = useState("L2E");
   const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
   const [owner, setOwner] = useState("");
@@ -43,7 +43,7 @@ export default function CreateNFT() {
     if (isInitialized) {
       await getAvailableCourses()
     }
-  }, [isInitialized]);
+  }, [isInitialized, devMode]);
 
   useEffect(() => {
     if (devMode) {
@@ -77,7 +77,7 @@ export default function CreateNFT() {
   async function getAvailableCourses() {
     const courses = await getAllCourses()
     const nfts = await getAllNFTs()
-    const filtered = courses.filter(course => !nfts.find(token => token.attributes.course.id === course.id))
+    const filtered = courses.filter(course => !nfts.find(token => (token.attributes.course === course.id) && (devMode ? token.attributes.chainId === 80001 : token.attributes.chainId === 137)))
     setAvailableCourses(filtered)
   }
 
@@ -196,23 +196,40 @@ export default function CreateNFT() {
     setLoading(false);
   }
 
+  async function setValues(courseId) {
+    setCourse(courseId)
+    const course = availableCourses.find(course => course.id === courseId);
+    const title = course.attributes.title
+    setName(`Learn2Earn Badge for ${title}`)
+    setSymbol('L2E')
+    setDescription(`A badge rewarded to those who completed the course and quiz with 100% accuracy on Ethereum Cat Herder's Learn2Earn platform for the following topic, ${title}.`)
+  }
+
   return (
     <Layout>
       <Container mb={20}>
         <HStack mt={5} mb={10} justifyContent="space-between">
           <Heading>Create a New NFT</Heading>
-          <Link href={`/poaps`} passHref>
+          <Link href={`/nfts`} passHref>
             <Button color='white' backgroundColor='black'>Back to NFTs</Button>
           </Link>
         </HStack>
         <Text mb={5}>Deploy a new NFT contract for users to mint from after passing 100% on a particular course quiz.</Text>
         <VStack alignItems="flex-start" mb={5}>
+          <Heading size="sm">Course:</Heading>
+          <Select placeholder="Select a course" onChange={(e) => setValues(e.currentTarget.value)} isRequired={true}>
+            {availableCourses.map((course) => (
+              <option key={course.id} value={course.id}>{course.attributes.title}</option>
+            ))}
+          </Select>
+        </VStack>
+        <VStack alignItems="flex-start" mb={5}>
           <Heading size="sm">Name:</Heading>
-          <Input value={name} onChange={(e) => setName(e.currentTarget.value)} />
+          <Input value={name} onChange={(e) => setName(e.currentTarget.value)} isRequired={true} />
         </VStack>
         <VStack alignItems="flex-start" mb={5}>
           <Heading size="sm">Symbol:</Heading>
-          <Input value={symbol} onChange={(e) => setSymbol(e.currentTarget.value)} />
+          <Input value={symbol} onChange={(e) => setSymbol(e.currentTarget.value)} isRequired={true} isDisabled={true} />
         </VStack>
         <VStack alignItems="flex-start" mb={5}>
           <Heading size="sm">Description:</Heading>
@@ -221,24 +238,17 @@ export default function CreateNFT() {
             value={description}
             onChange={(e) => setDescription(e.currentTarget.value)}
             placeholder="Add a brief description of its purpose"
+            isRequired={true}
           />
         </VStack>
         <VStack alignItems="flex-start" mb={5}>
           <Heading size="sm">Owner Address:</Heading>
-          <Input value={owner} onChange={(e) => setOwner(e.currentTarget.value)} />
-        </VStack>
-        <VStack alignItems="flex-start" mb={5}>
-          <Heading size="sm">Course:</Heading>
-          <Select placeholder="Select a course" onChange={(e) => setCourse(e.currentTarget.value)}>
-            {availableCourses.map((course) => (
-              <option key={course.id} value={course.id}>{course.attributes.title}</option>
-            ))}
-          </Select>
+          <Input value={owner} onChange={(e) => setOwner(e.currentTarget.value)} isRequired={true} />
         </VStack>
         <HStack mb={5} width='100%' gap={2}>
           <VStack alignItems="flex-start" flexGrow={1}>
             <Heading size="sm">Upload Image:</Heading>
-            <Input onChange={(e) => uploadImage(e.currentTarget.files[0])} type='file' />
+            <Input onChange={(e) => uploadImage(e.currentTarget.files[0])} type='file' isRequired={true} />
           </VStack>
           <Image
             src={image && `https://gateway.moralisipfs.com/ipfs/${image.substring(7)}`} 
@@ -250,18 +260,22 @@ export default function CreateNFT() {
           />
         </HStack>
         {error && <Text color="red">Something went wrong.</Text>}
-        {success && <Text color="green">Your NFT contract has been successfully created!</Text>}
-        <Button
-          type="button"
-          mt={5}
-          color='white'
-          backgroundColor='black'
-          onClick={submitNFTCreation}
-          isLoading={loading}
-          isDisabled={!name||!image||!symbol||!description||!owner||!course}
-        >
-          Create
-        </Button>
+        {success ? (
+          <Text color="green">Your NFT contract has been successfully created!</Text>
+        ) : (
+          <Button
+            type="button"
+            mt={5}
+            color='white'
+            backgroundColor='black'
+            onClick={submitNFTCreation}
+            isLoading={loading}
+            isDisabled={!name||!image||!symbol||!description||!owner||!course}
+          >
+            Deploy to {devMode ? 'Mumbai Testnet' : 'Polygon Mainnet'}
+          </Button>
+        )}
+        
       </Container>
     </Layout>
   )

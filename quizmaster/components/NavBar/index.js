@@ -40,7 +40,7 @@ export default function NavBar(props) {
             <FormLabel htmlFor='chain-toggler' mb={0}>
               Enable Dev Mode?
             </FormLabel>
-            <Switch id='chain-toggler' value={devMode} onChange={(e) => setDevMode(e.target.checked !== undefined && e.target.checked)} />
+            <Switch id='chain-toggler' defaultChecked={devMode} value={devMode} onChange={(e) => setDevMode(e.target.checked !== undefined && e.target.checked)} />
           </FormControl>
           <Text color={'white'} bg={'rgba(35, 35, 35, 1)'} borderRadius={5} padding={2}>
             {`${props.ethAddress.substring(0, 9)}...`}
