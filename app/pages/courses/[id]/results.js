@@ -1,13 +1,24 @@
-import { Heading, Text, Button, Box, Input, HStack, IconButton, useColorMode, useToast } from "@chakra-ui/react";
-import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
-import Link from "next/link";
+import {
+  Heading,
+  Link,
+  Text,
+  Button,
+  Box,
+  useColorMode,
+  useToast,
+  VStack
+} from "@chakra-ui/react";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
 import Layout from "../../../components/Layout";
 import { Contract, providers, utils } from "ethers";
+import { Web3Context } from "../../../context/Web3Context";
+import { EvmChain } from "@moralisweb3/common-evm-utils";
 
 export default function Result() {
+  const { devMode } = useContext(Web3Context)
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [mintAddress, setMintAddress] = useState(null)
   const [mintable, setMintable] = useState(false)
@@ -16,7 +27,7 @@ export default function Result() {
   const [mintId, setMintId] = useState(null)
   const [mintError, setMintError] = useState(false)
 
-  const { user, isInitialized, Moralis } = useMoralis();
+  const { user, isInitialized, Moralis, chainId } = useMoralis();
   const router = useRouter();
   const { colorMode } = useColorMode();
   const toast = useToast();
@@ -28,7 +39,7 @@ export default function Result() {
     if (isInitialized && id && user) {
       await getResult()
     }
-  }, [isInitialized, user, router.query.id]);
+  }, [isInitialized, user, router.query.id, chainId, devMode]);
 
   useEffect(() => {
     if (mintError) {
@@ -60,12 +71,20 @@ export default function Result() {
       const { match, total } = compareAnswers(userAnswers, actualAnswers);
       setScore({ correct: match, total: total });
       if (match / total >= minimumPassingPercentage) {
-        const { nftAddress } = course.attributes
-        if (!nftAddress) setMintable(false)
-        else {
-          setMintable(await isMintable(nftAddress))
-          setMintAddress(nftAddress)
+        const rewardNft = await getNFT(course.id)
+        if (rewardNft) {
+          const { address } = rewardNft.attributes
+          setMintable(await isMintable(address))
+          setMintAddress(address)
+        } else {
+          setMintable(false)
         }
+        // const { nftAddress } = course.attributes
+        // if (!nftAddress) setMintable(false)
+        // else {
+        //   setMintable(await isMintable(nftAddress))
+        //   setMintAddress(nftAddress)
+        // }
       }
     } catch (error) {
       console.error(error);
@@ -80,9 +99,22 @@ export default function Result() {
     return result;
   }
 
+  async function getNFT(courseId) {
+    const currentChainId = devMode ? 80001 : 137;
+    const RewardNFT = Moralis.Object.extend("RewardNFT");
+    const query = new Moralis.Query(RewardNFT);
+    query.equalTo('course', courseId);
+    query.equalTo('chainId', currentChainId)
+    const result = await query.first();
+    return result;
+  }
+
   async function isMintable(contractAddress) {
     if (user) {
-      const provider = new providers.Web3Provider(process.env.AlchemyUrl)
+      if (!Moralis.isWeb3Enabled()) await Moralis.enableWeb3();
+      const provider = new providers.JsonRpcProvider(
+        devMode ? process.env.AlchemyUrl_Dev : process.env.AlchemyUrl
+      )
       const signer = provider.getSigner(user.attributes.ethAddress)
       const abi = new utils.Interface([
         'function claimed(address account) external view returns (bool)',
@@ -104,17 +136,33 @@ export default function Result() {
     setMintId(null)
     setMinting(true)
     try {
-      const provider = new providers.Web3Provider(process.env.AlchemyUrl)
-      const signer = provider.getSigner(user.attributes.ethAddress)
+      if (!Moralis.isWeb3Enabled()) await Moralis.enableWeb3();
+      const connectorType = Moralis.connectorType;
+      let provider;
+      if (connectorType === "injected") {
+        if ((!devMode && chainId !== "0x89") || (devMode && chainId !== "0x13881")) {
+          await switchNetwork()
+        }
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts'
+        })
+        provider = new providers.Web3Provider(window.ethereum)
+      } else {
+        provider = new providers.JsonRpcProvider(
+          devMode ? process.env.AlchemyUrl_Dev : process.env.AlchemyUrl
+        )
+      }
+      const signer = provider.getSigner()
       const abi = new utils.Interface([
         'function mint() external',
+        'function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256)'
       ]);
       const contract = new Contract(
         mintAddress,
         abi,
-        signer,
+        provider
       );
-      const tx = await contract.mint()
+      const tx = await contract.connect(signer).mint()
       await tx.wait()
 
       const tokenId = await contract.tokenOfOwnerByIndex(user.attributes.ethAddress, 0)
@@ -139,6 +187,48 @@ export default function Result() {
     return result;
   }
 
+  async function switchNetwork() {
+    if (devMode) {
+      await Moralis.switchNetwork("0x13881")
+      if (chainId === "0x13881") {
+        const chainId = 80001;
+        const chainName = "Mumbai Testnet";
+        const currencyName = "MATIC";
+        const currencySymbol = "MATIC";
+        const rpcUrl = "https://rpc-mumbai.maticvigil.com/";
+        const blockExplorerUrl = "https://mumbai.polygonscan.com/";
+  
+        await Moralis.addNetwork(
+          chainId,
+          chainName,
+          currencyName,
+          currencySymbol,
+          rpcUrl,
+          blockExplorerUrl
+        );
+      }
+    } else {
+      await Moralis.switchNetwork("0x89")
+      if (chainId === "0x89") {
+        const chainId = 137;
+        const chainName = "Polygon Mainnet";
+        const currencyName = "MATIC";
+        const currencySymbol = "MATIC";
+        const rpcUrl = "https://polygon-rpc.com";
+        const blockExplorerUrl = "https://polygonscan.com/";
+  
+        await Moralis.addNetwork(
+          chainId,
+          chainName,
+          currencyName,
+          currencySymbol,
+          rpcUrl,
+          blockExplorerUrl
+        );
+      }
+    }
+  }
+
   return (
     <Layout>
       <Box
@@ -158,30 +248,33 @@ export default function Result() {
         {score.correct / score.total >= minimumPassingPercentage ? (
           <Box>
             {!mintable ? (
-              <Link href='/' passHref>
+              <NextLink href='/' passHref>
                 <Button mt={2}>
                   Back to Home
                 </Button>
-              </Link>
+              </NextLink>
             ) : (
               <>
               <Text>
-                {mintId && minted ? `You earned NFT #${mintId}!` : 'You earned an NFT as a reward.'}
+                {mintId && minted ? `You earned NFT #${mintId}!` : 'You earned an NFT as a reward!'}
               </Text>
-              <Button
-                backgroundColor='rgba(32, 223, 127, 1)'
-                _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
-                onClick={() => !minted ? mint() : router.push('/poaps')}
-                isLoading={minting}
-                loadingText="Claiming..."
-              >
-                {minted ? 'View NFTs earned' : 'Claim'}
-              </Button>
-              <Link href='/' passHref>
-                <Button mt={2}>
-                  Back to Home
+              <VStack align='center' mt={4}>
+                <Button
+                  backgroundColor='rgba(32, 223, 127, 1)'
+                  _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
+                  onClick={() => !minted ? mint() : router.push('/rewards')}
+                  isLoading={minting}
+                  loadingText="Claiming..."
+                  minW={200}
+                >
+                  {minted ? 'View NFTs earned' : 'Claim'}
                 </Button>
-              </Link>
+                <NextLink href='/' passHref>
+                  <Link textDecor='underline' mt={2}>
+                    Back to Home
+                  </Link>
+                </NextLink>
+              </VStack>
               </>
             )}
           </Box>
@@ -190,11 +283,11 @@ export default function Result() {
             <Text>
               Better luck next time :(
             </Text>
-            <Link href='/' passHref>
+            <NextLink href='/' passHref>
               <Button mt={2}>
                 Back to Home
               </Button>
-            </Link>
+            </NextLink>
           </Box>
         )}
       </Box>

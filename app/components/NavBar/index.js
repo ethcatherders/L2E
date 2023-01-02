@@ -48,6 +48,7 @@ export default function NavBar(props) {
   }, [isInitialized, user, isAuthenticated, chainId, devMode])
 
   async function getNetwork() {
+    if (!Moralis.isWeb3Enabled()) await Moralis.enableWeb3();
     const connectorType = Moralis.connectorType;
     if (connectorType === "injected") {
       if ((!devMode && chainId !== "0x89") || (devMode && chainId !== "0x13881")) {
@@ -55,6 +56,15 @@ export default function NavBar(props) {
       } else {
         setWrongNetworkMsg(false)
       }
+    }
+  }
+
+  async function isValidNetwork(connectorType, chainId, devMode) {
+    if (connectorType === "injected") {
+      if ((!devMode && chainId !== "0x89") || (devMode && chainId !== "0x13881")) {
+        return true
+      }
+      return false
     }
   }
 
@@ -112,7 +122,7 @@ export default function NavBar(props) {
               cursor='pointer'
               onClick={switchNetwork}
             >
-              <TagLabel>Wrong Network</TagLabel>
+              <TagLabel>Switch to {devMode ? 'Mumbai' : 'Polygon'}</TagLabel>
             </Tag>
           </Tooltip>
         )}
