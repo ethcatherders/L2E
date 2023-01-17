@@ -5,11 +5,12 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
 import Layout from "../../../components/Layout";
+import Confetti from 'react-confetti';
 
 export default function Result() {
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [mintLink, setMintLink] = useState('#');
-  const [statusMsg, setStatusMsg] = useState(null)
+  const [statusMsg, setStatusMsg] = useState(null);
 
   const { user, isInitialized, Moralis } = useMoralis();
   const router = useRouter();
@@ -35,6 +36,11 @@ export default function Result() {
     }
   }, [router.query.id]);
 
+  // useEffect(()=>{
+  //   showconfetti && setTimeout(() => {
+  //     setShowconfetti(false);
+  //   }, 5000);
+  // },[showconfetti])
   // Move this to Cloud function in Moralis
   // If the score qualifies for POAP, append the uuid of submission to POAP/Course object to prevent multiple mints from same submission
   // This should work whether signed in or not
@@ -206,9 +212,12 @@ export default function Result() {
         padding={5}
       >
         {score.correct / score.total >= minimumPassingPercentage && (
-          <Heading marginBottom={5}>
-            Congratulations! You passed!
-          </Heading>
+          <>
+            <Confetti recycle={false} tweenDuration={100000} numberOfPieces={1500} />
+            <Heading marginBottom={5}>
+              Congratulations! You passed!
+            </Heading>
+          </>
         )}
         <Heading size='md' marginBottom={5}>
           {score.correct}/{score.total} Correct
