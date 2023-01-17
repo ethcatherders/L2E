@@ -27,13 +27,12 @@ import {
   TagLabel,
   Tooltip
 } from '@chakra-ui/react';
-import { HamburgerIcon } from "@chakra-ui/icons";
 import { useRouter } from 'next/router';
 import NextLink from "next/link";
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useMoralis } from 'react-moralis';
 import { Web3Context } from '../../context/Web3Context';
-import { MoonIcon, SunIcon } from '../Icons';
+import { MenuIcon, MoonIcon, SunIcon } from '../Icons';
 import homeIcon from "../../public/icons/home-icon.svg";
 import homeIconDark from "../../public/icons/home-icon-dark.svg";
 import homeIconActive from "../../public/icons/home-icon-active.svg";
@@ -241,10 +240,10 @@ export default function NavBar(props) {
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
-      <HStack justify="space-between" align="center" padding={5}>
+      <HStack justify={isMobile ? "space-between" : "flex-end"} align="center" padding={5}>
         {isMobile && (
           <IconButton
-            icon={<HamburgerIcon/>}
+            icon={<MenuIcon/>}
             ref={btnRef2}
             onClick={() => setMobileMenuOpen(true)}
             color='white'
@@ -283,7 +282,7 @@ export default function NavBar(props) {
                   <Avatar />
                 </MenuButton>
                 <MenuList>
-                  <FormControl display='flex' alignItems='center' justifyContent='space-between' padding={3} isDisabled={true}>
+                  <FormControl display='flex' alignItems='center' justifyContent='space-between' padding={3}>
                     <FormLabel htmlFor='devmode-toggler' mb={0}>
                       Use Testnet?
                     </FormLabel>
