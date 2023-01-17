@@ -46,7 +46,7 @@ export default function SideNav(props) {
     }
     setActiveTab("home")
     return setCourseNav(false)
-  }, [])
+  }, [router])
 
   return (
     <Box>

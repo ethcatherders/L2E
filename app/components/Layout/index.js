@@ -9,6 +9,23 @@ import { Flex, Box, Text, Link, Spinner } from '@chakra-ui/react';
 
 export default function Layout({ children }) {
   const { isInitialized } = useMoralis()
+  const [isMobile, onMobile] = useState(false);
+  
+  useEffect(() => {
+    if (window) {
+      toggleMobileMode();
+      window.addEventListener('resize', toggleMobileMode);
+    }
+  });
+  
+  function toggleMobileMode() {
+    if (window.innerWidth < 800) {
+      onMobile(true);
+    } else {
+      onMobile(false);
+    }
+  };
+
   return (
     <Flex direction="column" height="100vh">
       <Head>
@@ -34,18 +51,18 @@ export default function Layout({ children }) {
       />
 
       <Box flexGrow={1}>
-        <NavBar />
+        <NavBar isMobile={isMobile} />
         <Flex direction="row">
-          <Box minW={250} ml={20}>
-            <SideNav />
+          <Box minW={250} ml={20} hidden={isMobile}>
+            <SideNav isMobile={isMobile} />
           </Box>
           {isInitialized ? (
-            <Box flexGrow={1} mr={20} height='100%'>
+            <Box flexGrow={1} mr={isMobile ? 0 : 20} height='100%'>
               {children}
             </Box>
           ) : (
             <Flex width='100%' height='100%' justify='center' align='center'>
-              <Spinner width={100} height={100} />
+              <Spinner width={200} height={200} />
             </Flex>
           )}
         </Flex>
