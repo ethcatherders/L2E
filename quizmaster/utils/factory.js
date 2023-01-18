@@ -2,7 +2,7 @@ export const FactoryAddresses = {
     prod: {
         network: 'polygon',
         chainId: 137,
-        address: "",
+        address: "0x8164dABCE65837D0D4E773CEe628e35603a51E0b",
         provider: process.env.AlchemyUrl
     },
     dev: {

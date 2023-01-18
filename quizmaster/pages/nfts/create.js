@@ -125,10 +125,14 @@ export default function CreateNFT() {
       throw console.error("Missing metadata param")
     }
 
+    const external_url = "https://l2e.ethereumcatherders.com"
+    const creator = "Ethereum Cat Herders"
     const metadata = {
       name,
       image,
-      description
+      description,
+      external_url,
+      creator
     }
 
     // Upload using NFT.Storage?
@@ -200,7 +204,7 @@ export default function CreateNFT() {
     setCourse(courseId)
     const course = availableCourses.find(course => course.id === courseId);
     const title = course.attributes.title
-    setName(`Learn2Earn Badge for ${title}`)
+    setName(`L2E Completion Badge for ${title}`)
     setSymbol('L2E')
     setDescription(`A badge rewarded to those who completed the course and quiz with 100% accuracy on Ethereum Cat Herder's Learn2Earn platform for the following topic, ${title}.`)
   }
