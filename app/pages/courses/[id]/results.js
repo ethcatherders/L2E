@@ -278,8 +278,9 @@ export default function Result() {
                     leftIcon={<TwitterIcon/>}
                     mt={6}
                     minW={150}
-                    backgroundColor='rgba(255, 255, 255, 0.2)'
-                    _hover={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+                    color='white'
+                    backgroundColor='rgba(35, 35, 35, 1)'
+                    _hover={{ textDecoration: 'none', backgroundColor: 'rgba(35, 35, 35, 0.5)' }}
                     isExternal
                     href="https://twitter.com/intent/tweet?hashtags=quiz%20%23ethereumquiz&amp;original_referer=https%3A%2F%2Fpublish.twitter.com%2F&amp;ref_src=twsrc%5Etfw%7Ctwcamp%5Ebuttonembed%7Ctwterm%5Eshare%7Ctwgr%5E&amp;text=I%20am%20excited%20to%20share%20that%20I%20took%20quiz%20on%20%22ECH%20Learn2Earn%22%20and%20received%20this%20NFT.%20Try%20it%20today%20at%20&amp;url=https%3A%2F%2Fl2e.ethereumcatherders.com%2F%20&amp;via=EthCatHerders"
                   >

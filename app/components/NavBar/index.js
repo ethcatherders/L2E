@@ -247,7 +247,8 @@ export default function NavBar(props) {
             ref={btnRef2}
             onClick={() => setMobileMenuOpen(true)}
             color='white'
-            bg='rgba(35, 35, 35, 1)'
+            backgroundColor='rgba(35, 35, 35, 1)'
+            _hover={{ backgroundColor: 'rgba(35, 35, 35, 0.5)' }}
           >
             Menu
           </IconButton>
@@ -269,7 +270,8 @@ export default function NavBar(props) {
           <IconButton
             icon={colorMode === 'dark' ? <MoonIcon /> : <SunIcon/>}
             color='white'
-            bg='rgba(35, 35, 35, 1)'
+            backgroundColor='rgba(35, 35, 35, 1)'
+            _hover={{ backgroundColor: 'rgba(35, 35, 35, 0.5)' }}
             onClick={toggleColorMode}
           />
           {user && isAuthenticated ? 
