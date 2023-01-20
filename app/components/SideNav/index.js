@@ -40,13 +40,13 @@ export default function SideNav(props) {
       setActiveTab("video")
       return setCourseNav(true)
     }
-    if (router.pathname.includes("poaps")) {
-      setActiveTab("poaps")
+    if (router.pathname.includes("rewards")) {
+      setActiveTab("rewards")
       return setCourseNav(false)
     }
     setActiveTab("home")
     return setCourseNav(false)
-  }, [])
+  }, [router])
 
   return (
     <Box>
@@ -84,17 +84,6 @@ export default function SideNav(props) {
               </Text>
             </HStack>
           </NextLink>
-          {/* {user ?
-            <NextLink href="/profile" passHref>
-              <HStack alignItems="center" width="100%" gap={5} cursor="pointer">
-                <Image src={activeTab == "profile" ? walletIconActive : walletIcon} alt="poaps" objectFit="cover" width={50} height={50} />
-                <Text textAlign="center" fontWeight={activeTab == "profile" ? "bold" : "normal"}>
-                  My POAPS
-                </Text>
-              </HStack>
-            </NextLink>
-            : ""
-          } */}
         </VStack>
         :
         <VStack mt={10} gap={5}>
@@ -107,9 +96,9 @@ export default function SideNav(props) {
             </HStack>
           </NextLink>
           {user ?
-            <NextLink href="/poaps" passHref>
+            <NextLink href="/rewards" passHref>
               <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
-                <Image src={activeTab == "poaps" ? walletIconActive : colorMode === "dark" ? walletIconDark : walletIcon } alt="poaps" objectFit="cover" width={50} height={50} />
+                <Image src={activeTab == "rewards" ? walletIconActive : colorMode === "dark" ? walletIconDark : walletIcon } alt="rewards" objectFit="cover" width={50} height={50} />
                 <Text textAlign="left" fontWeight={activeTab == "poaps" ? "bold" : "normal"}>
                   My Rewards
                 </Text>

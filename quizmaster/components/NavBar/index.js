@@ -12,18 +12,24 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-  useDisclosure
+  useDisclosure,
+  Switch,
+  FormControl,
+  FormLabel
 } from '@chakra-ui/react';
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useRef, useContext } from 'react';
 import { useMoralis } from 'react-moralis';
+import { AdminContext } from '../../context/AdminContext';
 import logo from '../../public/ECHLogo.png';
 
 export default function NavBar(props) {
   const { authenticate, isAuthenticating, logout, isLoggingOut } = useMoralis();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
-
+  const { devMode, setDevMode } = useContext(AdminContext)
+  const signingMessage = "By signing this message, you are verifying that you own this wallet address and will use it as your account to interact with the Quizmaster, the ECH Learn2Earn admin website."
+  
   return (
     <HStack justify={'space-between'} align={'center'} borderBottom={'1px solid grey'} padding={5}>
       <AspectRatio maxWidth={50} maxHeight={55} ratio={-1}>
@@ -31,6 +37,12 @@ export default function NavBar(props) {
       </AspectRatio>
       {props.authenticated ? 
         <HStack>
+          <FormControl display='flex' alignItems='center'>
+            <FormLabel htmlFor='chain-toggler' mb={0}>
+              Enable Dev Mode?
+            </FormLabel>
+            <Switch id='chain-toggler' defaultChecked={devMode} value={devMode} onChange={(e) => setDevMode(e.target.checked !== undefined && e.target.checked)} />
+          </FormControl>
           <Text color={'white'} bg={'rgba(35, 35, 35, 1)'} borderRadius={5} padding={2}>
             {`${props.ethAddress.substring(0, 9)}...`}
           </Text>
@@ -70,7 +82,8 @@ export default function NavBar(props) {
               <Button
                 width={'100%'}
                 onClick={() => authenticate({
-                  provider: 'metamask'
+                  provider: 'metamask',
+                  signingMessage
                 }).then(() => onClose())}
                 isLoading={isAuthenticating}
                 color='white'
@@ -81,7 +94,8 @@ export default function NavBar(props) {
               <Button
                 width={'100%'}
                 onClick={() => authenticate({
-                  provider: 'walletconnect'
+                  provider: 'walletconnect',
+                  signingMessage
                 }).then(() => onClose())}
                 isLoading={isAuthenticating}
                 color='white'
