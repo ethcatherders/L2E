@@ -292,7 +292,7 @@ export default function Questions() {
                 Your Answers Submitted!
               </AlertTitle>
               <AlertDescription maxWidth='sm'>
-                Click on &apos;View Results&apos; to see your score and potentially earn a POAP!
+                Click on &apos;View Results&apos; to see your score and potentially earn an NFT!
               </AlertDescription>
             </Alert>
             <Center>
