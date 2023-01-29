@@ -6,7 +6,6 @@ import {
   Box,
   useColorMode,
   useToast,
-  VStack,
   Flex
 } from "@chakra-ui/react";
 import NextLink from "next/link";
@@ -18,6 +17,7 @@ import { Contract, providers, utils } from "ethers";
 import { Web3Context } from "../../../context/Web3Context";
 import { TwitterIcon } from "../../../components/Icons";
 
+import Confetti from 'react-confetti';
 
 export default function Result() {
   const { devMode } = useContext(Web3Context)
@@ -81,12 +81,6 @@ export default function Result() {
         } else {
           setMintable(false)
         }
-        // const { nftAddress } = course.attributes
-        // if (!nftAddress) setMintable(false)
-        // else {
-        //   setMintable(await isMintable(nftAddress))
-        //   setMintAddress(nftAddress)
-        // }
       }
     } catch (error) {
       console.error(error);
@@ -240,9 +234,12 @@ export default function Result() {
         padding={5}
       >
         {score.correct / score.total >= minimumPassingPercentage && (
-          <Heading marginBottom={5}>
-            Congratulations! You passed!
-          </Heading>
+          <>
+            <Confetti recycle={false} tweenDuration={100000} numberOfPieces={1500} />
+            <Heading marginBottom={5}>
+              Congratulations! You passed!
+            </Heading>
+          </>
         )}
         <Heading size='md' marginBottom={5}>
           {score.correct}/{score.total} Correct
@@ -282,9 +279,9 @@ export default function Result() {
                     backgroundColor='rgba(35, 35, 35, 1)'
                     _hover={{ textDecoration: 'none', backgroundColor: 'rgba(35, 35, 35, 0.5)' }}
                     isExternal
-                    href="https://twitter.com/intent/tweet?hashtags=quiz%20%23ethereumquiz&amp;original_referer=https%3A%2F%2Fpublish.twitter.com%2F&amp;ref_src=twsrc%5Etfw%7Ctwcamp%5Ebuttonembed%7Ctwterm%5Eshare%7Ctwgr%5E&amp;text=I%20am%20excited%20to%20share%20that%20I%20took%20quiz%20on%20%22ECH%20Learn2Earn%22%20and%20received%20this%20NFT.%20Try%20it%20today%20at%20&amp;url=https%3A%2F%2Fl2e.ethereumcatherders.com%2F%20&amp;via=EthCatHerders"
+                    href="https://twitter.com/intent/tweet?hashtags=quiz%20%23ethereumquiz&amp;original_referer=https%3A%2F%2Fpublish.twitter.com%2F&amp;ref_src=twsrc%5Etfw%7Ctwcamp%5Ebuttonembed%7Ctwterm%5Eshare%7Ctwgr%5E&amp;text=I%20am%20excited%20to%20share%20that%20I%20took%20a%20quiz%20on%20%22ECH%20Learn2Earn%22%20and%20received%20an%20NFT.%20Try%20it%20today%20at%20&amp;url=https%3A%2F%2Fl2e.ethereumcatherders.com%2F%20&amp;via=EthCatHerders"
                   >
-                    Share to Twitter
+                    Share on Twitter
                   </Button>
                 )}
                 <NextLink href='/' passHref>
