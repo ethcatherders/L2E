@@ -27,3 +27,15 @@ This repository contains information on a WIP project [Learn2Earn](https://hackm
 Ethereum Cat Herders is a community-led project management group which aims to bring a fresh perspective to Ethereum blockchain and related projects to stay on schedule, improve productivity and quality of work.
 
 We invite all those who want to participate in the group to encourage consistent communications and help improve chances of achieving the desired result.
+
+For developers looking to contribute code to the repo, please follow this guideline below:
+1. Fork or clone the repo
+2. Create a new branch for specific feature or issue
+3. Commit your changes to that branch
+4. Make a PR to the `develop` branch of L2E repo
+5. PR will be reviewed and once approved, then merged to `develop` branch
+6. The changes will be reviewed on the deployed staging site
+7. If any bugs or errors, then repeat step 3
+8. Once it runs properly on staging, then someone will make a PR to merge `develop` to `main`
+9. Final review and approval before merge
+10. Merge to `main` (ship to production)!
