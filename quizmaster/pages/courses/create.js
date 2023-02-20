@@ -8,7 +8,11 @@ import {
   Button,
   Text,
   Input,
-  Heading
+  Heading,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle
 } from "@chakra-ui/react";
 import { read } from 'xlsx';
 
@@ -16,6 +20,9 @@ export default function CreateCourse() {
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false)
+  const [files, setFiles] = useState(undefined)
+  const [inputValue, setInputValue] = useState("")
+  const [courseList, setCourseList] = useState([])
   const { Moralis, user } = useMoralis();
 
   async function submitNewCourseFromFile(e) {
@@ -24,8 +31,9 @@ export default function CreateCourse() {
     setSuccess(false);
     setError(false);
     setSubmitting(true);
+    setCourseList([])
     try {
-      const fileList = document.getElementById('file').files;
+      const fileList = files;
       console.log(fileList[0].name);
       const fileReader = new FileReader();
       fileReader.readAsBinaryString(fileList[0]);
@@ -33,6 +41,7 @@ export default function CreateCourse() {
         try {
           const workbook = read(e.target.result, {type: 'binary'});
           const sheetNames = workbook.SheetNames;
+          console.log("🚀 ~ file: create.js:36 ~ fileReader.onload= ~ sheetNames:", sheetNames)
           const courses = [];
           for(let i=0; sheetNames.length > i; i++) {
             const sheet = workbook.Sheets[sheetNames[i]];
@@ -89,10 +98,13 @@ export default function CreateCourse() {
           }
     
           console.log("Courses:", courses);
+          console.log("Uploading courses to Moralis...")
           for(let y=0; courses.length > y; y++) {
             await uploadCourse(courses[y]);
+            console.log(`--> ✅ ${courses[y].title}`)
           }
           setSuccess(true);
+          setCourseList(courses.map(c => c.title))
           console.log("Success!");
         } catch (error) {
           console.error(error);
@@ -119,11 +131,70 @@ export default function CreateCourse() {
         <form method="POST" onSubmit={submitNewCourseFromFile}>
           <FormControl>
             <FormLabel>Upload a file ending in .xlsx</FormLabel>
-            <Input type='file' id="file" name="upload" accept=".xlsx" />
+            <Input
+              type='file'
+              id="file"
+              name="upload"
+              accept=".xlsx"
+              value={inputValue}
+              onChange={e => {
+                setFiles(e.currentTarget.files)
+                setInputValue(e.currentTarget.value)
+              }}
+            />
           </FormControl>
-          {error ? <Text color="red">Something went wrong.</Text> : ''}
-          {success ? <Text color="green">Successfully uploaded course(s)!</Text> : ''}
-          <Button type="submit" marginTop={5} isLoading={submitting} loadingText='Processing...' color='white' backgroundColor='black'>Submit</Button>
+          {error && <Text color="red">Something went wrong.</Text>}
+          {success && <Alert
+            status='success'
+            variant='subtle'
+            flexDirection='column'
+            alignItems='center'
+            justifyContent='center'
+            textAlign='center'
+            height='200px'
+            borderRadius={5}
+            marginTop={5}
+          >
+            <AlertIcon boxSize='40px' mr={0} />
+            <AlertTitle mt={4} mb={1} fontSize='lg'>
+              Success!
+            </AlertTitle>
+            <AlertDescription maxWidth='sm'>
+              <Text>Successfully uploaded the following course(s):</Text>
+              {(courseList.length > 0) && courseList.map((course, i) => (
+                <Text key={i} textAlign="left">✅ {course}</Text>
+              ))}
+            </AlertDescription>
+          </Alert>}
+          <Button
+            type="submit"
+            marginTop={5}
+            isLoading={submitting}
+            loadingText='Processing...'
+            color='white'
+            backgroundColor='black'
+            isDisabled={success}
+          >
+            Submit
+          </Button>
+          {success && (
+            <Button
+              type="button"
+              marginTop={5}
+              marginLeft={2}
+              isLoading={submitting}
+              loadingText='Processing...'
+              color='white'
+              backgroundColor='black'
+              onClick={() => {
+                setInputValue("")
+                setFiles(undefined)
+                setSuccess(false)
+              }}
+            >
+              Reset
+            </Button>
+          )}
         </form>
       </Container>
     </Layout>
