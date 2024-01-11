@@ -49,10 +49,19 @@ import videoIcon from "../../public/icons/video-icon.svg";
 import videoIconDark from "../../public/icons/video-icon-dark.svg";
 import videoIconActive from "../../public/icons/video-icon-active.svg";
 import Image from "next/image";
+import {
+  useConnectModal
+} from '@rainbow-me/rainbowkit';
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useAccount } from 'wagmi'
+import { polygon, polygonMumbai } from 'wagmi/chains';
+import { createSiweMessage } from '../../utils/siwe';
 
 
 export default function NavBar(props) {
   const { isMobile } = props
+  const { openConnectModal } = useConnectModal();
+  const account = useAccount();
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [wrongNetworkMsg, setWrongNetworkMsg] = useState(false)
   const { devMode, setDevMode } = useContext(Web3Context)
@@ -68,6 +77,13 @@ export default function NavBar(props) {
       getNetwork()
     }
   }, [isInitialized, user, isAuthenticated, chainId, devMode])
+
+  async function signin() {
+    const { message } = await Moralis.Cloud.run("requestMessage", { address: account.address, chain: polygonMumbai.id, networkType: 'evm' })
+    const auth = await authenticate({ signingMessage: message })
+    console.log(auth)
+    return auth
+  }
 
   async function getNetwork() {
     if (!Moralis.isWeb3Enabled()) await Moralis.enableWeb3();
@@ -301,10 +317,12 @@ export default function NavBar(props) {
             :
             <Button
               ref={btnRef}
-              onClick={onOpen}
+              // onClick={onOpen}
+              onClick={() => account.address ? signin() : openConnectModal()}
             >
-              Connect Wallet
+              {account ? "Authenticate" : "Connect Wallet"}
             </Button>
+            // <ConnectButton />
           }
         </HStack>
       </HStack>
@@ -322,6 +340,12 @@ export default function NavBar(props) {
           <DrawerBody>
             <VStack>
               <Text>Connect your wallet via the following options:</Text>
+              <Button
+                width={'100%'}
+                onClick={openConnectModal}
+              >
+                RainbowKit
+              </Button>
               <Button
                 width={'100%'}
                 onClick={() => authenticate({
