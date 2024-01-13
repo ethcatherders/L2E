@@ -53,15 +53,18 @@ import {
   useConnectModal
 } from '@rainbow-me/rainbowkit';
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount } from 'wagmi'
+import { useAccount, useDisconnect } from 'wagmi'
 import { polygon, polygonMumbai } from 'wagmi/chains';
 import { createSiweMessage } from '../../utils/siwe';
 
 
 export default function NavBar(props) {
   const { isMobile } = props
-  const { openConnectModal } = useConnectModal();
+  const connectModal = useConnectModal();
+  const { openConnectModal, connectModalOpen } = connectModal;
+  const [fullSignin, setFullSignin] = useState(false)
   const account = useAccount();
+  const { disconnect } = useDisconnect();
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [wrongNetworkMsg, setWrongNetworkMsg] = useState(false)
   const { devMode, setDevMode } = useContext(Web3Context)
@@ -78,10 +81,20 @@ export default function NavBar(props) {
     }
   }, [isInitialized, user, isAuthenticated, chainId, devMode])
 
+  useEffect(() => {
+    if (fullSignin && account && account.address && !connectModalOpen && !isAuthenticating && !isAuthenticated) {
+      signin()
+        .then(() => setFullSignin(false))
+        .catch((e) => {
+          console.error(e)
+          setFullSignin(false)
+        })
+    }
+  }, [fullSignin, account])
+
   async function signin() {
     const { message } = await Moralis.Cloud.run("requestMessage", { address: account.address, chain: polygonMumbai.id, networkType: 'evm' })
     const auth = await authenticate({ signingMessage: message })
-    console.log(auth)
     return auth
   }
 
@@ -310,7 +323,7 @@ export default function NavBar(props) {
                       onChange={(e) => setDevMode(e.target.checked !== undefined && e.target.checked)}
                     />
                   </FormControl>
-                  <MenuItem onClick={logout}>Logout</MenuItem>
+                  <MenuItem onClick={() => logout().then(() => disconnect())}>Logout</MenuItem>
                 </MenuList>
               </Menu>
             </HStack>
@@ -318,9 +331,18 @@ export default function NavBar(props) {
             <Button
               ref={btnRef}
               // onClick={onOpen}
-              onClick={() => account.address ? signin() : openConnectModal()}
+              onClick={async () => {
+                try {
+                  if (account.address) return signin();
+                  openConnectModal();
+                  setFullSignin(true)
+                } catch (error) {
+                  console.log(error)
+                }
+              }}
+              isLoading={isAuthenticating}
             >
-              {account ? "Authenticate" : "Connect Wallet"}
+              Connect Wallet
             </Button>
             // <ConnectButton />
           }
