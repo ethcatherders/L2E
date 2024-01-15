@@ -39,6 +39,7 @@ export default function RewardsEarned() {
         const courseIds = coursesCompleted.map(course => course.id)
         return courseIds.includes(reward.attributes.course)
       })
+      console.log(rewards)
       setAllRewards(rewards)
 
       const contracts = rewards.map(reward => {return {address: reward.attributes.address, chainId: reward.attributes.chainId}})
@@ -53,7 +54,8 @@ export default function RewardsEarned() {
         console.log(response)
         const parsed = response.ownedNfts.map(item => {
           const matchedReward = rewards.find(reward => reward.attributes.address.toLowerCase() === item.contract.address.toLowerCase())
-          const course = coursesCompleted.find(cc => cc.id === matchedReward.attributes.course)
+          console.log("matchedReward: ", matchedReward)
+          const course = matchedReward ? coursesCompleted.find(cc => cc.id === matchedReward.attributes.course) : undefined
           let courseTitle = "";
           if (course) {
             courseTitle = course.attributes.title

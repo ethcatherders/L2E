@@ -14,7 +14,7 @@ import { mode } from "@chakra-ui/theme-tools";
 import { Web3ContextProvider } from "../context/Web3Context";
 
 const { chains, publicClient } = configureChains(
-  [polygon, polygonMumbai],
+  [polygon, polygonMumbai, mainnet],
   [
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_DEV_KEY }),
     publicProvider(),
