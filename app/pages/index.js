@@ -1,68 +1,56 @@
-import { Grid, GridItem, Container, Box, Text, Center, Heading, Image, AspectRatio, Flex, Skeleton, useColorMode, Circle, Avatar } from '@chakra-ui/react';
-import NextImage from 'next/image';
-import NextLink from 'next/link';
-import styles from '../styles/Home.module.css';
-import pic from '../public/ECHLogo.png';
-
-import Layout from '../components/Layout';
-import { useEffect, useState } from 'react';
-import { useMoralis } from 'react-moralis';
+import {
+  Grid,
+  GridItem,
+  Container,
+  Box,
+  Text,
+  Center,
+  Heading,
+  Image,
+  AspectRatio,
+  Flex,
+  Skeleton,
+  useColorMode,
+  Circle,
+  Avatar,
+} from "@chakra-ui/react";
+import NextImage from "next/image";
+import NextLink from "next/link";
+import styles from "../styles/Home.module.css";
+import pic from "../public/ECHLogo.png";
+import Videos from "../components/videos";
+import Layout from "../components/Layout";
+import { useEffect, useState } from "react";
+import { useMoralis } from "react-moralis";
+import Quiz from "../components/quiz";
+import Result from "../components/results";
 
 export default function Home() {
-  const [courses, setCourses] = useState([]);
-  const [showcaseWidth, setShowcaseWidth] = useState('100%')
+  const [showcaseWidth, setShowcaseWidth] = useState("100%");
   const { user, isInitialized, Moralis } = useMoralis();
-  const { colorMode } = useColorMode()
-  
-  useEffect(async () => {
-    if (isInitialized) {
-      // Query courses from Moralis
-      await getCourses();
-    }
-  }, [isInitialized]);
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
-    if (document && document.getElementById('showcase')) {
-      setShowcaseWidth(document.getElementById('showcase').offsetWidth)
-      window.addEventListener('resize', () => {
-        if (document && document.getElementById('showcase')) {
-          setShowcaseWidth(document.getElementById('showcase').offsetWidth)
+    if (document && document.getElementById("showcase")) {
+      setShowcaseWidth(document.getElementById("showcase").offsetWidth);
+      window.addEventListener("resize", () => {
+        if (document && document.getElementById("showcase")) {
+          setShowcaseWidth(document.getElementById("showcase").offsetWidth);
         }
-      })
+      });
     }
-  })
+  });
 
-  async function getCourses() {
-    // This will need to be transitioned to a Cloud function when filtering between completed and not completed by user
-    const Course = Moralis.Object.extend("Course");
-    const query = new Moralis.Query(Course);
-    const results = await query.map(course => {
-      let thumbnailUrl
-      if (course.attributes.videoUrl) {
-        const startIndex = "https://www.youtube.com/embed/".length
-        thumbnailUrl = `http://img.youtube.com/vi/${course.attributes.videoUrl.substring(startIndex)}/maxresdefault.jpg`
-      }
-
-      let completed = false
-      if (user && user.attributes.coursesCompleted) {
-        completed = !!user.attributes.coursesCompleted.find(cc => cc.id === course.id)
-      }
-
-      return {
-        id: course.id,
-        ...course.attributes,
-        completed,
-        thumbnail: thumbnailUrl ? thumbnailUrl : pic,
-        createdAt: course.createdAt,
-      }
-    });
-    setCourses(results);
+  let tab;
+  if (typeof window !== "undefined") {
+    const urlParams = new URLSearchParams(window.location.search);
+    tab = urlParams.get("tab");
   }
 
   return (
     <Layout>
-      <Container maxW='container.xl' paddingTop={5} paddingBottom={5}>
-        {courses.length ?
+      <Container maxW="container.xl" paddingTop={5} paddingBottom={5}>
+        {/* {courses.length ?
           <NextLink href={`/courses/${courses[0].id}`}>
             <Flex id='showcase' direction='column' justify='center' align='center' mb={10} borderRadius="2xl" width="100%" height={250} border="1px solid grey" cursor="pointer" overflow='hidden'>
               <Center
@@ -222,8 +210,9 @@ export default function Home() {
               </GridItem>
             </NextLink>
           )}
-        </Grid>
+        </Grid> */}
+        {tab === "quiz" ? <Quiz /> : tab === "result" ? <Result /> : <Videos />}
       </Container>
     </Layout>
-  )
+  );
 }
