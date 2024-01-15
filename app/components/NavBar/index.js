@@ -66,7 +66,8 @@ export default function NavBar(props) {
   const account = useAccount();
   const { disconnect } = useDisconnect();
   const { data: ensName, isLoading: isEnsNameLoading } = useEnsName({
-    address: account?.address
+    address: account?.address,
+    chainId: 1,
   });
   const { data: ensAvatar, isLoading: isEnsAvatarLoading } = useEnsAvatar({
     name: ensName
@@ -99,10 +100,21 @@ export default function NavBar(props) {
   }, [fullSignin, account])
 
   async function signin() {
+    // disconnect()
     const { message } = await Moralis.Cloud.run("requestMessage", { address: account.address, chain: polygonMumbai.id, networkType: 'evm' })
-    // console.log("connector: ", account?.connector.name.toLowerCase())
-    const auth = await authenticate({ provider: 'metamask', signingMessage: message })
-    return auth
+    console.log("connector: ", account?.connector.name.toLowerCase())
+    if (account?.connector.name.toLowerCase() == "walletconnect") {
+      return await authenticate({
+        provider: 'walletconnect',
+        projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
+        signingMessage: message
+      });
+    } else {
+      return await authenticate({
+        provider: 'metamask',
+        signingMessage: message 
+      })
+    }
   }
 
   async function getNetwork() {
