@@ -53,7 +53,7 @@ import {
   useConnectModal
 } from '@rainbow-me/rainbowkit';
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect, useEnsName, useEnsAvatar } from 'wagmi'
 import { polygon, polygonMumbai } from 'wagmi/chains';
 import { createSiweMessage } from '../../utils/siwe';
 
@@ -65,6 +65,12 @@ export default function NavBar(props) {
   const [fullSignin, setFullSignin] = useState(false)
   const account = useAccount();
   const { disconnect } = useDisconnect();
+  const { data: ensName, isLoading: isEnsNameLoading } = useEnsName({
+    address: account?.address
+  });
+  const { data: ensAvatar, isLoading: isEnsAvatarLoading } = useEnsAvatar({
+    name: ensName
+  });
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [wrongNetworkMsg, setWrongNetworkMsg] = useState(false)
   const { devMode, setDevMode } = useContext(Web3Context)
@@ -94,7 +100,8 @@ export default function NavBar(props) {
 
   async function signin() {
     const { message } = await Moralis.Cloud.run("requestMessage", { address: account.address, chain: polygonMumbai.id, networkType: 'evm' })
-    const auth = await authenticate({ signingMessage: message })
+    // console.log("connector: ", account?.connector.name.toLowerCase())
+    const auth = await authenticate({ provider: 'metamask', signingMessage: message })
     return auth
   }
 
@@ -306,11 +313,11 @@ export default function NavBar(props) {
           {user && isAuthenticated ? 
             <HStack>
               <Text color={'white'} bg={'rgba(35, 35, 35, 1)'} borderRadius={5} padding={2}>
-                {`${user.attributes.ethAddress.substring(0, 9)}...`}
+                {ensName ?? `${user.attributes.ethAddress.substring(0, 5)}...${user.attributes.ethAddress.substring(user.attributes.ethAddress.length - 4)}`}
               </Text>
               <Menu>
                 <MenuButton padding={1} as={Circle} _hover={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }} cursor='pointer'>
-                  <Avatar />
+                  <Avatar src={ensAvatar} />
                 </MenuButton>
                 <MenuList>
                   <FormControl display='flex' alignItems='center' justifyContent='space-between' padding={3}>

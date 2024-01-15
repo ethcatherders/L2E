@@ -2,7 +2,9 @@ import '@rainbow-me/rainbowkit/styles.css';
 import {
   getDefaultWallets,
   RainbowKitProvider,
+  connectorsForWallets
 } from '@rainbow-me/rainbowkit';
+import { injectedWallet, metaMaskWallet } from '@rainbow-me/rainbowkit/wallets';
 import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
@@ -26,11 +28,20 @@ const { chains, publicClient } = configureChains(
   ]
 );
 
-const { connectors } = getDefaultWallets({
-  appName: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_NAME,
-  projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
-  chains
-});
+// const { connectors } = getDefaultWallets({
+//   appName: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_NAME,
+//   projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
+//   chains
+// });
+
+const connectors = connectorsForWallets([
+  {
+    groupName: 'Recommended',
+    wallets: [
+      injectedWallet({ chains })
+    ],
+  },
+]);
 
 const wagmiConfig = createConfig({
   autoConnect: true,
