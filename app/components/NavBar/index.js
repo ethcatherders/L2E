@@ -247,7 +247,7 @@ export default function NavBar(props) {
                     </Text>
                   </HStack>
                 </NextLink>
-                {user ?
+                {/* {user ?
                   <NextLink href="/rewards" passHref>
                     <HStack alignItems="center" width="100%" gap={5} cursor="pointer" _hover={{ color: 'grey' }}>
                       <Image src={activeTab == "rewards" ? walletIconActive : colorMode === "dark" ? walletIconDark : walletIcon } alt="rewards" objectFit="cover" width={50} height={50} />
@@ -257,7 +257,7 @@ export default function NavBar(props) {
                     </HStack>
                   </NextLink>
                   : ""
-                }
+                } */}
               </VStack>
             }
           </DrawerBody>
