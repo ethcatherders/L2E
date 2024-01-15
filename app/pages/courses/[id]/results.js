@@ -261,13 +261,13 @@ export default function Result() {
                 <Button
                   backgroundColor='rgba(32, 223, 127, 1)'
                   _hover={{ backgroundColor: 'rgba(32, 223, 127, 0.5)' }}
-                  onClick={() => !minted ? mint() : router.push('/rewards')}
+                  onClick={() => !minted ? mint() : router.push(`https://${devMode && "testnets."}opensea.io/assets/${devMode ? "mumbai" : "polygon"}/${mintAddress}/${mintId}`)}
                   isLoading={minting}
                   loadingText="Claiming..."
                   minW={200}
                   size="lg"
                 >
-                  {minted ? 'View NFTs earned' : 'Claim'}
+                  {minted ? 'View NFT on OpenSea' : 'Claim'}
                 </Button>
                 {minted && (
                   <Button

@@ -2,12 +2,14 @@ import '@rainbow-me/rainbowkit/styles.css';
 import {
   getDefaultWallets,
   RainbowKitProvider,
+  connectorsForWallets
 } from '@rainbow-me/rainbowkit';
+import { injectedWallet, metaMaskWallet } from '@rainbow-me/rainbowkit/wallets';
 import { RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import {
-  polygon, polygonMumbai
+  polygon, polygonMumbai, mainnet
 } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
@@ -19,7 +21,7 @@ import { mode } from '@chakra-ui/theme-tools';
 import { Web3ContextProvider } from '../context/Web3Context';
 
 const { chains, publicClient } = configureChains(
-  [polygon, polygonMumbai],
+  [polygon, polygonMumbai, mainnet],
   [
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_DEV_KEY }),
     publicProvider()
