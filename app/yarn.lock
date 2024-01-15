@@ -5376,7 +5376,7 @@ modern-ahocorasick@^1.0.0:
   resolved "https://registry.yarnpkg.com/modern-ahocorasick/-/modern-ahocorasick-1.0.1.tgz#dec373444f51b5458ac05216a8ec376e126dd283"
   integrity sha512-yoe+JbhTClckZ67b2itRtistFKf8yPYelHLc7e5xAwtNAXxM6wJTUx2C7QeVSJFDzKT7bCIFyBVybPMKvmB9AA==
 
-moralis-v1@^1.12.0:
+moralis-v1@^1.13.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/moralis-v1/-/moralis-v1-1.13.0.tgz#c12d22a19430268d575474fc5976b11d5f344bff"
   integrity sha512-goxxaRSZjg8OWctk3ZDMG7GFePrCKoqI0J4Kai6i1GycE2919iGTARGedrdKWOTUdJTotCcunl4I0HgkS4pzNw==
