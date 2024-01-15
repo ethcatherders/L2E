@@ -41,7 +41,7 @@ export default function Videos() {
           <iframe
             src={selectedVideo.embedLink}
             title={selectedVideo.title}
-            frameborder="0"
+            frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen
             style={{ borderRadius: 10, width: "100%", height: "100%" }}

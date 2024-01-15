@@ -137,13 +137,13 @@ export default function Quiz() {
           <Text fontSize={{ lg: "2xl", md: "xl", base: "lg" }}>
             You have already taken the quiz
           </Text>
-          <a href="/?tab=result">
+          <Link href="/?tab=result">
             <Button style={{ background: "green" }}>
               <Text fontSize={{ lg: "2xl", md: "xl", base: "lg" }}>
                 Check your results
               </Text>
             </Button>
-          </a>
+          </Link>
         </Box>
       ) : user && !isSubmitted ? (
         <>
