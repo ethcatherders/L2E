@@ -30,7 +30,8 @@
     "react-uuid": "^1.0.2",
     "siwe": "^2",
     "viem": "^1",
-    "wagmi": "^1"
+    "wagmi": "^1",
+    "react-progressbar": "^15.4.1"
   },
   "devDependencies": {
     "eslint": "8.9.0",
