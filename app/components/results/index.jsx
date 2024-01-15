@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useMoralis } from "react-moralis";
+import Link from "next/link";
 
 export default function Result() {
   const [courses, setCourses] = useState();
@@ -117,13 +118,13 @@ export default function Result() {
           <Text fontSize={{ lg: "2xl", md: "xl", base: "lg" }}>
             You have not taken the quiz yet!
           </Text>
-          <a href="/?tab=quiz">
+          <Link href="/?tab=quiz">
             <Button variant="ghost" style={{ background: "green" }}>
               <Text fontSize={{ lg: "2xl", md: "xl", base: "lg" }}>
                 Take the quiz now
               </Text>
             </Button>
-          </a>
+          </Link>
         </Box>
       ) : (
         <Box

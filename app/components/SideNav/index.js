@@ -67,7 +67,7 @@ export default function SideNav(props) {
       setActiveTab("rewards");
       return setCourseNav(false);
     }
-    setActiveTab("video");
+    setActiveTab("videos");
   }, [tab]);
 
   return (
@@ -285,7 +285,7 @@ export default function SideNav(props) {
               />
               <Text
                 textAlign="left"
-                fontWeight={activeTab == "video" ? "bold" : "normal"}
+                fontWeight={activeTab == "videos" ? "bold" : "normal"}
               >
                 Videos
               </Text>
@@ -347,7 +347,7 @@ export default function SideNav(props) {
                   />
                   <Text
                     textAlign="left"
-                    fontWeight={activeTab == "poaps" ? "bold" : "normal"}
+                    fontWeight={activeTab == "rewards" ? "bold" : "normal"}
                   >
                     Results & Rewards
                   </Text>
