@@ -46,7 +46,6 @@ export default function Home() {
     const urlParams = new URLSearchParams(window.location.search);
     tab = urlParams.get("tab");
   }
-  console.log(tab);
 
   return (
     <Layout>

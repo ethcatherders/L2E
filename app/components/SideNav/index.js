@@ -34,27 +34,41 @@ export default function SideNav(props) {
   const { user } = useMoralis();
   const router = useRouter();
   const { colorMode } = useColorMode();
+  let tab;
+  if (typeof window !== "undefined") {
+    const urlParams = new URLSearchParams(window.location.search);
+    tab = urlParams.get("tab");
+  }
 
-  // useEffect(() => {
-  //   if (router.pathname.includes("courses")) {
-  //     if (router.pathname.includes("questions")) {
-  //       setActiveTab("quiz");
-  //       return setCourseNav(true);
-  //     }
-  //     if (router.pathname.includes("resources")) {
-  //       setActiveTab("resources");
-  //       return setCourseNav(true);
-  //     }
-  //     setActiveTab("video");
-  //     return setCourseNav(true);
-  //   }
-  //   if (router.pathname.includes("rewards")) {
-  //     setActiveTab("rewards");
-  //     return setCourseNav(false);
-  //   }
-  //   setActiveTab("home");
-  //   return setCourseNav(false);
-  // }, [router]);
+  useEffect(() => {
+    // if (router.pathname.includes("courses")) {
+    //   if (router.pathname.includes("questions")) {
+    //     setActiveTab("quiz");
+    //     return setCourseNav(true);
+    //   }
+    //   if (router.pathname.includes("resources")) {
+    //     setActiveTab("resources");
+    //     return setCourseNav(true);
+    //   }
+    //   setActiveTab("video");
+    //   return setCourseNav(true);
+    // }
+    // if (router.pathname.includes("rewards")) {
+    //   setActiveTab("rewards");
+    //   return setCourseNav(false);
+    // }
+    // setActiveTab("home");
+    // return setCourseNav(false);
+    if (tab === "quiz") {
+      setActiveTab("quiz");
+      return setCourseNav(false);
+    }
+    if (tab === "result") {
+      setActiveTab("rewards");
+      return setCourseNav(false);
+    }
+    setActiveTab("video");
+  }, [tab]);
 
   return (
     // <Box>
@@ -254,17 +268,17 @@ export default function SideNav(props) {
               gap={5}
               cursor="pointer"
               _hover={{ color: "grey" }}
-              onClick={() => setActiveTab("video")}
+              onClick={() => setActiveTab("videos")}
             >
               <Image
                 src={
-                  activeTab == "video"
+                  activeTab == "videos"
                     ? videoIconActive
                     : colorMode === "dark"
                     ? videoIconDark
                     : videoIcon
                 }
-                alt="video"
+                alt="videos"
                 objectFit="cover"
                 width={50}
                 height={50}

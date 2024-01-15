@@ -3,7 +3,7 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { RainbowKitSiweNextAuthProvider } from "@rainbow-me/rainbowkit-siwe-next-auth";
 import { SessionProvider } from "next-auth/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { polygon, polygonMumbai } from "wagmi/chains";
+import { polygon, polygonMumbai, mainnet } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
