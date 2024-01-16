@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import Link from "next/link";
 
 import Layout from "../../../components/Layout";
+import Videos from "../../../components/videos";
 
 export default function Course() {
   const [course, setCourse] = useState(null);
@@ -51,11 +52,11 @@ export default function Course() {
       ) : (
         <>
         {course ? 
-          <Container maxW='container.md' paddingTop={5}>
+          <Container maxW='container.lg' paddingTop={5}>
             <Heading textAlign='center' paddingBottom={5}>
               {course.title}
             </Heading>
-            <AspectRatio height={450} width='100%'>
+            {/* <AspectRatio height={450} width='100%'>
               <iframe
                 width="560"
                 height="315"
@@ -65,7 +66,7 @@ export default function Course() {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            </AspectRatio>
+            </AspectRatio> */}
             {/* <Center paddingTop={5}>
               <Link href={`/courses/${router.query.id}/questions`}>
                 <Button>
@@ -73,6 +74,7 @@ export default function Course() {
                 </Button>
               </Link>
             </Center> */}
+            <Videos />
           </Container>
           :
           <Container>

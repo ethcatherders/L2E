@@ -46,7 +46,7 @@ export default function Resources() {
 
   return (
     <Layout>
-      <Box background={colorMode === 'dark' ? "rgba(229, 229, 229, 0.13)" : 'rgba(220, 220, 220, 1)'} padding={5} minH='70vh'>
+      <Box background={colorMode === 'dark' ? "rgba(229, 229, 229, 0.13)" : 'rgba(220, 220, 220, 1)'} padding={5} minH='70vh' borderRadius={10}>
         {!loading ?
           <Box>
             <Heading size="md" mb={5}>Extra Resources</Heading>
