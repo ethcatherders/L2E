@@ -356,7 +356,7 @@ export default function Questions() {
                       >
                         <ReCAPTCHA
                           ref={recaptchaRef}
-                          size="compact"
+                          size="normal"
                           sitekey={process.env.ReCaptchaSiteKey}
                           onChange={validateCaptcha}
                         />
@@ -377,6 +377,8 @@ export default function Questions() {
                             }
                             color={"white"}
                             hidden={index === 0}
+                            width={"40%"}
+                            maxW={200}
                           >
                             Back
                           </Button>
@@ -387,6 +389,8 @@ export default function Questions() {
                               backgroundColor: "rgba(32, 223, 127, 0.5)",
                             }}
                             isDisabled={!answers[index]}
+                            width={"40%"}
+                            maxW={200}
                           >
                             Submit
                           </Button>
