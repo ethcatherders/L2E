@@ -65,7 +65,7 @@ export default function Home() {
             get rewarded for it in the process. Watch the videos, take the quiz
             and earn an NFT!
           </Text>
-          <NextLink href={`/courses/${"FcJNeRkHph"}`}>
+          <NextLink href={`/courses/${process.env.NEXT_PUBLIC_COURSE_ID}`}>
             <Button>Learn about Dencun</Button>
           </NextLink>
         </VStack>
