@@ -42,7 +42,6 @@ export default function SideNav(props) {
     const urlParams = new URLSearchParams(window.location.search);
     tab = urlParams.get("tab");
   }
-  const { id } = router.query;
 
   useEffect(async () => {
     const { id } = router.query;

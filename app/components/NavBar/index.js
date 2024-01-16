@@ -3,6 +3,7 @@ import {
   VStack,
   Text,
   Avatar,
+  AvatarBadge,
   Button,
   Box,
   Drawer,
@@ -763,10 +764,12 @@ export default function NavBar(props) {
                     _hover={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
                     cursor="pointer"
                   >
-                    <Avatar src={ensAvatar} />
+                    <Avatar src={ensAvatar}>
+                      {/* {!!wrongNetworkMsg ? <AvatarBadge colorScheme="red" bg="red.500" color="red" size="5rem" /> : ""} */}
+                    </Avatar>
                   </MenuButton>
                   <MenuList>
-                    <FormControl
+                    {/* <FormControl
                       display="flex"
                       alignItems="center"
                       justifyContent="space-between"
@@ -784,7 +787,26 @@ export default function NavBar(props) {
                           )
                         }
                       />
-                    </FormControl>
+                    </FormControl> */}
+                    {wrongNetworkMsg && (
+                      <MenuItem
+                        // label={`Switch to ${
+                        //   devMode ? "Mumbai Testnet" : "Polygon Mainnet"
+                        // }`}
+                        // aria-label="A tooltip"
+                        onClick={switchNetwork}
+                      >
+                        <Tag
+                          colorScheme="red"
+                          borderRadius="full"
+                          padding={2}
+                          cursor="pointer"
+                          // onClick={switchNetwork}
+                        >
+                          <TagLabel>Switch to {devMode ? "Mumbai" : "Polygon"}</TagLabel>
+                        </Tag>
+                      </MenuItem>
+                    )}
                     <MenuItem onClick={() => logout().then(() => disconnect())}>
                       Logout
                     </MenuItem>

@@ -257,11 +257,13 @@ export default function Result() {
         <Box>
           {passed && (
             <>
-              <Confetti
-                recycle={false}
-                tweenDuration={100000}
-                numberOfPieces={1500}
-              />
+              {mintable && !minted && (
+                <Confetti
+                  recycle={false}
+                  tweenDuration={100000}
+                  numberOfPieces={1500}
+                />
+              )}
               <Heading marginBottom={5}>Congratulations! You passed!</Heading>
             </>
           )}
