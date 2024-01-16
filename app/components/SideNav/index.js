@@ -27,17 +27,56 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
+import { isDeterministicError } from "viem/utils";
 
 export default function SideNav(props) {
   const [courseNav, setCourseNav] = useState(false);
   const [activeTab, setActiveTab] = useState("videos");
-  const { user } = useMoralis();
+  const { isInitialized, Moralis, user } = useMoralis();
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState("");
   const router = useRouter();
   const { colorMode } = useColorMode();
   let tab;
   if (typeof window !== "undefined") {
     const urlParams = new URLSearchParams(window.location.search);
     tab = urlParams.get("tab");
+  }
+  const { id } = router.query;
+
+  useEffect(async () => {
+    const { id } = router.query;
+    if (isInitialized && id) {
+      if (user) {
+        await fetchData();
+      }
+    }
+  }, [isInitialized, user, router.query.id]);
+
+  async function fetchData() {
+    const Course = Moralis.Object.extend("Course");
+    const query = new Moralis.Query(Course);
+    const { id } = router.query;
+    try {
+      const result = await query.get(id);
+      let completed = false;
+      if (user && user.attributes.coursesCompleted) {
+        completed = !!user.attributes.coursesCompleted.find(
+          (cc) => cc.id === id
+        );
+      }
+
+      if (completed) {
+        setIsSubmitted(true);
+        setSubmissionId(
+          result?.attributes?.responses.filter(
+            (item) => item.user === user.id
+          )[0].id
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
@@ -50,13 +89,14 @@ export default function SideNav(props) {
         setActiveTab("resources");
         return setCourseNav(true);
       }
+      if (router.pathname.includes("results")) {
+        setActiveTab("results");
+        return setCourseNav(true);
+      }
       setActiveTab("video");
       return setCourseNav(true);
     }
-    if (router.pathname.includes("rewards")) {
-      setActiveTab("rewards");
-      return setCourseNav(false);
-    }
+
     setActiveTab("home");
     return setCourseNav(false);
     // if (tab === "quiz") {
@@ -104,33 +144,33 @@ export default function SideNav(props) {
             </HStack>
           </NextLink>
           <NextLink href={`/courses/${router.query.id}/`} passHref>
-    <HStack
-      alignItems="center"
-      width="100%"
-      gap={5}
-      cursor="pointer"
-      _hover={{ color: "grey" }}
-    >
-      <Image
-        src={
-          activeTab == "video"
-            ? videoIconActive
-            : colorMode === "dark"
-            ? videoIconDark
-            : videoIcon
-        }
-        alt="video"
-        objectFit="cover"
-        width={50}
-        height={50}
-      />
-      <Text
-        textAlign="left"
-        fontWeight={activeTab == "video" ? "bold" : "normal"}
-      >
-        Video
-      </Text>
-    </HStack>
+            <HStack
+              alignItems="center"
+              width="100%"
+              gap={5}
+              cursor="pointer"
+              _hover={{ color: "grey" }}
+            >
+              <Image
+                src={
+                  activeTab == "video"
+                    ? videoIconActive
+                    : colorMode === "dark"
+                    ? videoIconDark
+                    : videoIcon
+                }
+                alt="video"
+                objectFit="cover"
+                width={50}
+                height={50}
+              />
+              <Text
+                textAlign="left"
+                fontWeight={activeTab == "video" ? "bold" : "normal"}
+              >
+                Videos
+              </Text>
+            </HStack>
           </NextLink>
           <NextLink href={`/courses/${router.query.id}/resources`} passHref>
             <HStack
@@ -190,6 +230,42 @@ export default function SideNav(props) {
               </Text>
             </HStack>
           </NextLink>
+
+          {isSubmitted && submissionId && (
+            <NextLink
+              href={`/courses/${router.query.id}/results?entry=${submissionId}`}
+              passHref
+            >
+              <HStack
+                alignItems="center"
+                width="100%"
+                gap={5}
+                cursor="pointer"
+                _hover={{ color: "grey" }}
+                onClick={() => setActiveTab("results")}
+              >
+                <Image
+                  src={
+                    activeTab == "results"
+                      ? walletIconActive
+                      : colorMode === "dark"
+                      ? walletIconDark
+                      : walletIcon
+                  }
+                  alt="results"
+                  objectFit="cover"
+                  width={50}
+                  height={50}
+                />
+                <Text
+                  textAlign="left"
+                  fontWeight={activeTab == "results" ? "bold" : "normal"}
+                >
+                  Results & Rewards
+                </Text>
+              </HStack>
+            </NextLink>
+          )}
         </VStack>
       ) : (
         <VStack mt={10} gap={5}>
@@ -323,36 +399,36 @@ export default function SideNav(props) {
     //               </Text>
     //             </HStack>
     //           </Link>
-    //           <Link href="/?tab=result">
-    //             <HStack
-    //               alignItems="center"
-    //               width="100%"
-    //               gap={5}
-    //               cursor="pointer"
-    //               _hover={{ color: "grey" }}
-    //               onClick={() => setActiveTab("rewards")}
-    //             >
-    //               <Image
-    //                 src={
-    //                   activeTab == "rewards"
-    //                     ? walletIconActive
-    //                     : colorMode === "dark"
-    //                     ? walletIconDark
-    //                     : walletIcon
-    //                 }
-    //                 alt="rewards"
-    //                 objectFit="cover"
-    //                 width={50}
-    //                 height={50}
-    //               />
-    //               <Text
-    //                 textAlign="left"
-    //                 fontWeight={activeTab == "rewards" ? "bold" : "normal"}
-    //               >
-    //                 Results & Rewards
-    //               </Text>
-    //             </HStack>
-    //           </Link>
+    // <Link href="/?tab=result">
+    //   <HStack
+    //     alignItems="center"
+    //     width="100%"
+    //     gap={5}
+    //     cursor="pointer"
+    //     _hover={{ color: "grey" }}
+    //     onClick={() => setActiveTab("rewards")}
+    //   >
+    //     <Image
+    //       src={
+    //         activeTab == "rewards"
+    //           ? walletIconActive
+    //           : colorMode === "dark"
+    //           ? walletIconDark
+    //           : walletIcon
+    //       }
+    //       alt="rewards"
+    //       objectFit="cover"
+    //       width={50}
+    //       height={50}
+    //     />
+    //     <Text
+    //       textAlign="left"
+    //       fontWeight={activeTab == "rewards" ? "bold" : "normal"}
+    //     >
+    //       Results & Rewards
+    //     </Text>
+    //   </HStack>
+    // </Link>
     //         </>
     //       ) : (
     //         <></>

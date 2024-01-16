@@ -14,7 +14,7 @@ import {
   Circle,
   Avatar,
   Button,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 import NextImage from "next/image";
 import NextLink from "next/link";
@@ -52,17 +52,21 @@ export default function Home() {
   return (
     <Layout>
       <Container maxW="container.xl" paddingTop={5} paddingBottom={5}>
-        <VStack justify="center" align="center" textAlign="center" minH="70vh" spacing={4}>
+        <VStack
+          justify="center"
+          align="center"
+          textAlign="center"
+          minH="70vh"
+          spacing={4}
+        >
           <Heading>ECH Learn2Earn</Heading>
           <Text maxWidth={600}>
-            Learn2Earn is a platform that allows you to learn about Ethereum
-            and get rewarded for it in the process. Watch the videos, take the
-            quiz and earn an NFT!
+            Learn2Earn is a platform that allows you to learn about Ethereum and
+            get rewarded for it in the process. Watch the videos, take the quiz
+            and earn an NFT!
           </Text>
-          <NextLink href={`/courses/${'FcJNeRkHph'}`}>
-            <Button>
-              Learn about Dencun
-            </Button>
+          <NextLink href={`/courses/${"FcJNeRkHph"}`}>
+            <Button>Learn about Dencun</Button>
           </NextLink>
         </VStack>
         {/* {courses.length ?

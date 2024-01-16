@@ -8,7 +8,7 @@ import {
   useToast,
   Flex,
   Center,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -72,7 +72,7 @@ export default function Result() {
   async function getResult() {
     try {
       const course = await getCourse();
-      console.log("course:", course)
+      console.log("course:", course);
       const fromUser = course.attributes.responses.filter(
         (response) => response.id === router.query.entry
       );
@@ -248,9 +248,10 @@ export default function Result() {
             : "rgba(220, 220, 220, 1)"
         }
         padding={5}
+        margin={5}
         minH="70vh"
         borderRadius={10}
-        justify="center" 
+        justify="center"
         align="center"
       >
         <Box>
@@ -284,7 +285,17 @@ export default function Result() {
                     <Button
                       backgroundColor="rgba(32, 223, 127, 1)"
                       _hover={{ backgroundColor: "rgba(32, 223, 127, 0.5)" }}
-                      onClick={() => (!minted ? mint() : router.push(`https://${devMode && "testnets."}opensea.io/assets/${devMode ? "mumbai" : "polygon"}/${mintAddress}/${mintId}`))}
+                      onClick={() =>
+                        !minted
+                          ? mint()
+                          : router.push(
+                              `https://${
+                                devMode && "testnets."
+                              }opensea.io/assets/${
+                                devMode ? "mumbai" : "polygon"
+                              }/${mintAddress}/${mintId}`
+                            )
+                      }
                       isLoading={minting}
                       loadingText="Claiming..."
                       minW={200}
