@@ -205,41 +205,79 @@ export default function NavBar(props) {
 
   const [courseNav, setCourseNav] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState("");
   const router = useRouter();
   let tab;
   if (typeof window !== "undefined") {
     const urlParams = new URLSearchParams(window.location.search);
     tab = urlParams.get("tab");
   }
+  const { id } = router.query;
+  useEffect(async () => {
+    const { id } = router.query;
+    if (isInitialized && id) {
+      if (user) {
+        await fetchData();
+      }
+    }
+  }, [isInitialized, user, router.query.id]);
+
+  async function fetchData() {
+    const Course = Moralis.Object.extend("Course");
+    const query = new Moralis.Query(Course);
+    const { id } = router.query;
+    try {
+      const result = await query.get(id);
+      let completed = false;
+      if (user && user.attributes.coursesCompleted) {
+        completed = !!user.attributes.coursesCompleted.find(
+          (cc) => cc.id === id
+        );
+      }
+
+      if (completed) {
+        setIsSubmitted(true);
+        setSubmissionId(
+          result?.attributes?.responses.filter(
+            (item) => item.user === user.id
+          )[0].id
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
-    // if (router.pathname.includes("courses")) {
-    //   if (router.pathname.includes("questions")) {
-    //     setActiveTab("quiz");
-    //     return setCourseNav(true);
-    //   }
-    //   if (router.pathname.includes("resources")) {
-    //     setActiveTab("resources");
-    //     return setCourseNav(true);
-    //   }
-    //   setActiveTab("video");
-    //   return setCourseNav(true);
+    if (router.pathname.includes("courses")) {
+      if (router.pathname.includes("questions")) {
+        setActiveTab("quiz");
+        return setCourseNav(true);
+      }
+      if (router.pathname.includes("resources")) {
+        setActiveTab("resources");
+        return setCourseNav(true);
+      }
+      if (router.pathname.includes("results")) {
+        setActiveTab("results");
+        return setCourseNav(true);
+      }
+      setActiveTab("video");
+      return setCourseNav(true);
+    }
+
+    setActiveTab("home");
+    return setCourseNav(false);
+    // if (tab === "quiz") {
+    //   setActiveTab("quiz");
+    //   return setCourseNav(false);
     // }
-    // if (router.pathname.includes("rewards")) {
+    // if (tab === "result") {
     //   setActiveTab("rewards");
     //   return setCourseNav(false);
     // }
-    // setActiveTab("home");
-    // return setCourseNav(false);
-    if (tab === "quiz") {
-      setActiveTab("quiz");
-      return setCourseNav(false);
-    }
-    if (tab === "result") {
-      setActiveTab("result");
-      return setCourseNav(false);
-    }
-    setActiveTab("videos");
+    // setActiveTab("videos");
   }, [tab]);
 
   return (
@@ -447,103 +485,204 @@ export default function NavBar(props) {
                 )}
               </VStack>
             )} */}
-            <VStack mt={10} gap={5}>
-              <NextLink href={`/`} passHref>
-                <HStack
-                  alignItems="center"
-                  width="100%"
-                  gap={5}
-                  cursor="pointer"
-                  _hover={{ color: "grey" }}
-                >
-                  <Image
-                    src={
-                      activeTab == "videos"
-                        ? videoIconActive
-                        : colorMode === "dark"
-                        ? videoIconDark
-                        : videoIcon
-                    }
-                    alt="videos"
-                    objectFit="cover"
-                    width={50}
-                    height={50}
-                  />
-                  <Text
-                    textAlign="left"
-                    fontWeight={activeTab == "video" ? "bold" : "normal"}
+            {courseNav ? (
+              <VStack mt={10} gap={5}>
+                <NextLink href="/" passHref>
+                  <HStack
+                    alignItems="center"
+                    width="100%"
+                    gap={5}
+                    cursor="pointer"
+                    _hover={{ color: "grey" }}
                   >
-                    Videos
-                  </Text>
-                </HStack>
-              </NextLink>
-
-              {user ? (
-                <>
-                  <NextLink href={`/?tab=quiz`} passHref>
-                    <HStack
-                      alignItems="center"
-                      width="100%"
-                      gap={5}
-                      cursor="pointer"
-                      _hover={{ color: "grey" }}
+                    <Image
+                      src={
+                        activeTab == "home"
+                          ? homeIconActive
+                          : colorMode === "dark"
+                          ? homeIconDark
+                          : homeIcon
+                      }
+                      alt="home"
+                      objectFit="cover"
+                      width={50}
+                      height={50}
+                    />
+                    <Text
+                      textAlign="left"
+                      fontWeight={activeTab == "home" ? "bold" : "normal"}
                     >
-                      <Image
-                        src={
-                          activeTab == "quiz"
-                            ? quizIconActive
-                            : colorMode === "dark"
-                            ? quizIconDark
-                            : quizIcon
-                        }
-                        alt="quiz"
-                        objectFit="cover"
-                        width={50}
-                        height={50}
-                      />
-                      <Text
-                        textAlign="left"
-                        fontWeight={activeTab == "quiz" ? "bold" : "normal"}
-                      >
-                        Quiz
-                      </Text>
-                    </HStack>
-                  </NextLink>
+                      Discover
+                    </Text>
+                  </HStack>
+                </NextLink>
 
-                  <NextLink href="/?tab=result" passHref>
-                    <HStack
-                      alignItems="center"
-                      width="100%"
-                      gap={5}
-                      cursor="pointer"
-                      _hover={{ color: "grey" }}
-                    >
-                      <Image
-                        src={
-                          activeTab == "result"
-                            ? walletIconActive
-                            : colorMode === "dark"
-                            ? walletIconDark
-                            : walletIcon
-                        }
-                        alt="result"
-                        objectFit="cover"
-                        width={50}
-                        height={50}
-                      />
-                      <Text
-                        textAlign="left"
-                        fontWeight={activeTab == "poaps" ? "bold" : "normal"}
+                {user ? (
+                  <>
+                    <NextLink href={`/courses/${router.query.id}/`} passHref>
+                      <HStack
+                        alignItems="center"
+                        width="100%"
+                        gap={5}
+                        cursor="pointer"
+                        _hover={{ color: "grey" }}
                       >
-                        Results & Rewards
-                      </Text>
-                    </HStack>
-                  </NextLink>
-                </>
-              ) : (
-                <></>
-              )}
-            </VStack>
+                        <Image
+                          src={
+                            activeTab == "video"
+                              ? videoIconActive
+                              : colorMode === "dark"
+                              ? videoIconDark
+                              : videoIcon
+                          }
+                          alt="video"
+                          objectFit="cover"
+                          width={50}
+                          height={50}
+                        />
+                        <Text
+                          textAlign="left"
+                          fontWeight={activeTab == "video" ? "bold" : "normal"}
+                        >
+                          Videos
+                        </Text>
+                      </HStack>
+                    </NextLink>
+                    <NextLink href={`/courses/${id}/resources`} passHref>
+                      <HStack
+                        alignItems="center"
+                        width="100%"
+                        gap={5}
+                        cursor="pointer"
+                        _hover={{ color: "grey" }}
+                      >
+                        <Image
+                          src={
+                            activeTab == "resources"
+                              ? resourceIconActive
+                              : colorMode === "dark"
+                              ? resourceIconDark
+                              : resourceIcon
+                          }
+                          alt="extra resources"
+                          objectFit="cover"
+                          width={50}
+                          height={50}
+                        />
+                        <Text
+                          textAlign="left"
+                          fontWeight={
+                            activeTab == "resources" ? "bold" : "normal"
+                          }
+                        >
+                          Extra Resources
+                        </Text>
+                      </HStack>
+                    </NextLink>
+                    <NextLink href={`/courses/${id}/questions`} passHref>
+                      <HStack
+                        alignItems="center"
+                        width="100%"
+                        gap={5}
+                        cursor="pointer"
+                        _hover={{ color: "grey" }}
+                      >
+                        <Image
+                          src={
+                            activeTab == "quiz"
+                              ? quizIconActive
+                              : colorMode === "dark"
+                              ? quizIconDark
+                              : quizIcon
+                          }
+                          alt="quiz"
+                          objectFit="cover"
+                          width={50}
+                          height={50}
+                        />
+                        <Text
+                          textAlign="left"
+                          fontWeight={activeTab == "quiz" ? "bold" : "normal"}
+                        >
+                          Quiz
+                        </Text>
+                      </HStack>
+                    </NextLink>
+                    {isSubmitted && submissionId && (
+                      <NextLink
+                        href={`/courses/${id}/results?entry=${submissionId}`}
+                        passHref
+                      >
+                        <HStack
+                          alignItems="center"
+                          width="100%"
+                          gap={5}
+                          cursor="pointer"
+                          _hover={{ color: "grey" }}
+                          onClick={() => setActiveTab("results")}
+                        >
+                          <Image
+                            src={
+                              activeTab == "results"
+                                ? walletIconActive
+                                : colorMode === "dark"
+                                ? walletIconDark
+                                : walletIcon
+                            }
+                            alt="results"
+                            objectFit="cover"
+                            width={50}
+                            height={50}
+                          />
+                          <Text
+                            textAlign="left"
+                            fontWeight={
+                              activeTab == "results" ? "bold" : "normal"
+                            }
+                          >
+                            Results & Rewards
+                          </Text>
+                        </HStack>
+                      </NextLink>
+                    )}
+                  </>
+                ) : (
+                  <></>
+                )}
+              </VStack>
+            ) : (
+              <VStack mt={10} gap={5}>
+                <NextLink href="/" passHref>
+                  <HStack
+                    alignItems="center"
+                    width="100%"
+                    gap={5}
+                    cursor="pointer"
+                    _hover={{ color: "grey" }}
+                  >
+                    <Image
+                      src={
+                        activeTab == "home"
+                          ? homeIconActive
+                          : colorMode === "dark"
+                          ? homeIconDark
+                          : homeIcon
+                      }
+                      alt="home"
+                      objectFit="cover"
+                      width={50}
+                      height={50}
+                    />
+                    <Text
+                      textAlign="left"
+                      fontWeight={activeTab == "home" ? "bold" : "normal"}
+                    >
+                      Discover
+                    </Text>
+                  </HStack>
+                </NextLink>
+              </VStack>
+            )}
           </DrawerBody>
 
           <DrawerFooter>
@@ -575,7 +714,7 @@ export default function NavBar(props) {
           </IconButton>
         )}
         <HStack justifyContent="flex-end" alignItems="center">
-          {wrongNetworkMsg && (
+          {/* {wrongNetworkMsg && (
             <Tooltip
               label={`Switch to ${
                 devMode ? "Mumbai Testnet" : "Polygon Mainnet"
@@ -592,7 +731,7 @@ export default function NavBar(props) {
                 <TagLabel>Switch to {devMode ? "Mumbai" : "Polygon"}</TagLabel>
               </Tag>
             </Tooltip>
-          )}
+          )} */}
           <IconButton
             icon={colorMode === "dark" ? <MoonIcon /> : <SunIcon />}
             color="white"

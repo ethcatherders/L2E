@@ -25,12 +25,11 @@ import {
   Heading,
   useColorMode,
   useToast,
-  ButtonGroup
+  ButtonGroup,
 } from "@chakra-ui/react";
 import ReCAPTCHA from "react-google-recaptcha";
 import uuid from "react-uuid";
 import Progress from "react-progressbar";
-
 
 export default function Questions() {
   const [quiz, setQuiz] = useState([]);
@@ -86,6 +85,24 @@ export default function Questions() {
       const result = await query.get(id);
       const quizLength =
         result.attributes.quiz.length <= 5 ? result.attributes.quiz.length : 5;
+
+      // Uncomment this to make sure only one attempt is allowed per user
+      // let completed = false;
+      // if (user && user.attributes.coursesCompleted) {
+      //   completed = !!user.attributes.coursesCompleted.find(
+      //     (cc) => cc.id === id
+      //   );
+      // }
+
+      // if (completed) {
+      //   setIsSubmitted(true);
+      //   setSubmissionId(
+      //     result?.attributes?.responses.filter(
+      //       (item) => item.user === user.id
+      //     )[0].id
+      //   );
+      // }
+
       if (quizLength < result.attributes.quiz.length) {
         const questions = [];
         while (questions.length < quizLength) {
@@ -209,6 +226,7 @@ export default function Questions() {
           padding={5}
           minH="70vh"
           borderRadius={10}
+          marginX={5}
         >
           {restricted ? (
             <VStack height="100%" justify="center" minH="60vh">
@@ -229,7 +247,13 @@ export default function Questions() {
                       {/* <Heading size="md" mb={5}>
                         Question #{index + 1}
                       </Heading> */}
-                      <FormControl as="fieldset" isRequired paddingBottom={10} textAlign="center" width={"100%"}>
+                      <FormControl
+                        as="fieldset"
+                        isRequired
+                        paddingBottom={10}
+                        textAlign="center"
+                        width={"100%"}
+                      >
                         {/* <FormLabel as="legend" textAlign="center" width="100%"> */}
                         <Center>
                           <Heading size="md" mb={5} mt={8} maxWidth={800}>
@@ -242,18 +266,30 @@ export default function Questions() {
                           value={answers[index]}
                           onChange={(e) => selectAnswer(e, index)}
                         > */}
-                          <VStack>
-                            {quiz[index].options.map((option, optIndex) => (
-                              <>
+                        <VStack>
+                          {quiz[index].options.map((option, optIndex) => (
+                            <>
                               <Box
                                 key={option}
                                 maxWidth={500}
                                 width={"100%"}
-                                py={4}
+                                p={4}
                                 borderRadius={10}
                                 onClick={() => selectAnswer(option, index)}
-                                background={answers[index] === option ? "rgba(32, 223, 127, 1)" : colorMode === 'dark' ? "rgba(229, 229, 229, 0.4)" : "white"}
-                                _hover={{ cursor: "pointer", background: answers[index] === option ? "rgba(32, 223, 127, 0.8)" : "rgba(255, 255, 255, 0.6)" }}
+                                background={
+                                  answers[index] === option
+                                    ? "rgba(32, 223, 127, 1)"
+                                    : colorMode === "dark"
+                                    ? "rgba(229, 229, 229, 0.4)"
+                                    : "white"
+                                }
+                                _hover={{
+                                  cursor: "pointer",
+                                  background:
+                                    answers[index] === option
+                                      ? "rgba(32, 223, 127, 0.8)"
+                                      : "rgba(255, 255, 255, 0.6)",
+                                }}
                               >
                                 <Text>{option}</Text>
                               </Box>
@@ -266,9 +302,9 @@ export default function Questions() {
                               >
                                 {option}
                               </Radio> */}
-                              </>
-                            ))}
-                          </VStack>
+                            </>
+                          ))}
+                        </VStack>
                         {/* </RadioGroup> */}
                       </FormControl>
                     </Box>
@@ -289,7 +325,8 @@ export default function Questions() {
                               : "rgba(128, 129, 145, 1)"
                           }
                           color={"white"}
-                          minWidth={200}
+                          width={"40%"}
+                          maxW={200}
                           hidden={index === 0}
                         >
                           Back
@@ -302,8 +339,9 @@ export default function Questions() {
                           onClick={nextQuestion}
                           backgroundColor="rgba(32, 223, 127, 1)"
                           color="black"
-                          minWidth={200}
                           isDisabled={!answers[index]}
+                          width={"40%"}
+                          maxW={200}
                         >
                           Next
                         </Button>
@@ -318,7 +356,7 @@ export default function Questions() {
                       >
                         <ReCAPTCHA
                           ref={recaptchaRef}
-                          size="normal"
+                          size="compact"
                           sitekey={process.env.ReCaptchaSiteKey}
                           onChange={validateCaptcha}
                         />
@@ -339,7 +377,6 @@ export default function Questions() {
                             }
                             color={"white"}
                             hidden={index === 0}
-                            minWidth={200}
                           >
                             Back
                           </Button>
@@ -350,7 +387,6 @@ export default function Questions() {
                               backgroundColor: "rgba(32, 223, 127, 0.5)",
                             }}
                             isDisabled={!answers[index]}
-                            minWidth={200}
                           >
                             Submit
                           </Button>
@@ -413,9 +449,8 @@ export default function Questions() {
                 href={`/courses/${router.query.id}/results?entry=${submissionId}`}
               >
                 <Button
-                  type="button" 
+                  type="button"
                   isDisabled={!submissionId}
-                  minW={150}
                   color="white"
                   backgroundColor="rgba(35, 35, 35, 1)"
                   _hover={{
