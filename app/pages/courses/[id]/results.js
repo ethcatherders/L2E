@@ -7,10 +7,12 @@ import {
   useColorMode,
   useToast,
   Flex,
+  Center,
+  VStack
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import { useMoralis } from "react-moralis";
 import Layout from "../../../components/Layout";
 import { Contract, providers, utils } from "ethers";
@@ -35,6 +37,10 @@ export default function Result() {
   const toast = useToast();
 
   const minimumPassingPercentage = 1;
+
+  const passed = useMemo(() => {
+    return score.correct / score.total >= minimumPassingPercentage;
+  }, [score.correct, score.total]);
 
   useEffect(async () => {
     const { id } = router.query;
@@ -66,6 +72,7 @@ export default function Result() {
   async function getResult() {
     try {
       const course = await getCourse();
+      console.log("course:", course)
       const fromUser = course.attributes.responses.filter(
         (response) => response.id === router.query.entry
       );
@@ -98,7 +105,7 @@ export default function Result() {
     const Course = Moralis.Object.extend("Course");
     const query = new Moralis.Query(Course);
     const { id } = router.query;
-    const result = await query.get("flezBQjCxL");
+    const result = await query.get(id);
     return result;
   }
 
@@ -232,7 +239,7 @@ export default function Result() {
 
   return (
     <Layout>
-      <Box
+      <VStack
         textAlign="center"
         height="100%"
         bg={
@@ -241,81 +248,87 @@ export default function Result() {
             : "rgba(220, 220, 220, 1)"
         }
         padding={5}
+        minH="70vh"
+        borderRadius={10}
+        justify="center" 
+        align="center"
       >
-        {score.correct / score.total >= minimumPassingPercentage && (
-          <>
-            <Confetti
-              recycle={false}
-              tweenDuration={100000}
-              numberOfPieces={1500}
-            />
-            <Heading marginBottom={5}>Congratulations! You passed!</Heading>
-          </>
-        )}
-        <Heading size="md" marginBottom={5}>
-          {score.correct}/{score.total} Correct
-        </Heading>
-        {score.correct / score.total >= minimumPassingPercentage ? (
-          <Box>
-            {!mintable ? (
+        <Box>
+          {passed && (
+            <>
+              <Confetti
+                recycle={false}
+                tweenDuration={100000}
+                numberOfPieces={1500}
+              />
+              <Heading marginBottom={5}>Congratulations! You passed!</Heading>
+            </>
+          )}
+          <Heading size="md" marginBottom={5}>
+            {score.correct}/{score.total} Correct
+          </Heading>
+          {passed ? (
+            <Box>
+              {!mintable ? (
+                <NextLink href="/" passHref>
+                  <Button mt={2}>Back to Home</Button>
+                </NextLink>
+              ) : (
+                <>
+                  <Text>
+                    {mintId && minted
+                      ? `You are #${mintId} to earn this NFT reward!`
+                      : "You earned an NFT as a reward!"}
+                  </Text>
+                  <Flex direction="column" align="center" mt={4}>
+                    <Button
+                      backgroundColor="rgba(32, 223, 127, 1)"
+                      _hover={{ backgroundColor: "rgba(32, 223, 127, 0.5)" }}
+                      onClick={() => (!minted ? mint() : router.push(`https://${devMode && "testnets."}opensea.io/assets/${devMode ? "mumbai" : "polygon"}/${mintAddress}/${mintId}`))}
+                      isLoading={minting}
+                      loadingText="Claiming..."
+                      minW={200}
+                      size="lg"
+                    >
+                      {minted ? "View NFT earned" : "Claim"}
+                    </Button>
+                    {minted && (
+                      <Button
+                        as={Link}
+                        leftIcon={<TwitterIcon />}
+                        mt={6}
+                        minW={150}
+                        color="white"
+                        backgroundColor="rgba(35, 35, 35, 1)"
+                        _hover={{
+                          textDecoration: "none",
+                          backgroundColor: "rgba(35, 35, 35, 0.5)",
+                        }}
+                        isExternal
+                        href="https://twitter.com/intent/tweet?hashtags=quiz%20%23ethereumquiz&amp;original_referer=https%3A%2F%2Fpublish.twitter.com%2F&amp;ref_src=twsrc%5Etfw%7Ctwcamp%5Ebuttonembed%7Ctwterm%5Eshare%7Ctwgr%5E&amp;text=I%20am%20excited%20to%20share%20that%20I%20took%20a%20quiz%20on%20%22ECH%20Learn2Earn%22%20and%20received%20an%20NFT.%20Try%20it%20today%20at%20&amp;url=https%3A%2F%2Fl2e.ethereumcatherders.com%2F%20&amp;via=EthCatHerders"
+                      >
+                        Share on Twitter
+                      </Button>
+                    )}
+                    <NextLink href="/" passHref>
+                      <Link textDecor="underline" mt={2}>
+                        Back to Home
+                      </Link>
+                    </NextLink>
+                  </Flex>
+                </>
+              )}
+            </Box>
+          ) : (
+            <Box>
+              <Text>Better luck next time :(</Text>
               <NextLink href="/" passHref>
                 <Button mt={2}>Back to Home</Button>
               </NextLink>
-            ) : (
-              <>
-                <Text>
-                  {mintId && minted
-                    ? `You are #${mintId} to earn this NFT reward!`
-                    : "You earned an NFT as a reward!"}
-                </Text>
-                <Flex direction="column" align="center" mt={4}>
-                  <Button
-                    backgroundColor="rgba(32, 223, 127, 1)"
-                    _hover={{ backgroundColor: "rgba(32, 223, 127, 0.5)" }}
-                    onClick={() => (!minted ? mint() : router.push("/rewards"))}
-                    isLoading={minting}
-                    loadingText="Claiming..."
-                    minW={200}
-                    size="lg"
-                  >
-                    {minted ? "View NFTs earned" : "Claim"}
-                  </Button>
-                  {minted && (
-                    <Button
-                      as={Link}
-                      leftIcon={<TwitterIcon />}
-                      mt={6}
-                      minW={150}
-                      color="white"
-                      backgroundColor="rgba(35, 35, 35, 1)"
-                      _hover={{
-                        textDecoration: "none",
-                        backgroundColor: "rgba(35, 35, 35, 0.5)",
-                      }}
-                      isExternal
-                      href="https://twitter.com/intent/tweet?hashtags=quiz%20%23ethereumquiz&amp;original_referer=https%3A%2F%2Fpublish.twitter.com%2F&amp;ref_src=twsrc%5Etfw%7Ctwcamp%5Ebuttonembed%7Ctwterm%5Eshare%7Ctwgr%5E&amp;text=I%20am%20excited%20to%20share%20that%20I%20took%20a%20quiz%20on%20%22ECH%20Learn2Earn%22%20and%20received%20an%20NFT.%20Try%20it%20today%20at%20&amp;url=https%3A%2F%2Fl2e.ethereumcatherders.com%2F%20&amp;via=EthCatHerders"
-                    >
-                      Share on Twitter
-                    </Button>
-                  )}
-                  <NextLink href="/" passHref>
-                    <Link textDecor="underline" mt={2}>
-                      Back to Home
-                    </Link>
-                  </NextLink>
-                </Flex>
-              </>
-            )}
-          </Box>
-        ) : (
-          <Box>
-            <Text>Better luck next time :(</Text>
-            <NextLink href="/" passHref>
-              <Button mt={2}>Back to Home</Button>
-            </NextLink>
-          </Box>
-        )}
-      </Box>
+            </Box>
+          )}
+        </Box>
+      </VStack>
     </Layout>
   );
 }

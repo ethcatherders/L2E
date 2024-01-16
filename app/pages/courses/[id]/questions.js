@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Layout from "../../../components/Layout";
 import {
+  Text,
   Container,
   FormControl,
   FormLabel,
@@ -24,9 +25,12 @@ import {
   Heading,
   useColorMode,
   useToast,
+  ButtonGroup
 } from "@chakra-ui/react";
 import ReCAPTCHA from "react-google-recaptcha";
 import uuid from "react-uuid";
+import Progress from "react-progressbar";
+
 
 export default function Questions() {
   const [quiz, setQuiz] = useState([]);
@@ -143,15 +147,16 @@ export default function Questions() {
     setErrorMsg("");
 
     if (valid) {
-      const Course = Moralis.Object.extend("Course");
-      const query = new Moralis.Query(Course);
-      const { id } = router.query;
-
       try {
+        const Course = Moralis.Object.extend("Course");
+        const query = new Moralis.Query(Course);
+        const { id } = router.query;
+
         const result = await query.get(id);
         const userId = user.id;
         const entryId = uuid();
         setSubmissionId(entryId);
+
         console.log("Submission ID: ", submissionId);
         const submittedAnswers = answers.map((a, i) => {
           return { id: quiz[i].id, answer: a };
@@ -203,6 +208,7 @@ export default function Questions() {
           }
           padding={5}
           minH="70vh"
+          borderRadius={10}
         >
           {restricted ? (
             <VStack height="100%" justify="center" minH="60vh">
@@ -212,27 +218,46 @@ export default function Questions() {
             <>
               {quiz.length ? (
                 <form onSubmit={submit} style={{ height: "100%" }}>
+                  <Progress completed={index * (100 / quiz.length)} />
                   <VStack
                     align="flex-start"
                     minHeight="60vh"
                     justify="space-between"
+                    mt={4}
                   >
-                    <Box>
-                      <Heading size="md" mb={5}>
+                    <Box textAlign="center" width={"100%"}>
+                      {/* <Heading size="md" mb={5}>
                         Question #{index + 1}
-                      </Heading>
-                      <FormControl as="fieldset" isRequired paddingBottom={10}>
-                        <FormLabel as="legend">
-                          {quiz[index].question}
-                        </FormLabel>
-                        <RadioGroup
+                      </Heading> */}
+                      <FormControl as="fieldset" isRequired paddingBottom={10} textAlign="center" width={"100%"}>
+                        {/* <FormLabel as="legend" textAlign="center" width="100%"> */}
+                        <Center>
+                          <Heading size="md" mb={5} mt={8} maxWidth={800}>
+                            {`${index + 1}.`} {quiz[index].question}
+                          </Heading>
+                        </Center>
+                        {/* </FormLabel> */}
+                        {/* <RadioGroup
                           paddingLeft={5}
                           value={answers[index]}
                           onChange={(e) => selectAnswer(e, index)}
-                        >
-                          <VStack alignItems="flex-start">
+                        > */}
+                          <VStack>
                             {quiz[index].options.map((option, optIndex) => (
-                              <Radio
+                              <>
+                              <Box
+                                key={option}
+                                maxWidth={500}
+                                width={"100%"}
+                                py={4}
+                                borderRadius={10}
+                                onClick={() => selectAnswer(option, index)}
+                                background={answers[index] === option ? "rgba(32, 223, 127, 1)" : colorMode === 'dark' ? "rgba(229, 229, 229, 0.4)" : "white"}
+                                _hover={{ cursor: "pointer", background: answers[index] === option ? "rgba(32, 223, 127, 0.8)" : "rgba(255, 255, 255, 0.6)" }}
+                              >
+                                <Text>{option}</Text>
+                              </Box>
+                              {/* <Radio
                                 value={option}
                                 key={optIndex}
                                 borderColor={
@@ -240,17 +265,18 @@ export default function Questions() {
                                 }
                               >
                                 {option}
-                              </Radio>
+                              </Radio> */}
+                              </>
                             ))}
                           </VStack>
-                        </RadioGroup>
+                        {/* </RadioGroup> */}
                       </FormControl>
                     </Box>
                     {!displayBtn ? (
-                      <HStack
+                      <ButtonGroup
                         justifyContent="center"
                         alignItems="center"
-                        gap={10}
+                        gap={8}
                         mt={5}
                         width="100%"
                       >
@@ -263,6 +289,7 @@ export default function Questions() {
                               : "rgba(128, 129, 145, 1)"
                           }
                           color={"white"}
+                          minWidth={200}
                           hidden={index === 0}
                         >
                           Back
@@ -275,11 +302,12 @@ export default function Questions() {
                           onClick={nextQuestion}
                           backgroundColor="rgba(32, 223, 127, 1)"
                           color="black"
+                          minWidth={200}
                           isDisabled={!answers[index]}
                         >
                           Next
                         </Button>
-                      </HStack>
+                      </ButtonGroup>
                     ) : (
                       <VStack
                         justifyContent="center"
@@ -294,18 +322,24 @@ export default function Questions() {
                           sitekey={process.env.ReCaptchaSiteKey}
                           onChange={validateCaptcha}
                         />
-                        <HStack
+                        <ButtonGroup
                           justifyContent="center"
                           alignItems="center"
-                          gap={10}
+                          gap={8}
                           mt={5}
                           width="100%"
                         >
                           <Button
                             type="button"
                             onClick={prevQuestion}
-                            background="rgba(255, 255, 255, 0.1)"
+                            backgroundColor={
+                              colorMode === "dark"
+                                ? "rgba(255, 255, 255, 0.1)"
+                                : "rgba(128, 129, 145, 1)"
+                            }
+                            color={"white"}
                             hidden={index === 0}
+                            minWidth={200}
                           >
                             Back
                           </Button>
@@ -316,10 +350,11 @@ export default function Questions() {
                               backgroundColor: "rgba(32, 223, 127, 0.5)",
                             }}
                             isDisabled={!answers[index]}
+                            minWidth={200}
                           >
                             Submit
                           </Button>
-                        </HStack>
+                        </ButtonGroup>
                       </VStack>
                     )}
                   </VStack>
@@ -339,7 +374,19 @@ export default function Questions() {
           )}
         </Box>
       ) : (
-        <Box>
+        <VStack
+          // background={
+          //   colorMode === "dark"
+          //     ? "rgba(229, 229, 229, 0.13)"
+          //     : "rgba(220, 220, 220, 1)"
+          // }
+          padding={5}
+          minH="70vh"
+          borderRadius={10}
+          spacing={5}
+          justify="center"
+          align="center"
+        >
           <Alert
             status="success"
             variant="subtle"
@@ -347,27 +394,40 @@ export default function Questions() {
             alignItems="center"
             justifyContent="center"
             textAlign="center"
-            height="200px"
-            borderRadius={5}
-            marginBottom={5}
+            // height="200px"
+            borderRadius={10}
+            // marginBottom={5}
+            width="fit-content"
+            paddingY={8}
           >
             <AlertIcon boxSize="40px" mr={0} />
             <AlertTitle mt={4} mb={1} fontSize="lg">
-              Your Answers Submitted!
+              Answers Submitted!
             </AlertTitle>
             <AlertDescription maxWidth="sm">
               Click on &apos;View Results&apos; to see your score and
               potentially earn an NFT!
             </AlertDescription>
+            <Center mt={8}>
+              <Link
+                href={`/courses/${router.query.id}/results?entry=${submissionId}`}
+              >
+                <Button
+                  type="button" 
+                  isDisabled={!submissionId}
+                  minW={150}
+                  color="white"
+                  backgroundColor="rgba(35, 35, 35, 1)"
+                  _hover={{
+                    backgroundColor: "rgba(35, 35, 35, 0.5)",
+                  }}
+                >
+                  View Results
+                </Button>
+              </Link>
+            </Center>
           </Alert>
-          <Center>
-            <Link
-              href={`/courses/${router.query.id}/results?entry=${submissionId}`}
-            >
-              <Button type="button">View Results</Button>
-            </Link>
-          </Center>
-        </Box>
+        </VStack>
       )}
       {/* </Container> */}
     </Layout>

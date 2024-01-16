@@ -19,6 +19,7 @@ import {
   useColorMode,
   Circle,
   Avatar,
+  VStack,
 } from "@chakra-ui/react";
 import Progress from "react-progressbar";
 
@@ -30,6 +31,8 @@ export default function Quiz() {
   const [selectedOption, setSelectOption] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionId, setSubmissionId] = useState("");
+
+  const {colorMode} = useColorMode();
 
   useEffect(() => {
     async function fetchData() {
@@ -125,26 +128,37 @@ export default function Quiz() {
   return (
     <>
       {user && isSubmitted ? (
-        <Box
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "1rem",
-          }}
+        <VStack
+          // style={{
+          //   display: "flex",
+          //   flexDirection: "column",
+          //   justifyContent: "center",
+          //   alignItems: "center",
+          //   gap: "1rem",
+          // }}
+          justify="center"
+          align="center"
+          gap={4}
+          background={
+            colorMode === "dark"
+              ? "rgba(229, 229, 229, 0.13)"
+              : "rgba(220, 220, 220, 1)"
+          }
+          padding={5}
+          minH="70vh"
+          borderRadius={10}
         >
           <Text fontSize={{ lg: "2xl", md: "xl", base: "lg" }}>
             You have already taken the quiz
           </Text>
           <Link href="/?tab=result">
-            <Button style={{ background: "green" }}>
+            <Button backgroundColor="rgba(32, 223, 127, 0.9)" _hover={{ backgroundColor: "rgba(32, 223, 127, 0.5)" }}>
               <Text fontSize={{ lg: "2xl", md: "xl", base: "lg" }}>
                 Check your results
               </Text>
             </Button>
           </Link>
-        </Box>
+        </VStack>
       ) : user && !isSubmitted ? (
         <>
           <div style={{ display: "flex", justifyContent: "center" }}>

@@ -13,6 +13,8 @@ import {
   useColorMode,
   Circle,
   Avatar,
+  Button,
+  VStack
 } from "@chakra-ui/react";
 import NextImage from "next/image";
 import NextLink from "next/link";
@@ -50,6 +52,19 @@ export default function Home() {
   return (
     <Layout>
       <Container maxW="container.xl" paddingTop={5} paddingBottom={5}>
+        <VStack justify="center" align="center" textAlign="center" minH="70vh" spacing={4}>
+          <Heading>ECH Learn2Earn</Heading>
+          <Text maxWidth={600}>
+            Learn2Earn is a platform that allows you to learn about Ethereum
+            and get rewarded for it in the process. Watch the videos, take the
+            quiz and earn an NFT!
+          </Text>
+          <NextLink href={`/courses/${'FcJNeRkHph'}`}>
+            <Button>
+              Learn about Dencun
+            </Button>
+          </NextLink>
+        </VStack>
         {/* {courses.length ?
           <NextLink href={`/courses/${courses[0].id}`}>
             <Flex id='showcase' direction='column' justify='center' align='center' mb={10} borderRadius="2xl" width="100%" height={250} border="1px solid grey" cursor="pointer" overflow='hidden'>
@@ -211,7 +226,7 @@ export default function Home() {
             </NextLink>
           )}
         </Grid> */}
-        {tab === "quiz" ? <Quiz /> : tab === "result" ? <Result /> : <Videos />}
+        {/* {tab === "quiz" ? <Quiz /> : tab === "result" ? <Result /> : <Videos />} */}
       </Container>
     </Layout>
   );
