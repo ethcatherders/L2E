@@ -14,3 +14,12 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.grid-container {
+  display: grid;
+  gap: 3rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  justify-items: center;
+  justify-content: end;
+  align-content: end;
+}

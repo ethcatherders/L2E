@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
-import { Container, AspectRatio, Button, Center, Heading, Spinner } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
+import {
+  Container,
+  AspectRatio,
+  Button,
+  Center,
+  Heading,
+  Spinner,
+} from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 import Layout from "../../../components/Layout";
+import Videos from "../../../components/videos";
 
 export default function Course() {
   const [course, setCourse] = useState(null);
@@ -15,12 +23,12 @@ export default function Course() {
   useEffect(async () => {
     if (isInitialized) {
       setCourse(await getCourse());
-      setLoading(false)
+      setLoading(false);
     }
   }, [isInitialized]);
 
   useEffect(async () => {
-    const {id} = router.query;
+    const { id } = router.query;
     if (isInitialized && id) {
       setCourse(await getCourse());
     }
@@ -35,8 +43,8 @@ export default function Course() {
       const result = await query.get(id);
       return {
         title: result.attributes.title,
-        videoUrl: result.attributes.videoUrl
-      }
+        videoUrl: result.attributes.videoUrl,
+      };
     } catch (error) {
       console.error(error);
     }
@@ -50,12 +58,12 @@ export default function Course() {
         </Center>
       ) : (
         <>
-        {course ? 
-          <Container maxW='container.md' paddingTop={5}>
-            <Heading textAlign='center' paddingBottom={5}>
-              {course.title}
-            </Heading>
-            <AspectRatio height={450} width='100%'>
+          {course ? (
+            <Container maxW="container.lg" paddingTop={5}>
+              <Heading textAlign="center" paddingBottom={5}>
+                {course.title}
+              </Heading>
+              {/* <AspectRatio height={450} width='100%'>
               <iframe
                 width="560"
                 height="315"
@@ -65,22 +73,21 @@ export default function Course() {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            </AspectRatio>
-            {/* <Center paddingTop={5}>
+            </AspectRatio> */}
+              {/* <Center paddingTop={5}>
               <Link href={`/courses/${router.query.id}/questions`}>
                 <Button>
                   Take Quiz
                 </Button>
               </Link>
             </Center> */}
-          </Container>
-          :
-          <Container>
-            No Course Found
-          </Container>
-        }
+              <Videos />
+            </Container>
+          ) : (
+            <Container>No Course Found</Container>
+          )}
         </>
       )}
     </Layout>
-  )
+  );
 }

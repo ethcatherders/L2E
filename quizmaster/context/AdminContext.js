@@ -3,7 +3,7 @@ import { createContext, useState } from "react";
 export const AdminContext = createContext()
 
 export function AdminContextProvider({ children }) {
-	const [isAdmin, setIsAdmin] = useState(false)
+	const [isAdmin, setIsAdmin] = useState(true)
 	const [ethAddress, setEthAddress] = useState('')
 	const [devMode, setDevMode] = useState(false);
 
