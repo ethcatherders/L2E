@@ -6,7 +6,7 @@ import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
 import { IReward } from "./interfaces/IReward.sol";
 import { IRewardFactory } from "./interfaces/IRewardFactory.sol";
 
-contract L2ERewardFactory is Ownable, IRewardFactory {
+contract RewardFactory is Ownable, IRewardFactory {
     address public implementation;
     uint256 public count;
     mapping(uint256 => address) public rewards;

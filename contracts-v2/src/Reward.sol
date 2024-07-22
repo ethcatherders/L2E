@@ -11,7 +11,7 @@ import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import { IReward } from "./interfaces/IReward.sol";
 
-contract L2EReward is 
+contract Reward is 
     IReward,
     ERC721Enumerable,
     EIP712,
